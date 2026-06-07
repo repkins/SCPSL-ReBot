@@ -1,0 +1,37 @@
+﻿using System;
+using UnityEngine;
+
+namespace ReBot.Navigation.Mesh
+{
+    internal record struct TransformEdge(TransformVertex From, TransformVertex To, Transform Transform)
+    {
+        public readonly Edge Local => new (From.Local, To.Local);
+
+        public TransformEdge((Vertex From, Vertex To, Transform Tranform) tuple)
+            : this(new(tuple.From, tuple.Tranform), new(tuple.To, tuple.Tranform), tuple.Tranform)
+        { }
+
+        public TransformEdge(Edge Edge, Transform Tranform)
+            : this(new(Edge.From, Tranform), new(Edge.To, Tranform), Tranform)
+        { }
+
+        public readonly Vector3 MiddlePosition => Vector3.Lerp(From.Position, To.Position, 0.5f);
+        public readonly TransformEdge Inversed => new(To, From, Transform);
+
+        [Obsolete]
+        public static bool operator ==(TransformEdge? left, TransformEdge right)
+        {
+            throw new NotSupportedException();
+        }
+        [Obsolete]
+        public static bool operator !=(TransformEdge? left, TransformEdge right)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(TransformEdge)}({From.Local}, {To.Local}, {Transform.gameObject.name})";
+        }
+    }
+}

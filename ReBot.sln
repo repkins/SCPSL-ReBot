@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11822.322 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReBot", "ReBot\ReBot.csproj", "{823DC4ED-B408-4EB8-0E83-2E07D1736A42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{823DC4ED-B408-4EB8-0E83-2E07D1736A42}.Debug|x64.ActiveCfg = Debug|x64
+		{823DC4ED-B408-4EB8-0E83-2E07D1736A42}.Debug|x64.Build.0 = Debug|x64
+		{823DC4ED-B408-4EB8-0E83-2E07D1736A42}.Release|x64.ActiveCfg = Release|x64
+		{823DC4ED-B408-4EB8-0E83-2E07D1736A42}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1FB601A3-72A4-4189-B2B2-38E24E129C0F}
+	EndGlobalSection
+EndGlobal
