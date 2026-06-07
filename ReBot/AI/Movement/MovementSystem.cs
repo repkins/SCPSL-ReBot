@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ReBot.AI.Movement.Pathfinding;
+using UnityEngine;
 
 namespace ReBot.AI.Movement;
 
@@ -8,23 +9,28 @@ public static class MovementSystem
 
     public static void Process()
     {
-        MovementStore.CameraPositions.Clear();
         MovementStore.PlayerTransforms.Clear();
         MovementStore.CameraTransforms.Clear();
+        MovementStore.CameraPositions.Clear();
+        MovementStore.PlayerPositions.Clear();
 
         foreach (var (botRef, fpcRole) in MovementStore.CurrentFpcPlayerRoles)
         {
             var referenceHub = BotStore.BotHubs[botRef.Idx].ReferenceHub;
 
-            MovementStore.CameraPositions.Add(fpcRole.CameraPosition);
             MovementStore.PlayerTransforms.Add(fpcRole.FpcModule.transform);
             MovementStore.CameraTransforms.Add(referenceHub.PlayerCameraReference);
+
+            MovementStore.CameraPositions.Add(fpcRole.CameraPosition);
+            MovementStore.PlayerPositions.Add(fpcRole.FpcModule.Position);
         }
+
+        PathfindingSystem.Process();
 
         MovementStore.DesiredMoves.Clear();
         MovementStore.DesiredLooks.Clear();
 
-        foreach (var (botFpcRoleRef, position) in MovementStore.MoveToPositions)
+        foreach (var (botFpcRoleRef, position) in PathfindingStore.ClosestPositions)
         {
             SteerToPosition(botFpcRoleRef, position);
         }

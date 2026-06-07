@@ -13,6 +13,7 @@ public static class MovementStore
     public static Dictionary<FpcRoleRef, Vector3> MoveToPositions = [];
 
     public static List<Vector3> CameraPositions = [];
+    public static List<Vector3> PlayerPositions = [];
     public static List<Transform> PlayerTransforms = [];
     public static List<Transform> CameraTransforms = [];
 
