@@ -1,9 +1,15 @@
 ﻿namespace ReBot.Navigation.Mesh
 {
-    internal struct Edge(Ref<Vertex> from, Ref<Vertex> to)
+    internal struct Edge
     {
-        public Ref<Vertex> From = from;
-        public Ref<Vertex> To = to;
+        public Vertex From;
+        public Vertex To;
+
+        public Edge(Vertex from, Vertex to)
+        {
+            From = from;
+            To = to;
+        }
 
         public override readonly bool Equals(object obj)
         {
@@ -12,7 +18,7 @@
 
         public override readonly int GetHashCode()
         {
-            return System.HashCode.Combine(From, To);
+            return (From, To).GetHashCode();
         }
 
         public static bool operator ==(Edge left, Edge right)

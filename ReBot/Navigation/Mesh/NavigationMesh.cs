@@ -9,12 +9,12 @@ namespace ReBot.Navigation.Mesh
     internal partial class NavigationMesh
     {
         public List<Vertex> Vertices { get; } = new();
-        public event Action<Ref<Vertex>> VertexCreated;
-        public event Action<Ref<Vertex>> VertexDeleted;
+        public event Action<Vertex> VertexCreated;
+        public event Action<Vertex> VertexDeleted;
 
         public List<Cell> Cells { get; } = new();
-        public event Action<Ref<Cell>> CellCreated;
-        public event Action<Ref<Cell>> CellDeleted;
+        public event Action<Cell> CellCreated;
+        public event Action<Cell> CellDeleted;
 
         private NavigationMesh()
         {
@@ -23,108 +23,104 @@ namespace ReBot.Navigation.Mesh
 
         #region Mesh manipulation
 
-        public Ref<Vertex> AddVertex(Vector3 position)
+        public Vertex AddVertex(Vector3 position)
         {
             var newVertex = new Vertex(position);
             Vertices.Add(newVertex);
 
-            var newVertexRef = new Ref<Vertex>(Vertices.IndexOf(newVertex), this);
-            VertexCreated?.Invoke(newVertexRef);
+            VertexCreated?.Invoke(newVertex);
 
-            return newVertexRef;
+            return newVertex;
         }
 
-        public bool DeleteVertex(Ref<Vertex> vertexRef)
+        public bool DeleteVertex(Vertex vertex)
         {
-            if (vertexRef.Idx < 0)
+            if (!Vertices.Remove(vertex))
             {
                 return false;
             }
 
-            Vertices.RemoveAt(vertexRef.Idx);
-
-            VertexDeleted?.Invoke(vertexRef);
+            VertexDeleted?.Invoke(vertex);
 
             return true;
         }
 
-        private void RemoveVertexFromCells(Ref<Vertex> vertexRef)
+        private void RemoveVertexFromCells(Vertex vertex)
         {
-            for (int cellIdx = 0; cellIdx < Cells.Count; cellIdx++)
+            foreach (var cell in Cells)
             {
-                Cells[cellIdx].RemoveVertex(vertexRef);
+                cell.RemoveVertex(vertex);
 
-                RemoveAdjacentCells(new(cellIdx, this));
-                AddAdjacentCells(new(cellIdx, this));
+                RemoveAdjacentCells(cell);
+                AddAdjacentCells(cell);
             }
         }
 
-        public bool MoveVertex(Ref<Vertex> vertexRef, Vector3 newPosition)
+        public bool MoveVertex(Vertex vertex, Vector3 newPosition)
         {
-            Vertices[vertexRef.Idx] = new(newPosition);
+            vertex.Position = newPosition;
 
             return true;
         }
 
-        public Ref<Cell> MakeCell(IEnumerable<Ref<Vertex>> vertexRefs)
+        public Cell MakeCell(IEnumerable<Vertex> vertices)
         {
-            var newCell = new Cell(vertexRefs);
+            var newCell = new Cell(vertices);
             Cells.Add(newCell);
 
-            var newCellRef = new Ref<Cell>(Cells.IndexOf(newCell), this);
-            AddAdjacentCells(newCellRef);
+            AddAdjacentCells(newCell);
 
-            CellCreated?.Invoke(newCellRef);
+            CellCreated?.Invoke(newCell);
 
-            return newCellRef;
+            return newCell;
         }
 
-        private void AddAdjacentCells(Ref<Cell> newCellRef)
+        private void AddAdjacentCells(Cell newCell)
         {
-            for (int adjacentCellIdx = 0; adjacentCellIdx < Cells.Count; adjacentCellIdx++)
+            foreach (var adjacentCell in Cells)
             {
-                foreach (var edge in Cells[newCellRef.Idx].Edges)
+                foreach (var edge in newCell.Edges)
                 {
                     var adjacentEdge = new Edge(edge.To, edge.From);
-                    if (Cells[adjacentCellIdx].Edges.Contains(adjacentEdge))
+                    if (adjacentCell.Edges.Contains(adjacentEdge))
                     {
-                        Cells[newCellRef.Idx].AddAdjacentCell(new(adjacentCellIdx, this), adjacentEdge);
-                        Cells[adjacentCellIdx].AddAdjacentCell(newCellRef, edge);
+                        newCell.AddAdjacentCell(adjacentCell, adjacentEdge);
+                        adjacentCell.AddAdjacentCell(newCell, edge);
                     }
                 }
             }
         }
 
-        public bool RemoveCell(Ref<Cell> cellRef)
+        public bool RemoveCell(Cell cell)
         {
-            if (cellRef.Idx < 0)
+            var cells = Cells;
+            if (!cells.Remove(cell))
             {
                 return false;
             }
 
-            Cells.RemoveAt(cellRef.Idx);
-            RemoveAdjacentCells(cellRef);
+            RemoveAdjacentCells(cell);
 
-            CellDeleted?.Invoke(cellRef);
+            CellDeleted?.Invoke(cell);
 
             return true;
         }
 
-        private void RemoveAdjacentCells(Ref<Cell> cellRef)
+        private void RemoveAdjacentCells(Cell cell)
         {
-            for (int otherCellIdx = 0; otherCellIdx < Cells.Count; otherCellIdx++)
+            foreach (var otherCell in Cells)
             {
-                Cells[cellRef.Idx].RemoveAdjacentCell(new(otherCellIdx, this));
-                Cells[otherCellIdx].RemoveAdjacentCell(cellRef);
+                cell.RemoveAdjacentCell(otherCell);
+                otherCell.RemoveAdjacentCell(cell);
             }
         }
 
-        public void AddVertexToCell(Ref<Cell> cellRef, Ref<Vertex> vertexRef, Ref<Vertex> beforeVertexRef)
+        public void AddVertexToCell(Cell cell, Vertex vertex, Vertex beforeVertex)
         {
-            Cells[cellRef.Idx].AddVertex(vertexRef, beforeVertexRef);
+            cell.AddVertex(vertex, beforeVertex);
 
-            RemoveAdjacentCells(cellRef);
-            AddAdjacentCells(cellRef);
+            RemoveAdjacentCells(cell);
+            AddAdjacentCells(cell);
         }
 
         #endregion
@@ -147,7 +143,7 @@ namespace ReBot.Navigation.Mesh
                     z = binaryReader.ReadSingle()
                 };
 
-                AddVertex(vertexPosition);
+                var newVertex = AddVertex(vertexPosition);
             }
 
             ///
@@ -155,6 +151,9 @@ namespace ReBot.Navigation.Mesh
             ///
 
             var cellsCount = binaryReader.ReadInt32();
+
+            var cellsVertices = new int[cellsCount][];
+            var cellsConnections = new int[cellsCount][];
 
             for (var j = 0; j < cellsCount; j++)
             {
@@ -164,26 +163,38 @@ namespace ReBot.Navigation.Mesh
                 {
                     cellVertices[k] = binaryReader.ReadInt32();
                 }
+                cellsVertices[j] = cellVertices;
 
-                MakeCell(cellVertices.Select(vertexIdx => new Ref<Vertex>(vertexIdx, this)));
+                var newCell = MakeCell(cellVertices.Select(vertexIdx => Vertices[vertexIdx]));
+
+                if (version < 5)
+                {
+                    var connectedCellsCount = binaryReader.ReadInt32();
+                    var connectedCells = new int[connectedCellsCount];
+                    for (var k = 0; k < connectedCellsCount; k++)
+                    {
+                        connectedCells[k] = binaryReader.ReadInt32();
+                    }
+                    cellsConnections[j] = connectedCells;
+                }
             }
         }
 
         public void WriteMesh(BinaryWriter binaryWriter)
         {
             binaryWriter.Write(Vertices.Count);
-            for (int vertexIdx = 0; vertexIdx < Vertices.Count; vertexIdx++)
+            foreach (var vertex in Vertices)
             {
-                binaryWriter.Write(Vertices[vertexIdx].Position.x);
-                binaryWriter.Write(Vertices[vertexIdx].Position.y);
-                binaryWriter.Write(Vertices[vertexIdx].Position.z);
+                binaryWriter.Write(vertex.Position.x);
+                binaryWriter.Write(vertex.Position.y);
+                binaryWriter.Write(vertex.Position.z);
             }
 
             binaryWriter.Write(Cells.Count);
-            for (int cellIdx = 0; cellIdx < Cells.Count; cellIdx++)
+            foreach (var cell in Cells)
             {
-                binaryWriter.Write(Cells[cellIdx].Vertices.Count);
-                foreach (var vertexIdx in Cells[cellIdx].Vertices.Select(cellVertexRef => cellVertexRef.Idx))
+                binaryWriter.Write(cell.Vertices.Count);
+                foreach (var vertexIdx in cell.Vertices.Select(cellVertex => Vertices.IndexOf(cellVertex)))
                 {
                     binaryWriter.Write(vertexIdx);
                 }

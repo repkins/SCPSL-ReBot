@@ -2,5 +2,18 @@
 
 namespace ReBot.Navigation.Mesh
 {
-    internal record struct Vertex(Vector3 Position);
+    internal class Vertex
+    {
+        public Vector3 Position { get; set; }
+
+        public Vertex(Vector3 position)
+        {
+            Position = position;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Vertex)}{Position}";
+        }
+    }
 }

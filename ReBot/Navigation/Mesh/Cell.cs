@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace ReBot.Navigation.Mesh
 {
-    internal struct Cell : IEquatable<Cell>
+    internal class Cell
     {
-        public List<Ref<Vertex>> Vertices { get; } = new();
+        public List<Vertex> Vertices { get; } = new();
 
-        public List<Ref<Cell>> AdjacentCells { get; } = new();
-        public Dictionary<Ref<Cell>, Edge> AdjacentCellEdges { get; } = new();
+        public List<Cell> AdjacentCells { get; } = new();
+        public Dictionary<Cell, Edge> AdjacentCellEdges { get; } = new();
 
-        public readonly IEnumerable<Edge> Edges => Vertices.Zip(Vertices.Skip(1), (v1, v2) => new Edge(v1, v2))
+        public IEnumerable<Edge> Edges => Vertices.Zip(Vertices.Skip(1), (v1, v2) => new Edge(v1, v2))
             .Append(new Edge(Vertices.Last(), Vertices.First()));
 
-        public Vector3 MeanPosition => Vertices.Select(v => v.Mesh.Vertices[v.Idx].Position)
+        public Vector3 MeanPosition => Vertices.Select(v => v.Position)
             .Aggregate(Vector3.zero, (a, u) => a + u) / Vertices.Count;
 
-        public Cell(IEnumerable<Ref<Vertex>> vertices)
+        public Cell(IEnumerable<Vertex> vertices)
         {
             Vertices.AddRange(vertices);
-        }
-
-        public readonly bool Equals(Cell other)
-        {
-            return Vertices.SequenceEqual(other.Vertices);
         }
 
         public bool ContainsEdge(Edge edge)
@@ -33,24 +27,24 @@ namespace ReBot.Navigation.Mesh
             return Edges.Contains(edge);
         }
 
-        public void AddVertex(Ref<Vertex> vertex, Ref<Vertex> beforeVertex)
+        public void AddVertex(Vertex vertex, Vertex beforeVertex)
         {
             var atIdx = Vertices.IndexOf(beforeVertex);
             Vertices.Insert(atIdx, vertex);
         }
 
-        public void RemoveVertex(Ref<Vertex> vertex)
+        public void RemoveVertex(Vertex vertex)
         {
             Vertices.Remove(vertex);
         }
 
-        public void AddAdjacentCell(Ref<Cell> adjacentCell, Edge adjacentEdge)
+        public void AddAdjacentCell(Cell adjacentCell, Edge adjacentEdge)
         {
             AdjacentCells.Add(adjacentCell);
             AdjacentCellEdges.Add(adjacentCell, adjacentEdge);
         }
 
-        public void RemoveAdjacentCell(Ref<Cell> adjacentCell)
+        public void RemoveAdjacentCell(Cell adjacentCell)
         {
             AdjacentCells.Remove(adjacentCell);
             AdjacentCellEdges.Remove(adjacentCell);
