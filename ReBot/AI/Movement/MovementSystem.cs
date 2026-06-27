@@ -1,4 +1,5 @@
-﻿using ReBot.AI.Movement.Pathfinding;
+﻿using PlayerRoles.FirstPersonControl;
+using ReBot.AI.Movement.Pathfinding;
 using UnityEngine;
 
 namespace ReBot.AI.Movement;
@@ -14,9 +15,13 @@ public static class MovementSystem
         MovementStore.CameraPositions.Clear();
         MovementStore.PlayerPositions.Clear();
 
-        foreach (var (botRef, fpcRole) in MovementStore.CurrentFpcPlayerRoles)
+        for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
-            var referenceHub = BotStore.BotHubs[botRef.Idx].ReferenceHub;
+            var referenceHub = BotStore.BotHubs[botIdx];
+            if (referenceHub.roleManager.CurrentRole is not FpcStandardRoleBase fpcRole)
+            {
+                continue;
+            }
 
             MovementStore.PlayerTransforms.Add(fpcRole.FpcModule.transform);
             MovementStore.CameraTransforms.Add(referenceHub.PlayerCameraReference);
@@ -30,26 +35,26 @@ public static class MovementSystem
         MovementStore.DesiredMoves.Clear();
         MovementStore.DesiredLooks.Clear();
 
-        foreach (var (botFpcRoleRef, position) in PathfindingStore.ClosestPositions)
+        foreach (var (botRef, position) in PathfindingStore.ClosestPositions)
         {
-            SteerToPosition(botFpcRoleRef, position);
+            SteerToPosition(botRef, position);
         }
     }
 
-    private static void SteerToPosition(FpcRoleRef botFpcRoleRef, Vector3 targetPosition)
+    private static void SteerToPosition(BotRef botRef, Vector3 targetPosition)
     {
-        var relativePos = targetPosition - MovementStore.CameraPositions[botFpcRoleRef.Idx];
+        var relativePos = targetPosition - MovementStore.CameraPositions[botRef.Idx];
         var relativeHorizontalPos = Vector3.ProjectOnPlane(relativePos, Vector3.up);
-        var turnPosition = relativeHorizontalPos + MovementStore.CameraPositions[botFpcRoleRef.Idx];
+        var turnPosition = relativeHorizontalPos + MovementStore.CameraPositions[botRef.Idx];
 
-        ToPosition(botFpcRoleRef, turnPosition);
+        ToPosition(botRef, turnPosition);
 
-        var playerDirection = MovementStore.PlayerTransforms[botFpcRoleRef.Idx].forward;
+        var playerDirection = MovementStore.PlayerTransforms[botRef.Idx].forward;
         var dirTowardsTarget = Vector3.Normalize(relativeHorizontalPos);
 
         if (Vector3.Dot(playerDirection, dirTowardsTarget) < 0f)
         {
-            MovementStore.DesiredMoves.Add(new(MovementStore.PlayerTransforms[botFpcRoleRef.Idx].InverseTransformDirection(dirTowardsTarget)));
+            MovementStore.DesiredMoves.Add(new(MovementStore.PlayerTransforms[botRef.Idx].InverseTransformDirection(dirTowardsTarget)));
         }
         else
         {
@@ -57,10 +62,10 @@ public static class MovementSystem
         }
     }
 
-    private static void ToPosition(FpcRoleRef botFpcRoleRef, Vector3 targetPosition)
+    private static void ToPosition(BotRef botRef, Vector3 targetPosition)
     {
-        var playerTransform = MovementStore.PlayerTransforms[botFpcRoleRef.Idx];
-        var cameraTransform = MovementStore.CameraTransforms[botFpcRoleRef.Idx];
+        var playerTransform = MovementStore.PlayerTransforms[botRef.Idx];
+        var cameraTransform = MovementStore.CameraTransforms[botRef.Idx];
 
         var relativePos = targetPosition - cameraTransform.position;
 

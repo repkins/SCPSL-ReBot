@@ -15,10 +15,10 @@ namespace ReBot.AI.Movement
         {
             var hub = HubField.GetValue(__instance) as ReferenceHub;
 
-            if (hub != null && MovementStore.BotFpcRoleIds.TryGetValue(hub, out var botFpcRoleRef))
+            if (hub != null && BotStore.BotHubRefs.TryGetValue(hub, out var botRef))
             {
-                var hRotation = MovementStore.DesiredLooks[botFpcRoleRef.Idx].DesiredHorizontalRotation;
-                var vRotation = MovementStore.DesiredLooks[botFpcRoleRef.Idx].DesiredVerticalRotation;
+                var hRotation = MovementStore.DesiredLooks[botRef.Idx].DesiredHorizontalRotation;
+                var vRotation = MovementStore.DesiredLooks[botRef.Idx].DesiredVerticalRotation;
 
                 //__instance.CurrentHorizontal = Mathf.DeltaAngle(0f, hub.transform.eulerAngles.y);
                 //__instance.CurrentVertical = -Mathf.DeltaAngle(0f, hub.PlayerCameraReference.localEulerAngles.x);
@@ -32,7 +32,7 @@ namespace ReBot.AI.Movement
                 hub.transform.rotation = rotation;
                 hub.PlayerCameraReference.localRotation = cameraRotation;
 
-                MovementStore.DesiredLooks[botFpcRoleRef.Idx] = new(Quaternion.identity, Quaternion.identity, Quaternion.identity);
+                MovementStore.DesiredLooks[botRef.Idx] = new(Quaternion.identity, Quaternion.identity, Quaternion.identity);
 
                 return false;
             }

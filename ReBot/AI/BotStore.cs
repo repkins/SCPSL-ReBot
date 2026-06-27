@@ -8,6 +8,6 @@ namespace ReBot.AI;
 
 public static class BotStore
 {
-    public static Dictionary<ReferenceHub, BotRef> BotHubIds = [];
-    public static List<BotHub> BotHubs = [];
+    public static List<ReferenceHub> BotHubs = [];
+    public static Dictionary<ReferenceHub, BotRef> BotHubRefs = [];
 }

@@ -15,10 +15,10 @@ namespace ReBot.AI.Movement
             var fpcModule = MainModuleField.GetValue(__instance) as FirstPersonMovementModule;
             var hub = HubGetter.Invoke(fpcModule, null) as ReferenceHub;
 
-            if (MovementStore.BotFpcRoleIds.TryGetValue(hub, out var botFpcRoleRef))
+            if (BotStore.BotHubRefs.TryGetValue(hub, out var botRef))
             {
-                __result = fpcModule!.transform.TransformDirection(MovementStore.DesiredMoves[botFpcRoleRef.Idx].DesiredLocalDirection);
-                MovementStore.DesiredMoves[botFpcRoleRef.Idx] = new(Vector3.zero);
+                __result = fpcModule!.transform.TransformDirection(MovementStore.DesiredMoves[botRef.Idx].DesiredLocalDirection);
+                MovementStore.DesiredMoves[botRef.Idx] = new(Vector3.zero);
 
 
                 return false;
@@ -34,7 +34,7 @@ namespace ReBot.AI.Movement
             var fpcModule = MainModuleField.GetValue(__instance) as FirstPersonMovementModule;
             var hub = HubGetter.Invoke(fpcModule, null) as ReferenceHub;
 
-            if (MovementStore.BotFpcRoleIds.TryGetValue(hub, out var botFpcRoleRef))
+            if (BotStore.BotHubRefs.TryGetValue(hub, out var botRef))
             { 
                 __instance.ReceivedPosition = new RelativePositioning.RelativePosition(fpcModule!.Position + __instance.MoveDirection);
             }

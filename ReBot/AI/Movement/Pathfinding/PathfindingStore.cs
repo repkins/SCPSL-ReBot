@@ -6,5 +6,5 @@ namespace ReBot.AI.Movement.Pathfinding;
 
 internal static class PathfindingStore
 {
-    public static List<(FpcRoleRef, Vector3)> ClosestPositions = [];
+    public static List<(BotRef, Vector3)> ClosestPositions = [];
 }

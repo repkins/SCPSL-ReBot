@@ -1,9 +1,10 @@
-﻿using MapGeneration;
+﻿using LabApi.Features.Extensions;
+using LabApi.Features.Wrappers;
+using MapGeneration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using LabApi.Features.Wrappers;
 
 namespace ReBot.Navigation.Mesh
 {

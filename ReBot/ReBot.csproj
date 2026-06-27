@@ -40,6 +40,10 @@
   <ItemGroup>
     <PackageReference Include="IsExternalInit" Version="1.0.3" />
     <PackageReference Include="Lib.Harmony" Version="2.3.6" />
+    <PackageReference Include="RequiredMemberAttribute" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -85,6 +89,17 @@
     <ProjectCapability Remove="ReferenceManagerCOM" />
     <ProjectCapability Remove="AssemblyReferences" />
     <ProjectCapability Remove="ReferenceManagerAssemblies" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AI\Mind\BeliefRef.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AI\Mind\Common\" />
+    <Folder Include="AI\Mind\Scp049\" />
   </ItemGroup>
 
 </Project>

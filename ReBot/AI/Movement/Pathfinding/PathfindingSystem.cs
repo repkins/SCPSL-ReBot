@@ -7,15 +7,25 @@ namespace ReBot.AI.Movement.Pathfinding;
 
 internal static class PathfindingSystem
 {
-    private static List<TransformCell> cellsPath = [];
+    private static readonly List<TransformCell> cellsPath = [];
 
     public static void Process()
     {
         PathfindingStore.ClosestPositions.Clear();
 
-        foreach (var (fpcRef, targetPos) in MovementStore.MoveToPositions)
+        for (int botIdx = 0; botIdx < MovementStore.MoveToPositionRefs.Count; botIdx++)
         {
-            var startingPos = MovementStore.PlayerPositions[fpcRef.Idx];
+            var moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx];
+
+            var (hasTargetPos, targetPos) = moveToPositionRef.Value;
+            moveToPositionRef.Value = default;
+
+            if (!hasTargetPos)
+            {
+                continue;
+            }
+
+            var startingPos = MovementStore.PlayerPositions[botIdx];
 
             var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos);
             var targetCellResult = NavigationMesh.GetCellWithinOrClosest(targetPos);
@@ -28,7 +38,7 @@ internal static class PathfindingSystem
             NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, cellsPath);
             var closestPosition = GetNextCorner(startingPos, targetPos, startingCellResult.Value);
 
-            PathfindingStore.ClosestPositions.Add((fpcRef, closestPosition));
+            PathfindingStore.ClosestPositions.Add((new(botIdx), closestPosition));
         }
     }
 
