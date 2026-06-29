@@ -7,10 +7,9 @@ internal struct BeliefPathfinding()
     private NativeList<(float, (BeliefEnum, BeliefRef))> beliefsToVisit = new(Allocator.Temp);
     private NativeHashMap<(BeliefEnum, BeliefRef), float> generalCosts = new(1, Allocator.Temp);
 
-    public bool TryDequeueMin(out BeliefEnum bestEnum, out BeliefRef bestRef)
+    public bool TryDequeueMin(out (BeliefEnum beliefEnum, BeliefRef beliefRef) best)
     {
-        bestEnum = default;
-        bestRef = default;
+        best = default;
 
         if (beliefsToVisit.Length > 0)
         {
@@ -23,7 +22,7 @@ internal struct BeliefPathfinding()
                 if (priority < smallest)
                 {
                     smallest = priority;
-                    (bestEnum, bestRef) = belief;
+                    best = belief;
                     bestIdx = i;
                 }
             }

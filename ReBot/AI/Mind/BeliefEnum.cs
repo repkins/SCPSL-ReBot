@@ -7,5 +7,10 @@ public enum BeliefEnum : byte
     WithinTarget,
     InteractingWithTarget,
 
-    NoObstacleTarget,
+    ObstacleTargetToRemove,
+    SightedEnemies,
+
+    TargetsTerminated,
+    EnemyWithinDistance,
+    CardiacTarget,
 }
