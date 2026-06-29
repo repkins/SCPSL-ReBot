@@ -4,8 +4,8 @@ public enum BeliefEnum : byte
 {
     Default,
 
-    MoveToTarget,
-    InteractWithTarget,
+    WithinTarget,
+    InteractingWithTarget,
 
-    ObstacleTarget,
+    NoObstacleTarget,
 }

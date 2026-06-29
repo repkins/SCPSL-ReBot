@@ -24,38 +24,38 @@ internal struct FindActionJob : IJob
     {
         var beliefPathfinding = new BeliefPathfinding();
 
-        while (!moveToPositionRef.Value.HasPosition && beliefPathfinding.TryDequeueMin(out var beliefEnum, out var beliefRef))
+        while (!moveToPositionRef.Value.HasPosition && beliefPathfinding.TryDequeueMin(out var enablingBeliefEnum, out var enablingBeliefRef))
         {
-            switch (beliefEnum) 
+            switch (enablingBeliefEnum) 
             {
-                case BeliefEnum.MoveToTarget:
+                case BeliefEnum.WithinTarget:
                     {
-                        var targetPosition = targetPositions[beliefRef.Idx];
+                        var targetPosition = targetPositions[enablingBeliefRef.Idx];
                         moveToPositionRef.Value = (true, targetPosition);
                     }
                     break;
 
-                case BeliefEnum.InteractWithTarget:
+                case BeliefEnum.InteractingWithTarget:
                     {
-                        var targetPosition = targetPositions[beliefRef.Idx];
+                        var targetPosition = targetPositions[enablingBeliefRef.Idx];
                         interactPositionRef.Value = (true, targetPosition);
                     }
                     break;
 
-                case BeliefEnum.ObstacleTarget:
+                case BeliefEnum.NoObstacleTarget:
                     {
-                        var (hasObstacle2, obstacle2TargetRef) = obstacleTargets[beliefRef.Idx];
+                        var (hasObstacle2, obstacle2TargetRef) = obstacleTargets[enablingBeliefRef.Idx];
                         if (!hasObstacle2)
                         {
-                            var cost = Vector3.Distance(targetPositions[beliefRef.Idx], playerPosition);
+                            var cost = Vector3.Distance(targetPositions[enablingBeliefRef.Idx], playerPosition);
 
-                            beliefPathfinding.EnqueueIfLess((beliefEnum, beliefRef), cost, (BeliefEnum.MoveToTarget, new(beliefRef.Idx)));
+                            beliefPathfinding.EnqueueIfLess((enablingBeliefEnum, enablingBeliefRef), cost, (BeliefEnum.WithinTarget, enablingBeliefRef));
                         }
                         else
                         {
-                            var cost = Vector3.Distance(targetPositions[beliefRef.Idx], targetPositions[obstacle2TargetRef.Idx]);
+                            var cost = Vector3.Distance(targetPositions[enablingBeliefRef.Idx], targetPositions[obstacle2TargetRef.Idx]);
 
-                            beliefPathfinding.EnqueueIfLess((beliefEnum, beliefRef), cost, (BeliefEnum.ObstacleTarget, new(obstacle2TargetRef.Idx)));
+                            beliefPathfinding.EnqueueIfLess((enablingBeliefEnum, enablingBeliefRef), cost, (BeliefEnum.NoObstacleTarget, new(obstacle2TargetRef.Idx)));
                         }
                     }
                     break;
