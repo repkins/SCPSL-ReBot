@@ -22,12 +22,9 @@ internal struct FindActionJob : IJob
 
     public void Execute()
     {
-        var beliefsToVisit = new BeliefPriorityQueue();
+        var beliefPathfinding = new BeliefPathfinding();
 
-        var moveToTarget = new BeliefToImpact(BeliefEnum.MoveToTarget, targetPositions.Length);
-        var obstacleTarget = new BeliefToImpact(BeliefEnum.ObstacleTarget, obstacleTargets.Length);
-
-        while (!moveToPositionRef.Value.HasPosition && beliefsToVisit.TryDequeueMin(out var beliefEnum, out var beliefRef))
+        while (!moveToPositionRef.Value.HasPosition && beliefPathfinding.TryDequeueMin(out var beliefEnum, out var beliefRef))
         {
             switch (beliefEnum) 
             {
@@ -47,20 +44,18 @@ internal struct FindActionJob : IJob
 
                 case BeliefEnum.ObstacleTarget:
                     {
-                        var beliefCost = obstacleTarget.generalCosts[beliefRef];
-
                         var (hasObstacle2, obstacle2TargetRef) = obstacleTargets[beliefRef.Idx];
                         if (!hasObstacle2)
                         {
                             var cost = Vector3.Distance(targetPositions[beliefRef.Idx], playerPosition);
 
-                            beliefsToVisit.EnqueueIfLess(beliefCost, cost, ref moveToTarget, new(beliefRef.Idx));
+                            beliefPathfinding.EnqueueIfLess((beliefEnum, beliefRef), cost, (BeliefEnum.MoveToTarget, new(beliefRef.Idx)));
                         }
                         else
                         {
                             var cost = Vector3.Distance(targetPositions[beliefRef.Idx], targetPositions[obstacle2TargetRef.Idx]);
 
-                            beliefsToVisit.EnqueueIfLess(beliefCost, cost, ref obstacleTarget, new(obstacle2TargetRef.Idx));
+                            beliefPathfinding.EnqueueIfLess((beliefEnum, beliefRef), cost, (BeliefEnum.ObstacleTarget, new(obstacle2TargetRef.Idx)));
                         }
                     }
                     break;
