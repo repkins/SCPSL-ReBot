@@ -18,22 +18,31 @@ internal class DecisionMakingSystem
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
-            var findActionJob = new FindActionJob
+            var botHub = BotStore.BotHubs[botIdx];
+
+            switch (botHub.roleManager.CurrentRole.RoleTypeId)
             {
-                playerPosition = PlayerStore.PlayerPositions[botIdx],
-                targetPositions = LocationStore.TargetPositions[botIdx],
-                obstacleTargets = ObstacleStore.ObstacleTargets[botIdx],
-                roomEnterLocationTargets = RoomStore.RoomEnterLocationTargets[botIdx],
+                case PlayerRoles.RoleTypeId.Scp049:
+                    {
+                        var findActionJob = new FindActionJob
+                        {
+                            playerPosition = PlayerStore.PlayerPositions[botIdx],
+                            targetPositions = LocationStore.TargetPositions[botIdx],
+                            obstacleTargets = ObstacleStore.ObstacleTargets[botIdx],
+                            roomEnterLocationTargets = RoomStore.RoomEnterLocationTargets[botIdx],
 
-                moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx],
-                interactPositionRef = InteractionStore.InteractWithPositionRefs[botIdx],
+                            moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx],
+                            interactPositionRef = InteractionStore.InteractWithPositionRefs[botIdx],
 
-                sightedEnemyTargets = TerminationState.SightedEnemyTargets[botIdx],
-                enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx],
-                cardiacPositionRef = CardiacStore.CardiacPositionRefs[botIdx],
-            };
+                            sightedEnemyTargets = TerminationState.SightedEnemyTargets[botIdx],
+                            enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx],
+                            cardiacPositionRef = CardiacStore.CardiacPositionRefs[botIdx],
+                        };
 
-            findActionHandles[botIdx] = findActionJob.Schedule();
+                        findActionHandles[botIdx] = findActionJob.Schedule();
+                    }
+                    break;
+            }
         }
 
         var decisionMakingHandle = JobHandle.CombineDependencies(findActionHandles);
