@@ -3,6 +3,7 @@
 using LabApi.Events.Handlers;
 using MEC;
 using PlayerRoles;
+using ReBot.AI.Mind;
 using ReBot.AI.Movement;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -49,6 +50,8 @@ public static class BotSystem
 
     public static IEnumerator<float> RunPlayerUpdates()
     {
+        // Perception systems
+        DecisionMakingSystem.Process();
         MovementSystem.Process();
 
         yield break;

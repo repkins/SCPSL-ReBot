@@ -1,4 +1,4 @@
-﻿using ReBot.AI.Traversal;
+﻿using ReBot.AI.Spacial;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;

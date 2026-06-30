@@ -1,11 +1,8 @@
-﻿using ReBot.AI.Movement;
+﻿using ReBot.AI.Cardiac;
+using ReBot.AI.Interaction;
+using ReBot.AI.Movement;
+using ReBot.AI.Spacial;
 using ReBot.AI.Termination;
-using ReBot.AI.Traversal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -21,12 +18,19 @@ internal class DecisionMakingSystem
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
-            var targets = TraversalState.Targets[botIdx];
-
             var findActionJob = new FindActionJob
             {
-                targetPositions = targets,
-                moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx]
+                playerPosition = PlayerStore.PlayerPositions[botIdx],
+                targetPositions = LocationStore.TargetPositions[botIdx],
+                obstacleTargets = ObstacleStore.ObstacleTargets[botIdx],
+                roomEnterLocationTargets = RoomStore.RoomEnterLocationTargets[botIdx],
+
+                moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx],
+                interactPositionRef = InteractionStore.InteractWithPositionRefs[botIdx],
+
+                sightedEnemyTargets = TerminationState.SightedEnemyTargets[botIdx],
+                enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx],
+                cardiacPositionRef = CardiacStore.CardiacPositionRefs[botIdx],
             };
 
             findActionHandles[botIdx] = findActionJob.Schedule();
