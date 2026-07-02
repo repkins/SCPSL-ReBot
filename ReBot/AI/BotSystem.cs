@@ -3,6 +3,8 @@
 using LabApi.Events.Handlers;
 using MEC;
 using PlayerRoles;
+using ReBot.AI.Cardiac;
+using ReBot.AI.Interaction;
 using ReBot.AI.Mind;
 using ReBot.AI.Movement;
 using System.Collections.Generic;
@@ -52,7 +54,12 @@ public static class BotSystem
     {
         // Perception systems
         DecisionMakingSystem.Process();
+
         MovementSystem.Process();
+        InteractionSystem.Process();
+
+        // SCP 049 Role
+        CardiacSystem.Process();
 
         yield break;
     }
