@@ -12,6 +12,6 @@ namespace ReBot.AI.Termination;
 
 internal static class TerminationState
 {
-    public static List<NativeList<TargetRef>> SightedEnemyTargets = [];
+    public static List<NativeList<Vector3>> SightedEnemyLocations = [];
     public static List<NativeList<bool>> EnemiesWithinDistance = [];
 }

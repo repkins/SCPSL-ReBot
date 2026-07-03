@@ -4,13 +4,14 @@ public enum BeliefEnum : byte
 {
     Default,
 
-    WithinTarget,
-    InteractingWithTarget,
+    ObstacleToRemove,
+    WithinObstacleLocation,
 
-    ObstacleTargetToRemove,
-    SightedEnemies,
+    WithinRoomEnterLocation,
+    InteractingWithObstacle,
 
     TargetsTerminated,
-    EnemyWithinDistance,
-    CardiacTarget,
+    SightedEnemies,
+    WithinEnemyLocation,
+    CardiacEnemy,
 }

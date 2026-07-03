@@ -11,15 +11,15 @@ internal struct FindActionJob : IJob
     public required Vector3 playerPosition;
 
     [ReadOnly]
-    public required NativeList<Vector3> targetPositions;
+    public required NativeHashMap<Vector3, ObstacleRef> obstacles;
     [ReadOnly]
-    public required NativeList<(bool, TargetRef)> obstacleTargets;
+    public required NativeList<Vector3> obstacleLocations;
 
     [ReadOnly]
-    public required NativeList<TargetRef> roomEnterLocationTargets;
+    public required NativeList<Vector3> roomEnterLocations;
 
     [ReadOnly]
-    public required NativeList<TargetRef> sightedEnemyTargets;
+    public required NativeList<Vector3> sightedEnemyLocations;
     [ReadOnly]
     public required NativeList<bool> enemiesWithinDistance;
 
@@ -43,23 +43,32 @@ internal struct FindActionJob : IJob
             {
                 case BeliefEnum.TargetsTerminated:
                     {
-                        if (sightedEnemyTargets.Length > 0)
+                        if (sightedEnemyLocations.Length > 0)
                         {
-                            for (var enemyIdx = 0; enemyIdx < sightedEnemyTargets.Length; enemyIdx++)
+                            for (var enemyIdx = 0; enemyIdx < sightedEnemyLocations.Length; enemyIdx++)
                             {
-                                var enemyTargetRef = sightedEnemyTargets[enemyIdx];
+                                var cost = 1f;  // cardiac attack cost, constant
 
                                 if (enemiesWithinDistance[enemyIdx])
                                 {
-                                    var cost = 1;
-
-                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.CardiacTarget, new(enemyTargetRef.Idx)));
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.CardiacEnemy, new(enemyIdx)));
                                 }
                                 else
                                 {
-                                    var cost = 1;
+                                    var enemyPosition = sightedEnemyLocations[enemyIdx];
 
-                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.EnemyWithinDistance, new(enemyTargetRef.Idx)));
+                                    if (!obstacles.TryGetValue(enemyPosition, out var obstacleRef))
+                                    {
+                                        cost += Vector3.Distance(enemyPosition, playerPosition);
+
+                                        beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinEnemyLocation, new(enemyIdx)));
+                                    }
+                                    else
+                                    {
+                                        cost += Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+
+                                        beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacleRef.Idx)));
+                                    }
                                 }
                             }
                         }
@@ -72,94 +81,91 @@ internal struct FindActionJob : IJob
                     }
                     break;
 
-                case BeliefEnum.EnemyWithinDistance:
-                    {
-                        var enemyRef = enablingBelief.beliefRef;
-                        var enemyTargetRef = sightedEnemyTargets[enemyRef.Idx];
-
-                        var (hasObstacle, obstacleTargetRef) = obstacleTargets[enemyTargetRef.Idx];
-                        if (!hasObstacle)
-                        {
-                            var cost = Vector3.Distance(targetPositions[enemyTargetRef.Idx], playerPosition);
-
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinTarget, new(enemyTargetRef.Idx)));
-                        }
-                        else
-                        {
-                            var cost = Vector3.Distance(targetPositions[enemyTargetRef.Idx], targetPositions[obstacleTargetRef.Idx]);
-
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleTargetToRemove, new(obstacleTargetRef.Idx)));
-                        }
-                    }
-                    break;
-
                 case BeliefEnum.SightedEnemies:
                     {
-                        if (roomEnterLocationTargets.Length > 0)
+                        if (roomEnterLocations.Length > 0)
                         {
-                            for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < roomEnterLocationTargets.Length; roomEnterLocationIdx++)
+                            for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < roomEnterLocations.Length; roomEnterLocationIdx++)
                             {
-                                var roomEnterLocationTargetRef = roomEnterLocationTargets[roomEnterLocationIdx];
+                                var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
 
-                                var (hasObstacle, obstacleTargetRef) = obstacleTargets[roomEnterLocationTargetRef.Idx];
-                                if (!hasObstacle)
+                                var cost = 10f; // multiplier is odds of seeing enemies
+
+                                if (!obstacles.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
                                 {
-                                    var cost = Vector3.Distance(targetPositions[roomEnterLocationTargetRef.Idx], playerPosition);
-                                    cost *= 10; // multiplier is odds of seeing enemies
+                                    cost *= Vector3.Distance(roomEnterLocationPosition, playerPosition);
 
-                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinTarget, new(roomEnterLocationTargetRef.Idx)));
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinRoomEnterLocation, new(roomEnterLocationIdx)));
                                 }
                                 else
                                 {
-                                    var cost = Vector3.Distance(targetPositions[roomEnterLocationTargetRef.Idx], targetPositions[obstacleTargetRef.Idx]);
-                                    cost *= 10; // multiplier is odds of seeing enemies
+                                    cost *= Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
 
-                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleTargetToRemove, new(obstacleTargetRef.Idx)));
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacleRef.Idx)));
                                 }
                             }
                         }
                     }
                     break;
 
-                case BeliefEnum.ObstacleTargetToRemove:
+                case BeliefEnum.ObstacleToRemove:
                     {
-                        var (hasObstacle2, obstacle2TargetRef) = obstacleTargets[enablingBelief.beliefRef.Idx];
-                        if (!hasObstacle2)
-                        {
-                            var cost = Vector3.Distance(targetPositions[enablingBelief.beliefRef.Idx], playerPosition);
+                        var obstaclePosition = obstacleLocations[enablingBelief.beliefRef.Idx];
 
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinTarget, enablingBelief.beliefRef));
+                        if (!obstacles.TryGetValue(obstaclePosition, out var obstacle2Ref))
+                        {
+                            var cost = Vector3.Distance(obstaclePosition, playerPosition);
+
+                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinObstacleLocation, enablingBelief.beliefRef));
                         }
                         else
                         {
-                            var cost = Vector3.Distance(targetPositions[enablingBelief.beliefRef.Idx], targetPositions[obstacle2TargetRef.Idx]);
+                            var cost = Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleTargetToRemove, new(obstacle2TargetRef.Idx)));
+                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacle2Ref.Idx)));
                         }
                     }
                     break;
 
-                case BeliefEnum.WithinTarget:
+                case BeliefEnum.WithinEnemyLocation:
                     {
-                        var targetPosition = targetPositions[enablingBelief.beliefRef.Idx];
+                        var targetPosition = sightedEnemyLocations[enablingBelief.beliefRef.Idx];
                         moveToPositionRef.Value = (true, targetPosition);
 
                         actionFound = true;
                     }
                     break;
 
-                case BeliefEnum.InteractingWithTarget:
+                case BeliefEnum.WithinObstacleLocation:
                     {
-                        var targetPosition = targetPositions[enablingBelief.beliefRef.Idx];
+                        var targetPosition = obstacleLocations[enablingBelief.beliefRef.Idx];
+                        moveToPositionRef.Value = (true, targetPosition);
+
+                        actionFound = true;
+                    }
+                    break;
+
+                case BeliefEnum.WithinRoomEnterLocation:
+                    {
+                        var targetPosition = roomEnterLocations[enablingBelief.beliefRef.Idx];
+                        moveToPositionRef.Value = (true, targetPosition);
+
+                        actionFound = true;
+                    }
+                    break;
+
+                case BeliefEnum.InteractingWithObstacle:
+                    {
+                        var targetPosition = obstacleLocations[enablingBelief.beliefRef.Idx];
                         interactPositionRef.Value = (true, targetPosition);
 
                         actionFound = true;
                     }
                     break;
 
-                case BeliefEnum.CardiacTarget:
+                case BeliefEnum.CardiacEnemy:
                     {
-                        var targetPosition = targetPositions[enablingBelief.beliefRef.Idx];
+                        var targetPosition = sightedEnemyLocations[enablingBelief.beliefRef.Idx];
                         cardiacPositionRef.Value = (true, targetPosition);
 
                         actionFound = true;

@@ -10,5 +10,6 @@ namespace ReBot.AI.Spacial;
 
 internal static class ObstacleStore
 {
-    public static readonly List<NativeList<(bool, TargetRef)>> ObstacleTargets = [];
+    public static readonly List<NativeHashMap<Vector3, ObstacleRef>> Obstacles = [];
+    public static readonly List<NativeList<Vector3>> ObstacleLocations = [];
 }

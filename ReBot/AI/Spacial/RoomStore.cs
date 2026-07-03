@@ -14,5 +14,5 @@ internal static class RoomStore
     public static readonly List<RoomIdentifier> PrevRoomWithin = [];
     public static readonly Dictionary<RoomIdentifier, float> RoomLastVisitTime = [];
 
-    public static readonly List<NativeList<TargetRef>> RoomEnterLocationTargets = [];
+    public static readonly List<NativeList<Vector3>> RoomEnterLocations = [];
 }

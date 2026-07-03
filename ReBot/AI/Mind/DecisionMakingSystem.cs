@@ -27,14 +27,14 @@ internal class DecisionMakingSystem
                         var findActionJob = new FindActionJob
                         {
                             playerPosition = PlayerStore.PlayerPositions[botIdx],
-                            targetPositions = LocationStore.TargetPositions[botIdx],
-                            obstacleTargets = ObstacleStore.ObstacleTargets[botIdx],
-                            roomEnterLocationTargets = RoomStore.RoomEnterLocationTargets[botIdx],
+                            obstacles = ObstacleStore.Obstacles[botIdx],
+                            obstacleLocations = ObstacleStore.ObstacleLocations[botIdx],
+                            roomEnterLocations = RoomStore.RoomEnterLocations[botIdx],
 
                             moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx],
                             interactPositionRef = InteractionStore.InteractWithPositionRefs[botIdx],
 
-                            sightedEnemyTargets = TerminationState.SightedEnemyTargets[botIdx],
+                            sightedEnemyLocations = TerminationState.SightedEnemyLocations[botIdx],
                             enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx],
                             cardiacPositionRef = CardiacStore.CardiacPositionRefs[botIdx],
                         };

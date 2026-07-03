@@ -16,7 +16,7 @@ internal class RoomPerceptionSystem
             if (!RoomUtils.TryGetRoom(playerPosition, out var roomWithin))
             {
                 Debug.LogWarning($"Could not determine room bot currently in");
-                return;
+                continue;
             }
 
             // Room change check
@@ -48,12 +48,11 @@ internal class RoomPerceptionSystem
                 .OrderBy(foreignCell => RoomStore.RoomLastVisitTime.TryGetValue(foreignCell.Transform.GetComponent<RoomIdentifier>(), out var time) ? time : -Random.Range(0f, 4f))
                 .Select(a => a.MeanPosition);
 
+            RoomStore.RoomEnterLocations[botIdx].Clear();
+
             foreach (var enteringPosition in enteringPositions)
             {
-                var targetIdx = LocationStore.TargetPositions[botIdx].Length;
-                LocationStore.TargetPositions[botIdx].Add(enteringPosition);
-
-                RoomStore.RoomEnterLocationTargets[botIdx].Add(new(targetIdx));
+                RoomStore.RoomEnterLocations[botIdx].Add(enteringPosition);
             }
         }
     }
