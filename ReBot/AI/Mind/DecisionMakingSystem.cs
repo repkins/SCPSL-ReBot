@@ -27,7 +27,7 @@ internal class DecisionMakingSystem
                         var findActionJob = new FindActionJob
                         {
                             playerPosition = PlayerStore.PlayerPositions[botIdx],
-                            obstacles = ObstacleStore.Obstacles[botIdx],
+                            obstacles = ObstacleStore.ObstaclesByTarget[botIdx],
                             obstacleLocations = ObstacleStore.ObstacleLocations[botIdx],
                             roomEnterLocations = RoomStore.RoomEnterLocations[botIdx],
 

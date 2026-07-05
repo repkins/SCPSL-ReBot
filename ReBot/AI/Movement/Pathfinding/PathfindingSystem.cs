@@ -1,14 +1,10 @@
-﻿using ReBot.AI.Movement;
-using ReBot.Navigation.Mesh;
-using System.Collections.Generic;
+﻿using ReBot.Navigation.Mesh;
 using UnityEngine;
 
 namespace ReBot.AI.Movement.Pathfinding;
 
 internal static class PathfindingSystem
 {
-    private static readonly List<TransformCell> cellsPath = [];
-
     public static void Process()
     {
         PathfindingStore.ClosestPositions.Clear();
@@ -35,15 +31,38 @@ internal static class PathfindingSystem
                 continue;
             }
 
-            NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, cellsPath);
-            var closestPosition = GetNextCorner(startingPos, targetPos, startingCellResult.Value);
+            NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, PathfindingStore.CellsPath[botIdx]);
+            var closestPosition = GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value);
 
             PathfindingStore.ClosestPositions.Add((new(botIdx), closestPosition));
+
+            var pointsPath = PathfindingStore.PointsPath[botIdx];
+            pointsPath.Clear();
+            pointsPath.Add(startingPos);
+
+            var partialPath = false;
+            foreach (var (cell, nextCell) in PathfindingStore.CellPathSegments[botIdx])
+            {
+                if (!cell.AdjacentCellEdges.TryGetValue(nextCell, out var e)
+                    && !NavigationMesh.ForeignConnectedCellEdges[cell].TryGetValue(nextCell, out e))
+                {
+                    partialPath = true;
+                    break;
+                }
+                pointsPath.Add(Vector3.Lerp(e.From.Position, e.To.Position, .5f));
+            }
+
+            if (!partialPath)
+            {
+                pointsPath.Add(targetPos);
+            }
         }
     }
 
-    private static Vector3 GetNextCorner(Vector3 playerPosition, Vector3 goalPosition, TransformCell currentCell)
+    private static Vector3 GetNextCorner(int botIdx, Vector3 playerPosition, Vector3 goalPosition, TransformCell currentCell)
     {
+        var cellsPath = PathfindingStore.CellsPath[botIdx];
+        
         var currentPathIdx = 0;
 
         var nextTargetCell = cellsPath[currentPathIdx + 1];
