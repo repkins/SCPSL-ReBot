@@ -28,7 +28,7 @@ internal class DecisionMakingSystem
                         {
                             playerPosition = PlayerStore.PlayerPositions[botIdx],
                             obstacles = ObstacleStore.ObstaclesByTarget[botIdx],
-                            obstacleLocations = ObstacleStore.ObstacleLocations[botIdx],
+                            obstacleLocations = ObstacleStore.ObstacleLocations,
                             roomEnterLocations = RoomStore.RoomEnterLocations[botIdx],
 
                             moveToPositionRef = MovementStore.MoveToPositionRefs[botIdx],

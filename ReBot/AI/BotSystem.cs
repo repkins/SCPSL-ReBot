@@ -54,6 +54,7 @@ public static class BotSystem
     public static IEnumerator<float> RunPlayerUpdates()
     {
         // Perception systems
+        ObstaclePerceptionSystem.Process();
         RoomPerceptionSystem.Process();
 
         DecisionMakingSystem.Process();
