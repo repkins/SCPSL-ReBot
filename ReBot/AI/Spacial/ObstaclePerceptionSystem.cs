@@ -65,7 +65,11 @@ internal class ObstaclePerceptionSystem
             return false;
         }
 
-        if (Vector3.Angle(facingDir, diff) > 90)
+        var fovDegrees = 90f;
+        var fovRadians = fovDegrees * Mathf.Deg2Rad;
+        var cosineOfFov = Mathf.Cos(fovRadians / 2f);
+
+        if (Vector3.Dot(facingDir, diff) < cosineOfFov)
         {
             return false;
         }
