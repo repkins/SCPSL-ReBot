@@ -54,41 +54,4 @@ internal class ObstaclePerceptionSystem
             }
         }
     }
-
-    private static bool IsWithinFov(Vector3 position, Vector3 forward, Vector3 targetPosition)
-    {
-        var facingDir = forward;
-        var diff = Vector3.Normalize(targetPosition - position);
-
-        if (Vector3.Dot(facingDir, diff) < 0)
-        {
-            return false;
-        }
-
-        var fovDegrees = 90f;
-        var fovRadians = fovDegrees * Mathf.Deg2Rad;
-        var cosineOfFov = Mathf.Cos(fovRadians / 2f);
-
-        if (Vector3.Dot(facingDir, diff) < cosineOfFov)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static bool IsPositionObstructed(Vector3 cameraPosition, Vector3 targetPosition, out RaycastHit outObstructtionHit)
-    {
-        var isObstructed = Physics.Linecast(cameraPosition, targetPosition, out var hit, collisionLayerMask);
-        if (isObstructed)
-        {
-            outObstructtionHit = hit;
-        }
-        else
-        {
-            outObstructtionHit = default;
-        }
-
-        return isObstructed;
-    }
 }

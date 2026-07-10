@@ -1,4 +1,5 @@
 ﻿using ReBot.AI.Spacial;
+using ReBot.AI.Termination;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -19,9 +20,9 @@ internal struct FindActionJob : IJob
     public required NativeList<Vector3> roomEnterLocations;
 
     [ReadOnly]
-    public required NativeList<Vector3> sightedEnemyLocations;
+    public required NativeList<Vector3> enemiesWithinSight;
     [ReadOnly]
-    public required NativeList<bool> enemiesWithinDistance;
+    public required NativeList<EnemyRef> enemiesWithinDistance;
 
     [WriteOnly]
     public required NativeReference<(bool HasPosition, Vector3 Position)> moveToPositionRef;
@@ -43,19 +44,19 @@ internal struct FindActionJob : IJob
             {
                 case BeliefEnum.TargetsTerminated:
                     {
-                        if (sightedEnemyLocations.Length > 0)
+                        if (enemiesWithinSight.Length > 0)
                         {
-                            for (var enemyIdx = 0; enemyIdx < sightedEnemyLocations.Length; enemyIdx++)
+                            for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
                             {
                                 var cost = 1f;  // cardiac attack cost, constant
 
-                                if (enemiesWithinDistance[enemyIdx])
+                                if (enemiesWithinDistance.Contains(new EnemyRef(enemyIdx)))
                                 {
                                     beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.CardiacEnemy, new(enemyIdx)));
                                 }
                                 else
                                 {
-                                    var enemyPosition = sightedEnemyLocations[enemyIdx];
+                                    var enemyPosition = enemiesWithinSight[enemyIdx];
 
                                     if (!obstacles.TryGetValue(enemyPosition, out var obstacleRef))
                                     {
@@ -129,7 +130,7 @@ internal struct FindActionJob : IJob
 
                 case BeliefEnum.WithinEnemyLocation:
                     {
-                        var targetPosition = sightedEnemyLocations[enablingBelief.beliefRef.Idx];
+                        var targetPosition = enemiesWithinSight[enablingBelief.beliefRef.Idx];
                         moveToPositionRef.Value = (true, targetPosition);
 
                         actionFound = true;
@@ -165,7 +166,7 @@ internal struct FindActionJob : IJob
 
                 case BeliefEnum.CardiacEnemy:
                     {
-                        var targetPosition = sightedEnemyLocations[enablingBelief.beliefRef.Idx];
+                        var targetPosition = enemiesWithinSight[enablingBelief.beliefRef.Idx];
                         cardiacPositionRef.Value = (true, targetPosition);
 
                         actionFound = true;
