@@ -61,7 +61,7 @@ internal class SightPerceptionSystem
 
             for (int hitIdx = 0; hitIdx < maxHits; hitIdx++)
             {
-                var hit = overlapSphereResults[botIdx];
+                var hit = overlapSphereResults[botIdx * maxHits + hitIdx];
                 if (hit.instanceID == 0)
                 {
                     break;
