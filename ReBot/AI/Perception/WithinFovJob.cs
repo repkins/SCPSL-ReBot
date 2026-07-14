@@ -20,6 +20,8 @@ public struct WithinFovJob : IJobFor
     public required NativeArray<Vector3> targetPositions;
 
     [WriteOnly]
+    public required NativeList<int> outWithinFovTargets;
+    [WriteOnly]
     public required NativeArray<RaycastCommand> outRaycastCommands;
 
     public void Execute(int index)
@@ -43,6 +45,7 @@ public struct WithinFovJob : IJobFor
             return;
         }
 
+        outWithinFovTargets.Add(index);
         outRaycastCommands[index] = new(fromPosition, direction, new(raycastMask), raycastDistance);
     }
 }
