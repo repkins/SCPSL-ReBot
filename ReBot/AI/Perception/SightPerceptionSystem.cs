@@ -33,76 +33,103 @@ internal class SightPerceptionSystem
         ProcessEnemiesWithinDistance(enemyPlayerPositionLists);
     }
 
-    private static void ProcessEnemiesWithinDistance(in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists)
+    private static void PrepareEnemiesWithinRadius(out NativeArray<NativeHashSet<int>> otherEnemyPlayersInstanceIdSets, out NativeArray<NativeList<Vector3>> enemyPlayerPositionLists)
     {
+        var botCount = BotStore.BotHubs.Count;
+        var overlapSphereCommands = new NativeArray<OverlapSphereCommand>(botCount, Allocator.Temp);
+        var overlapSphereResults = new NativeArray<ColliderHit>(botCount, Allocator.Temp);
+
+        for (int botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var playerPosition = PlayerStore.PlayerPositions[botIdx];
+            overlapSphereCommands[botIdx] = new OverlapSphereCommand(playerPosition, maxSightRadius, new(playerLayerMask));
+        }
+
+        var maxHits = 10;
+        var overlapSphereHandle = OverlapSphereCommand.ScheduleBatch(overlapSphereCommands, overlapSphereResults, 1, maxHits);
+        overlapSphereHandle.Complete();
+
+        otherEnemyPlayersInstanceIdSets = new NativeArray<NativeHashSet<int>>(botCount, Allocator.Temp);
+        enemyPlayerPositionLists = new NativeArray<NativeList<Vector3>>(botCount, Allocator.Temp);
+
+        for (int botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var otherEnemyPlayersInstanceIds = new NativeHashSet<int>(maxHits, Allocator.Temp);
+            var enemyPlayerPositions = new NativeList<Vector3>(Allocator.Temp);
+
+            var playerHub = BotStore.BotHubs[botIdx];
+
+            for (int hitIdx = 0; hitIdx < maxHits; hitIdx++)
+            {
+                var hit = overlapSphereResults[botIdx];
+                if (hit.instanceID == 0)
+                {
+                    break;
+                }
+
+                if (hit.collider.GetComponentInParent<FpcStandardRoleBase>() is FpcStandardRoleBase fpcRole
+                    && fpcRole.Team.GetFaction() != playerHub.GetFaction()
+                    && fpcRole.Team.GetFaction() != Faction.Unclassified)
+                {
+                    if (otherEnemyPlayersInstanceIds.Add(fpcRole.GetInstanceID()))
+                    {
+                        enemyPlayerPositions.Add(fpcRole.FpcModule.Position);
+                    }
+                }
+            }
+
+            otherEnemyPlayersInstanceIdSets[botIdx] = otherEnemyPlayersInstanceIds;
+            enemyPlayerPositionLists[botIdx] = enemyPlayerPositions;
+        }
+    }
+
+    private static JobHandle ProcessEnemySighting(
+        in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists,
+        out NativeArray<NativeList<int>> enemyWithinFovTargetsArrays,
+        out NativeArray<NativeArray<RaycastHit>> enemyRaycastResultsArrays)
+    {
+        enemyWithinFovTargetsArrays = new NativeArray<NativeList<int>>(enemyPlayerPositionLists.Length, Allocator.Temp);
+        var enemyRaycastCommandsHandles = new NativeArray<JobHandle>(enemyPlayerPositionLists.Length, Allocator.Temp);
+        enemyRaycastResultsArrays = new NativeArray<NativeArray<RaycastHit>>(enemyPlayerPositionLists.Length, Allocator.Temp);
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
             var enemyPlayerPositions = enemyPlayerPositionLists[botIdx];
 
             var cameraPosition = PlayerStore.PlayerCameraPositions[botIdx];
+            var cameraForward = PlayerStore.PlayerCameraForwards[botIdx];
 
-            var enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx];
-            enemiesWithinDistance.Clear();
+            var withinFovTargets = new NativeList<int>(enemyPlayerPositions.Length, Allocator.Temp);
+            var raycastCommands = new NativeArray<RaycastCommand>(enemyPlayerPositions.Length, Allocator.Temp);
 
-            for (var enemyIdx = 0; enemyIdx < enemyPlayerPositions.Length; enemyIdx++)
+            var withinFovJob = new WithinFovJob
             {
-                var enemyPosition = enemyPlayerPositions[enemyIdx];
+                fromPosition = cameraPosition,
+                direction = cameraForward,
+                targetPositions = enemyPlayerPositions.AsArray(),
 
-                if (Vector3.Distance(cameraPosition, enemyPosition) < 2f)
-                {
-                    enemiesWithinDistance.Add(new(enemyIdx));
-                }
-            }
+                outWithinFovTargets = withinFovTargets,
+
+                outRaycastCommands = raycastCommands,
+                raycastDistance = maxSightRadius,
+                raycastMask = sightLayerMask
+            };
+            var withinFovJobHandle = withinFovJob.Schedule(enemyPlayerPositions.Length, default);
+
+            var raycastResults = new NativeArray<RaycastHit>(enemyPlayerPositions.Length, Allocator.Temp);
+            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
+
+            enemyWithinFovTargetsArrays[botIdx] = withinFovTargets;
+            enemyRaycastCommandsHandles[botIdx] = raycastCommandsHandle;
+            enemyRaycastResultsArrays[botIdx] = raycastResults;
         }
-    }
 
-    private static void ProcessObstacleSightResults(
-        in NativeArray<NativeList<int>> obstacleWithinFovTargetsOnPathArrays, 
-        in NativeArray<NativeArray<RaycastHit>> obstacleRaycastResultsOnPathArrays, 
-        in NativeArray<NativeList<ObstacleRef>> obstacleRefsOnPathArrays)
-    {
-        for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
-        {
-            var withinFovTargetsOnPath = obstacleWithinFovTargetsOnPathArrays[botIdx];
-            var raycastResultsOnPath = obstacleRaycastResultsOnPathArrays[botIdx];
-
-            var obstacles = ObstacleStore.ObstaclesByTarget[botIdx];
-            var goalPos = PathfindingStore.GoalPositions[botIdx];
-
-            for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovTargetsOnPath.Length; withinFovResultIdx++)
-            {
-                var targetIdx = withinFovTargetsOnPath[withinFovResultIdx];
-
-                var hit = raycastResultsOnPath[targetIdx];
-                if (hit.collider is null)
-                {
-                    if (obstacles.ContainsKey(goalPos))
-                    {
-                        obstacles.Remove(goalPos);
-                    }
-                    continue;
-                }
-
-                var obstacleRefsOnPath = obstacleRefsOnPathArrays[botIdx];
-                var obstacleRef = obstacleRefsOnPath[targetIdx];
-
-                var cellInPath = ObstacleStore.CellsByObstacle[obstacleRef];
-                var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
-                if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
-                {
-                    continue;
-                }
-
-                obstacles[goalPos] = obstacleRef;
-                break;
-            }
-        }
+        return JobHandle.CombineDependencies(enemyRaycastCommandsHandles);
     }
 
     private static void ProcessEnemySightResults(
-        in NativeArray<NativeHashSet<int>> otherEnemyPlayersInstanceIdSets, 
-        in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists, 
-        in NativeArray<NativeList<int>> enemyWithinFovTargetsArrays, 
+        in NativeArray<NativeHashSet<int>> otherEnemyPlayersInstanceIdSets,
+        in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists,
+        in NativeArray<NativeList<int>> enemyWithinFovTargetsArrays,
         in NativeArray<NativeArray<RaycastHit>> enemyRaycastResultsArrays)
     {
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
@@ -135,6 +162,29 @@ internal class SightPerceptionSystem
                 var enemyPosition = enemyPlayerPositions[enemyIdx];
 
                 enemiesWithinSight.Add(enemyPosition);
+            }
+        }
+    }
+
+    private static void ProcessEnemiesWithinDistance(in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists)
+    {
+        for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
+        {
+            var enemyPlayerPositions = enemyPlayerPositionLists[botIdx];
+
+            var cameraPosition = PlayerStore.PlayerCameraPositions[botIdx];
+
+            var enemiesWithinDistance = TerminationState.EnemiesWithinDistance[botIdx];
+            enemiesWithinDistance.Clear();
+
+            for (var enemyIdx = 0; enemyIdx < enemyPlayerPositions.Length; enemyIdx++)
+            {
+                var enemyPosition = enemyPlayerPositions[enemyIdx];
+
+                if (Vector3.Distance(cameraPosition, enemyPosition) < 2f)
+                {
+                    enemiesWithinDistance.Add(new(enemyIdx));
+                }
             }
         }
     }
@@ -200,96 +250,46 @@ internal class SightPerceptionSystem
         return JobHandle.CombineDependencies(obstacleRaycastCommandsOnPathHandles);
     }
 
-    private static JobHandle ProcessEnemySighting(
-        in NativeArray<NativeList<Vector3>> enemyPlayerPositionLists, 
-        out NativeArray<NativeList<int>> enemyWithinFovTargetsArrays, 
-        out NativeArray<NativeArray<RaycastHit>> enemyRaycastResultsArrays)
+    private static void ProcessObstacleSightResults(
+        in NativeArray<NativeList<int>> obstacleWithinFovTargetsOnPathArrays,
+        in NativeArray<NativeArray<RaycastHit>> obstacleRaycastResultsOnPathArrays,
+        in NativeArray<NativeList<ObstacleRef>> obstacleRefsOnPathArrays)
     {
-        enemyWithinFovTargetsArrays = new NativeArray<NativeList<int>>(enemyPlayerPositionLists.Length, Allocator.Temp);
-        var enemyRaycastCommandsHandles = new NativeArray<JobHandle>(enemyPlayerPositionLists.Length, Allocator.Temp);
-        enemyRaycastResultsArrays = new NativeArray<NativeArray<RaycastHit>>(enemyPlayerPositionLists.Length, Allocator.Temp);
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
-            var enemyPlayerPositions = enemyPlayerPositionLists[botIdx];
+            var withinFovTargetsOnPath = obstacleWithinFovTargetsOnPathArrays[botIdx];
+            var raycastResultsOnPath = obstacleRaycastResultsOnPathArrays[botIdx];
 
-            var cameraPosition = PlayerStore.PlayerCameraPositions[botIdx];
-            var cameraForward = PlayerStore.PlayerCameraForwards[botIdx];
+            var obstacles = ObstacleStore.ObstaclesByTarget[botIdx];
+            var goalPos = PathfindingStore.GoalPositions[botIdx];
 
-            var withinFovTargets = new NativeList<int>(enemyPlayerPositions.Length, Allocator.Temp);
-            var raycastCommands = new NativeArray<RaycastCommand>(enemyPlayerPositions.Length, Allocator.Temp);
-
-            var withinFovJob = new WithinFovJob
+            for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovTargetsOnPath.Length; withinFovResultIdx++)
             {
-                fromPosition = cameraPosition,
-                direction = cameraForward,
-                targetPositions = enemyPlayerPositions.AsArray(),
+                var targetIdx = withinFovTargetsOnPath[withinFovResultIdx];
 
-                outWithinFovTargets = withinFovTargets,
-
-                outRaycastCommands = raycastCommands,
-                raycastDistance = maxSightRadius,
-                raycastMask = sightLayerMask
-            };
-            var withinFovJobHandle = withinFovJob.Schedule(enemyPlayerPositions.Length, default);
-
-            var raycastResults = new NativeArray<RaycastHit>(enemyPlayerPositions.Length, Allocator.Temp);
-            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
-
-            enemyWithinFovTargetsArrays[botIdx] = withinFovTargets;
-            enemyRaycastCommandsHandles[botIdx] = raycastCommandsHandle;
-            enemyRaycastResultsArrays[botIdx] = raycastResults;
-        }
-
-        return JobHandle.CombineDependencies(enemyRaycastCommandsHandles);
-    }
-
-    private static void PrepareEnemiesWithinRadius(out NativeArray<NativeHashSet<int>> otherEnemyPlayersInstanceIdSets, out NativeArray<NativeList<Vector3>> enemyPlayerPositionLists)
-    {
-        var botCount = BotStore.BotHubs.Count;
-        var overlapSphereCommands = new NativeArray<OverlapSphereCommand>(botCount, Allocator.Temp);
-        var overlapSphereResults = new NativeArray<ColliderHit>(botCount, Allocator.Temp);
-
-        for (int botIdx = 0; botIdx < botCount; botIdx++)
-        {
-            var playerPosition = PlayerStore.PlayerPositions[botIdx];
-            overlapSphereCommands[botIdx] = new OverlapSphereCommand(playerPosition, maxSightRadius, new(playerLayerMask));
-        }
-
-        var maxHits = 10;
-        var overlapSphereHandle = OverlapSphereCommand.ScheduleBatch(overlapSphereCommands, overlapSphereResults, 1, maxHits);
-        overlapSphereHandle.Complete();
-
-        otherEnemyPlayersInstanceIdSets = new NativeArray<NativeHashSet<int>>(botCount, Allocator.Temp);
-        enemyPlayerPositionLists = new NativeArray<NativeList<Vector3>>(botCount, Allocator.Temp);
-
-        for (int botIdx = 0; botIdx < botCount; botIdx++)
-        {
-            var otherEnemyPlayersInstanceIds = new NativeHashSet<int>(maxHits, Allocator.Temp);
-            var enemyPlayerPositions = new NativeList<Vector3>(Allocator.Temp);
-
-            var playerHub = BotStore.BotHubs[botIdx];
-
-            for (int hitIdx = 0; hitIdx < maxHits; hitIdx++)
-            {
-                var hit = overlapSphereResults[botIdx];
-                if (hit.instanceID == 0)
+                var hit = raycastResultsOnPath[targetIdx];
+                if (hit.collider is null)
                 {
-                    break;
-                }
-
-                if (hit.collider.GetComponentInParent<FpcStandardRoleBase>() is FpcStandardRoleBase fpcRole
-                    && fpcRole.Team.GetFaction() != playerHub.GetFaction()
-                    && fpcRole.Team.GetFaction() != Faction.Unclassified)
-                {
-                    if (otherEnemyPlayersInstanceIds.Add(fpcRole.GetInstanceID()))
+                    if (obstacles.ContainsKey(goalPos))
                     {
-                        enemyPlayerPositions.Add(fpcRole.FpcModule.Position);
+                        obstacles.Remove(goalPos);
                     }
+                    continue;
                 }
-            }
 
-            otherEnemyPlayersInstanceIdSets[botIdx] = otherEnemyPlayersInstanceIds;
-            enemyPlayerPositionLists[botIdx] = enemyPlayerPositions;
+                var obstacleRefsOnPath = obstacleRefsOnPathArrays[botIdx];
+                var obstacleRef = obstacleRefsOnPath[targetIdx];
+
+                var cellInPath = ObstacleStore.CellsByObstacle[obstacleRef];
+                var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
+                if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
+                {
+                    continue;
+                }
+
+                obstacles[goalPos] = obstacleRef;
+                break;
+            }
         }
     }
 }
