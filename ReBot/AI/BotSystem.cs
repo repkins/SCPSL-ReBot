@@ -7,6 +7,7 @@ using ReBot.AI.Cardiac;
 using ReBot.AI.Interaction;
 using ReBot.AI.Mind;
 using ReBot.AI.Movement;
+using ReBot.AI.Perception;
 using ReBot.AI.Spacial;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -54,7 +55,7 @@ public static class BotSystem
     public static IEnumerator<float> RunPlayerUpdates()
     {
         // Perception systems
-        ObstaclePerceptionSystem.Process();
+        SightPerceptionSystem.Process();
         RoomPerceptionSystem.Process();
 
         DecisionMakingSystem.Process();

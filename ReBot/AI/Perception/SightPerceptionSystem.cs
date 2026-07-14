@@ -1,7 +1,10 @@
 ﻿using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
+using ReBot.AI.Movement.Pathfinding;
 using ReBot.AI.Spacial;
 using ReBot.AI.Termination;
+using ReBot.Navigation.Mesh;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -19,8 +22,8 @@ internal class SightPerceptionSystem
     {
         ProcessEnemiesWithinSightRadius(out NativeArray<NativeHashSet<int>> otherEnemyPlayersInstanceIdSets, out NativeArray<NativeList<Vector3>> enemyPlayerPositionLists);
 
-        var raycastCommandHandles = new NativeArray<JobHandle>(enemyPlayerPositionLists.Length, Allocator.TempJob);
-        var raycastResultArrays = new NativeArray<NativeArray<RaycastHit>>(enemyPlayerPositionLists.Length, Allocator.TempJob);
+        var enemyRaycastCommandsHandles = new NativeArray<JobHandle>(enemyPlayerPositionLists.Length, Allocator.TempJob);
+        var enemyRaycastResultsArrays = new NativeArray<NativeArray<RaycastHit>>(enemyPlayerPositionLists.Length, Allocator.TempJob);
 
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
@@ -44,21 +47,80 @@ internal class SightPerceptionSystem
             var withinFovJobHandle = withinFovJob.Schedule(enemyPlayerPositions.Length, default);
 
             var raycastResults = new NativeArray<RaycastHit>(enemyPlayerPositions.Length, Allocator.TempJob);
-            var raycastCommandHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
+            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
 
-            raycastCommands.Dispose(raycastCommandHandle);
+            raycastCommands.Dispose(raycastCommandsHandle);
 
-            raycastCommandHandles[botIdx] = raycastCommandHandle;
-            raycastResultArrays[botIdx] = raycastResults;
+            enemyRaycastCommandsHandles[botIdx] = raycastCommandsHandle;
+            enemyRaycastResultsArrays[botIdx] = raycastResults;
         }
 
-        JobHandle.CompleteAll(raycastCommandHandles);
+        var enemiesRaycastCommandsHandle = JobHandle.CombineDependencies(enemyRaycastCommandsHandles);
+        enemyRaycastCommandsHandles.Dispose(enemiesRaycastCommandsHandle);
 
-        raycastCommandHandles.Dispose();
+
+        var obstacleRaycastCommandsOnPathHandles = new NativeArray<JobHandle>(ObstacleStore.ObstaclesByTarget.Count, Allocator.TempJob);
+        var obstacleRaycastResultsOnPathArrays = new NativeArray<NativeArray<RaycastHit>>(ObstacleStore.ObstaclesByTarget.Count, Allocator.TempJob);
+        var obstacleRefsOnPathArrays = new NativeArray<NativeList<ObstacleRef>>(ObstacleStore.ObstaclesByTarget.Count, Allocator.TempJob);
 
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
-            var raycastResults = raycastResultArrays[botIdx];
+            var cameraPosition = PlayerStore.PlayerCameraPositions[botIdx];
+            var cameraForward = PlayerStore.PlayerCameraForwards[botIdx];
+
+            var cellsPath = PathfindingStore.CellsPath[botIdx];
+
+            var obstaclePositionsOnPath = new NativeList<Vector3>(Allocator.TempJob);
+            var obstacleRefsOnPath = new NativeList<ObstacleRef>(Allocator.TempJob);
+
+            foreach (var cellInPath in cellsPath)
+            {
+                if (!ObstacleStore.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
+                {
+                    continue;
+                }
+
+                obstacleRefsOnPath.Add(obstacleRef);
+
+                var obstaclePosition = ObstacleStore.ObstacleLocations[obstacleRef.Idx];
+                obstaclePositionsOnPath.Add(obstaclePosition);
+            }
+
+            var raycastCommands = new NativeArray<RaycastCommand>(obstaclePositionsOnPath.Length, Allocator.TempJob);
+
+            var withinFovJob = new WithinFovJob
+            {
+                fromPosition = cameraPosition,
+                direction = cameraForward,
+                targetPositions = obstaclePositionsOnPath.AsArray(),
+
+                outRaycastCommands = raycastCommands,
+                raycastDistance = maxSightRadius,
+                raycastMask = sightLayerMask
+            };
+            var withinFovJobHandle = withinFovJob.Schedule(obstaclePositionsOnPath.Length, default);
+
+            var raycastResults = new NativeArray<RaycastHit>(obstaclePositionsOnPath.Length, Allocator.TempJob);
+            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
+
+            raycastCommands.Dispose(raycastCommandsHandle);
+
+            obstacleRaycastCommandsOnPathHandles[botIdx] = raycastCommandsHandle;
+            obstacleRaycastResultsOnPathArrays[botIdx] = raycastResults;
+            obstacleRefsOnPathArrays[botIdx] = obstacleRefsOnPath;
+        }
+        
+        var obstaclesRaycastCommandsHandle = JobHandle.CombineDependencies(obstacleRaycastCommandsOnPathHandles);
+        obstacleRaycastCommandsOnPathHandles.Dispose(obstaclesRaycastCommandsHandle);
+
+
+        var allRaycastCommandsHandle = JobHandle.CombineDependencies(enemiesRaycastCommandsHandle, obstaclesRaycastCommandsHandle);
+        allRaycastCommandsHandle.Complete();
+
+
+        for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
+        {
+            var raycastResults = enemyRaycastResultsArrays[botIdx];
 
             var otherEnemyPlayersInstanceIds = otherEnemyPlayersInstanceIdSets[botIdx];
             var enemyPlayerPositions = enemyPlayerPositionLists[botIdx];
@@ -88,7 +150,46 @@ internal class SightPerceptionSystem
             raycastResults.Dispose();
         }
 
-        raycastResultArrays.Dispose();
+        enemyRaycastResultsArrays.Dispose();
+
+
+        for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
+        {
+            var raycastResultsOnPath = obstacleRaycastResultsOnPathArrays[botIdx];
+
+            var obstacles = ObstacleStore.ObstaclesByTarget[botIdx];
+            var goalPos = PathfindingStore.GoalPositions[botIdx];
+
+            for (var hitIdx = 0; hitIdx < raycastResultsOnPath.Length; hitIdx++)
+            {
+                var hit = raycastResultsOnPath[hitIdx];
+                if (hit.collider is null)
+                {
+                    if (obstacles.ContainsKey(goalPos))
+                    {
+                        obstacles.Remove(goalPos);
+                    }
+                    continue;
+                }
+
+                var obstacleRefsOnPath = obstacleRefsOnPathArrays[botIdx];
+                var obstacleRef = obstacleRefsOnPath[hitIdx];
+
+                var cellInPath = ObstacleStore.CellsByObstacle[obstacleRef];
+                var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
+                if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
+                {
+                    continue;
+                }
+
+                obstacles[goalPos] = obstacleRef;
+                break;
+            }
+        }
+
+        obstacleRaycastResultsOnPathArrays.Dispose();
+        obstacleRefsOnPathArrays.Dispose();
+
 
         for (int botIdx = 0; botIdx < BotStore.BotHubs.Count; botIdx++)
         {
