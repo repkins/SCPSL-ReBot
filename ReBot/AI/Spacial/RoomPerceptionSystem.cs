@@ -23,7 +23,7 @@ internal class RoomPerceptionSystem
             var prevRoomWithin = RoomStore.PrevRoomWithin[botIdx];
             if (roomWithin != prevRoomWithin && prevRoomWithin != null)
             {
-                RoomStore.RoomLastVisitTime[prevRoomWithin] = Time.time;
+                RoomStore.RoomLastVisitTime[botIdx][prevRoomWithin] = Time.time;
             }
 
             // Reached different room check
@@ -45,7 +45,7 @@ internal class RoomPerceptionSystem
                 .Where(foreignCell => foreignCell.Transform.GetComponent<RoomIdentifier>().Name == RoomName.Unnamed
                                 || foreignCell.Transform.GetComponent<RoomIdentifier>().Name != roomWithin.Name)
                 //.Where(foreignCell => foreignCell.Room.Identifier.Shape != RoomShape.Endroom || zoneTransitionRoomNames.Contains(foreignCell.Room.Identifier.Name))
-                .OrderBy(foreignCell => RoomStore.RoomLastVisitTime.TryGetValue(foreignCell.Transform.GetComponent<RoomIdentifier>(), out var time) ? time : -Random.Range(0f, 4f))
+                .OrderBy(foreignCell => RoomStore.RoomLastVisitTime[botIdx].TryGetValue(foreignCell.Transform.GetComponent<RoomIdentifier>(), out var time) ? time : -Random.Range(0f, 4f))
                 .Select(a => a.MeanPosition);
 
             RoomStore.RoomEnterLocations[botIdx].Clear();
