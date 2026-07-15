@@ -5,7 +5,6 @@ using LabApi.Loader.Features.Plugins;
 using Mirror.LiteNetLib4Mirror;
 using ReBot.Navigation;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace ReBot

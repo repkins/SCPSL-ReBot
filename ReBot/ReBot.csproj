@@ -92,14 +92,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="AI\Mind\BeliefRef.cs">
+    <Compile Update="Main\AI\Mind\BeliefRef.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AI\Mind\Common\" />
-    <Folder Include="AI\Mind\Scp049\" />
+    <Folder Include="Main\AI\Mind\Common\" />
+    <Folder Include="Main\AI\Mind\Scp049\" />
   </ItemGroup>
 
 </Project>

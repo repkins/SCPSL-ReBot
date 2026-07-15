@@ -1,5 +1,4 @@
-﻿using LabApi.Features.Extensions;
-using LabApi.Features.Wrappers;
+﻿using LabApi.Features.Wrappers;
 using MapGeneration;
 using System.Collections.Generic;
 using System.IO;
