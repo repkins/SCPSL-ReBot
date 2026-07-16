@@ -9,9 +9,14 @@ namespace ReBot.Main.AI.Perception;
 
 public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
 {
-    private NativeArray<NativeList<int>> obstacleWithinFovTargetsArrays = new(botCount, Allocator.Temp);
-    private NativeArray<NativeArray<RaycastHit>> obstacleRaycastResultsArrays = new(botCount, Allocator.Temp);
-    private NativeArray<NativeList<ObstacleRef>> obstacleRefsArrays = new(botCount, Allocator.Temp);
+    struct ObstacleSightBot()
+    {
+        public NativeList<int> obstacleWithinFovTargets = new(Allocator.Temp);
+        public NativeList<RaycastHit> obstacleRaycastResults = new(Allocator.Temp);
+        public NativeList<ObstacleRef> targetObstacleRefs = new(Allocator.Temp);
+    }
+
+    private NativeArray<ObstacleSightBot> obstacleSightBots = new(botCount, Allocator.Temp);
 
     public JobHandle ProcessObstacleSighting()
     {
@@ -26,19 +31,18 @@ public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerM
 
             var cellsPath = PathfindingStore.CellsPath[botIdx];
 
-            var obstaclePositions = new NativeList<Vector3>(Allocator.Temp);
-            var obstacleRefs = new NativeList<ObstacleRef>(Allocator.Temp);
+            var targetObstaclePositions = new NativeList<Vector3>(Allocator.Temp);
+            var targetObstacleRefs = obstacleSightBots[botIdx].targetObstacleRefs;
 
             var receivedObstacles = bot.ObstacleState.ObstaclesByTarget;
 
             foreach (var pair in receivedObstacles)
             {
                 var obstacleRef = pair.Value;
-
-                obstacleRefs.Add(obstacleRef);
-
                 var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
-                obstaclePositions.Add(obstaclePosition);
+
+                targetObstaclePositions.Add(obstaclePosition);
+                targetObstacleRefs.Add(obstacleRef);
             }
 
             foreach (var cellInPath in cellsPath)
@@ -48,20 +52,22 @@ public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerM
                     continue;
                 }
 
-                obstacleRefs.Add(obstacleRef);
-
                 var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
-                obstaclePositions.Add(obstaclePosition);
+
+                targetObstaclePositions.Add(obstaclePosition);
+                targetObstacleRefs.Add(obstacleRef);
             }
 
-            var withinFovTargets = new NativeList<int>(obstaclePositions.Length, Allocator.Temp);
-            var raycastCommands = new NativeArray<RaycastCommand>(obstaclePositions.Length, Allocator.Temp);
+            var withinFovTargets = obstacleSightBots[botIdx].obstacleWithinFovTargets;
+            withinFovTargets.SetCapacity(targetObstaclePositions.Length);
+
+            var raycastCommands = new NativeArray<RaycastCommand>(targetObstaclePositions.Length, Allocator.Temp);
 
             var withinFovJob = new WithinFovJob
             {
                 fromPosition = cameraPosition,
                 direction = cameraForward,
-                targetPositions = obstaclePositions.AsArray(),
+                targetPositions = targetObstaclePositions.AsArray(),
 
                 outWithinFovTargets = withinFovTargets,
 
@@ -69,15 +75,14 @@ public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerM
                 raycastDistance = maxSightRadius,
                 raycastMask = sightLayerMask
             };
-            var withinFovJobHandle = withinFovJob.Schedule(obstaclePositions.Length, default);
+            var withinFovJobHandle = withinFovJob.Schedule(targetObstaclePositions.Length, default);
 
-            var raycastResults = new NativeArray<RaycastHit>(obstaclePositions.Length, Allocator.Temp);
-            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults, raycastCommands.Length, withinFovJobHandle);
+            var raycastResults = obstacleSightBots[botIdx].obstacleRaycastResults;
+            raycastResults.ResizeUninitialized(raycastCommands.Length);
 
-            obstacleWithinFovTargetsArrays[botIdx] = withinFovTargets;
+            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(raycastCommands, raycastResults.AsArray(), raycastCommands.Length, withinFovJobHandle);
+
             obstacleRaycastCommandsHandles[botIdx] = raycastCommandsHandle;
-            obstacleRaycastResultsArrays[botIdx] = raycastResults;
-            obstacleRefsArrays[botIdx] = obstacleRefs;
         }
 
         return JobHandle.CombineDependencies(obstacleRaycastCommandsHandles);
@@ -89,8 +94,8 @@ public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerM
         {
             var bot = BotStore.Bots[botIdx];
 
-            var withinFovTargets = obstacleWithinFovTargetsArrays[botIdx];
-            var raycastResults = obstacleRaycastResultsArrays[botIdx];
+            var withinFovTargets = obstacleSightBots[botIdx].obstacleWithinFovTargets;
+            var raycastResults = obstacleSightBots[botIdx].obstacleRaycastResults;
 
             var obstacles = bot.ObstacleState.ObstaclesByTarget;
             var goalPos = PathfindingStore.GoalPositions[botIdx];
@@ -109,8 +114,8 @@ public struct ObstacleSightPerception(int botCount, float maxSightRadius, LayerM
                     continue;
                 }
 
-                var obstacleRefs = obstacleRefsArrays[botIdx];
-                var obstacleRef = obstacleRefs[targetIdx];
+                var targetObstacleRefs = obstacleSightBots[botIdx].targetObstacleRefs;
+                var obstacleRef = targetObstacleRefs[targetIdx];
 
                 var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
                 var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
