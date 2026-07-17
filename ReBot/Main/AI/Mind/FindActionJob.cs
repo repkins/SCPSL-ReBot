@@ -113,17 +113,26 @@ internal struct FindActionJob : IJob
                     {
                         var obstaclePosition = obstacleLocations[enablingBelief.beliefRef.Idx];
 
-                        if (!obstacles.TryGetValue(obstaclePosition, out var obstacle2Ref))
-                        {
-                            var cost = Vector3.Distance(obstaclePosition, playerPosition);
+                        var cost = 1f;  // interact cost, constant
 
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinObstacleLocation, enablingBelief.beliefRef));
+                        if (Vector3.Distance(obstaclePosition, playerPosition) < 2f)
+                        {
+                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.InteractingWithObstacle, enablingBelief.beliefRef));
                         }
                         else
                         {
-                            var cost = Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
+                            if (!obstacles.TryGetValue(obstaclePosition, out var obstacle2Ref))
+                            {
+                                cost += Vector3.Distance(obstaclePosition, playerPosition);
 
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacle2Ref.Idx)));
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinObstacleLocation, enablingBelief.beliefRef));
+                            }
+                            else
+                            {
+                                cost += Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
+
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacle2Ref.Idx)));
+                            }
                         }
                     }
                     break;

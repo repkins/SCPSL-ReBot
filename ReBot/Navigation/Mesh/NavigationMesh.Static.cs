@@ -18,13 +18,7 @@ namespace ReBot.Navigation.Mesh
         public static Dictionary<TransformCell, Dictionary<TransformCell, TransformEdge>> ForeignConnectedCellEdges = new();
 
         public static Dictionary<TransformCell, Transform> CellsWithObstacles = [];
-        public static List<(TransformCell CellZero, TransformCell CellOne, Transform PanelZero, Transform PanelOne)> ElevationCells = [];
-
-        public static Dictionary<int, Dictionary<int, HashSet<(TransformCell ExitCell, TransformCell EntryCell)>>> ExitEntryCellsByLevelFrom = [];
-        public const float LevelScale = 5f;
-        public const int NumLevelsBelow = 2;
-        public const int NumLevelsAbove = 2;
-        public const int NumLevels = NumLevelsBelow + NumLevelsAbove + 1;
+        public static Dictionary<TransformCell, (TransformCell ToCell, Transform InteractPanel)> ElevationObstacles = [];
 
         public static NavigationMesh CreateMesh(string form)
         {

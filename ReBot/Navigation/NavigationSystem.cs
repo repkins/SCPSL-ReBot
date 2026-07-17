@@ -129,7 +129,7 @@ namespace ReBot.Navigation
                 }
             }
 
-            Debug.Log($"Connecting cells between elevator destinations and adding elevation and level cells.");
+            Debug.Log($"Connecting cells between elevator destinations and adding elevation cells.");
             var elevatorGroups = Enum.GetValues(typeof(ElevatorGroup));
             foreach (ElevatorGroup group in elevatorGroups)
             {
@@ -190,52 +190,11 @@ namespace ReBot.Navigation
                     // Add elevation cells
                     var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>().transform;
                     var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>().transform;
-                    NavigationMesh.ElevationCells.Add((cellAt0InShaft, cellAt1InShaft, panelAt0, panelAt1));
-
-                    // Add level cells
-                    int cell0Level = Mathf.FloorToInt(cellAt0InShaft.MeanPosition.y / NavigationMesh.LevelScale);
-                    int cell1Level = Mathf.FloorToInt(cellAt1InShaft.MeanPosition.y / NavigationMesh.LevelScale);
-
-                    if (Mathf.Abs(cell1Level - cell0Level) <= NavigationMesh.NumLevels)
-                    {
-                        continue;
-                    }
-
-                    var numLevelsBelow = NavigationMesh.NumLevelsBelow;
-                    var numLevelsAbove = NavigationMesh.NumLevelsAbove;
-                    var fromToCells = new[] {
-                        (cell1Level, cell0Level, cellAt1InShaft, cellAt0InShaft),
-                        (cell0Level, cell1Level, cellAt0InShaft, cellAt1InShaft)
-                    };
-                    foreach (var (fromLevel, toLevel, fromCell, toCell) in fromToCells)
-                    {
-                        if (!NavigationMesh.ExitEntryCellsByLevelFrom.TryGetValue(fromLevel, out var entryCellsTo))
-                        {
-                            entryCellsTo = [];
-                            var lowestLevel = fromLevel - numLevelsBelow;
-                            var highestLevel = fromLevel + numLevelsAbove;
-                            for (var i = lowestLevel; i <= highestLevel; i++)
-                            {
-                                NavigationMesh.ExitEntryCellsByLevelFrom.Add(i, entryCellsTo);
-                            }
-                        }
-
-                        if (!entryCellsTo.TryGetValue(toLevel, out var entryCells))
-                        {
-                            entryCells = [];
-                            var lowestLevel = toLevel - numLevelsBelow;
-                            var highestLevel = toLevel + numLevelsAbove;
-                            for (var i = lowestLevel; i <= highestLevel; i++)
-                            {
-                                entryCellsTo.Add(i, entryCells);
-                            }
-                        }
-
-                        entryCells.Add((fromCell, toCell));
-                    }
+                    NavigationMesh.ElevationObstacles.Add(cellAt0InShaft, (cellAt1InShaft, panelAt0));
+                    NavigationMesh.ElevationObstacles.Add(cellAt1InShaft, (cellAt0InShaft, panelAt1));
                 }
             }
-            Debug.Log($"Connecting cells and adding cells with obstacles and level cells finished.");
+            Debug.Log($"Connecting cells and adding cells with obstacles cells finished.");
         }
 
         public void LoadMeshes(string fileName)
