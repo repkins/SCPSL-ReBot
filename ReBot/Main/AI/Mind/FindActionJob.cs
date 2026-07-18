@@ -11,10 +11,17 @@ internal struct FindActionJob : IJob
     [ReadOnly]
     public required Vector3 playerPosition;
 
+    [ReadOnly] public required NativeList<Vector3> obstacleLocations;
+
+    [ReadOnly] public required NativeList<ObstacleRef> elevationTravelObstacles;
+    [ReadOnly] public required NativeList<Vector3> elevationTravelEnterLocations;
+    [ReadOnly] public required NativeList<Vector3> elevationTravelInteractLocations;
+
+    [ReadOnly] public required NativeList<ObstacleRef> elevationCallObstacles;
+    [ReadOnly] public required NativeList<Vector3> elevationCallInteractLocations;
+
     [ReadOnly]
-    public required NativeHashMap<Vector3, ObstacleRef> obstacles;
-    [ReadOnly]
-    public required NativeList<Vector3> obstacleLocations;
+    public required NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget;
 
     [ReadOnly]
     public required NativeList<Vector3> roomEnterLocations;
@@ -58,7 +65,7 @@ internal struct FindActionJob : IJob
                                 {
                                     var enemyPosition = enemiesWithinSight[enemyIdx];
 
-                                    if (!obstacles.TryGetValue(enemyPosition, out var obstacleRef))
+                                    if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
                                     {
                                         cost += Vector3.Distance(enemyPosition, playerPosition);
 
@@ -68,7 +75,7 @@ internal struct FindActionJob : IJob
                                     {
                                         cost += Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
 
-                                        beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacleRef.Idx)));
+                                        beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToOvercome, new(obstacleRef.Idx)));
                                     }
                                 }
                             }
@@ -92,7 +99,7 @@ internal struct FindActionJob : IJob
 
                                 var cost = 10f; // multiplier is odds of seeing enemies
 
-                                if (!obstacles.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
+                                if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
                                 {
                                     cost *= Vector3.Distance(roomEnterLocationPosition, playerPosition);
 
@@ -102,36 +109,87 @@ internal struct FindActionJob : IJob
                                 {
                                     cost *= Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
 
-                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacleRef.Idx)));
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToOvercome, new(obstacleRef.Idx)));
                                 }
                             }
                         }
                     }
                     break;
 
-                case BeliefEnum.ObstacleToRemove:
+                case BeliefEnum.ObstacleToOvercome:
                     {
-                        var obstaclePosition = obstacleLocations[enablingBelief.beliefRef.Idx];
+                        var beliefObstacleRef = enablingBelief.beliefRef;
+                        var obstaclePosition = obstacleLocations[beliefObstacleRef.Idx];
 
-                        var cost = 1f;  // interact cost, constant
+                        if (elevationTravelObstacles.IndexOf(new ObstacleRef(enablingBelief.beliefRef.Idx)) is var elevationIdx && elevationIdx > -1)
+                        {
+                            var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
 
-                        if (Vector3.Distance(obstaclePosition, playerPosition) < 2f)
-                        {
-                            beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.InteractingWithObstacle, enablingBelief.beliefRef));
-                        }
-                        else
-                        {
-                            if (!obstacles.TryGetValue(obstaclePosition, out var obstacle2Ref))
+                            var cost = 5f;
+
+                            if (Vector3.Distance(elevationEnterPosition, playerPosition) < 1f)
                             {
-                                cost += Vector3.Distance(obstaclePosition, playerPosition);
-
-                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinObstacleLocation, enablingBelief.beliefRef));
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.TravelingOnElevator, new(elevationIdx)));
                             }
                             else
                             {
-                                cost += Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
+                                if (!obstaclesByTarget.TryGetValue(elevationEnterPosition, out var obstacle2Ref))
+                                {
+                                    cost += Vector3.Distance(elevationEnterPosition, playerPosition);
 
-                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToRemove, new(obstacle2Ref.Idx)));
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.InElevator, new(elevationIdx)));
+                                }
+                                else
+                                {
+                                    cost += Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
+
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToOvercome, new(obstacle2Ref.Idx)));
+                                }
+                            }
+                        }
+                        else if (elevationCallObstacles.IndexOf(new ObstacleRef(enablingBelief.beliefRef.Idx)) is var elevationCallIdx && elevationCallIdx > -1)
+                        {
+                            var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
+
+                            var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
+
+                            if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
+                            {
+                                cost += Vector3.Distance(elevationCallInteractPosition, playerPosition);
+
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ElevatorCalled, new(elevationCallIdx)));
+                            }
+                            else
+                            {
+                                cost += Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToOvercome, new(obstacle2Ref.Idx)));
+                            }
+                        }
+                        else
+                        {
+                            var obstacleInteractPosition = obstacleLocations[beliefObstacleRef.Idx];
+
+                            var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition);
+
+                            if (Vector3.Distance(obstacleInteractPosition, playerPosition) < 2f)
+                            {
+                                beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.InteractingWithObstacle, beliefObstacleRef));
+                            }
+                            else
+                            {
+                                if (!obstaclesByTarget.TryGetValue(obstacleInteractPosition, out var obstacle2Ref))
+                                {
+                                    cost += Vector3.Distance(obstacleInteractPosition, playerPosition);
+
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.WithinObstacleLocation, beliefObstacleRef));
+                                }
+                                else
+                                {
+                                    cost += Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+
+                                    beliefPathfinding.EnqueueIfLess(enablingBelief, cost, (BeliefEnum.ObstacleToOvercome, new(obstacle2Ref.Idx)));
+                                }
                             }
                         }
                     }
@@ -168,6 +226,44 @@ internal struct FindActionJob : IJob
                     {
                         var targetPosition = obstacleLocations[enablingBelief.beliefRef.Idx];
                         interactPositionRef.Value = (true, targetPosition);
+
+                        actionFound = true;
+                    }
+                    break;
+
+                case BeliefEnum.TravelingOnElevator:
+                    {
+                        var elevationIdx = enablingBelief.beliefRef.Idx;
+                        var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
+                        interactPositionRef.Value = (true, travelInteractPosition);
+
+                        actionFound = true;
+                    }
+                    break;
+
+                case BeliefEnum.InElevator:
+                    {
+                        var elevationIdx = enablingBelief.beliefRef.Idx;
+                        var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
+                        moveToPositionRef.Value = (true, elevationEnterPosition);
+
+                        actionFound = true;
+                    }
+                    break;
+
+                case BeliefEnum.ElevatorCalled:
+                    {
+                        var elevationCallIdx = enablingBelief.beliefRef.Idx;
+                        var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
+
+                        if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
+                        {
+                            interactPositionRef.Value = (true, elevationCallInteractPosition);
+                        }
+                        else
+                        {
+                            moveToPositionRef.Value = (true, elevationCallInteractPosition);
+                        }
 
                         actionFound = true;
                     }

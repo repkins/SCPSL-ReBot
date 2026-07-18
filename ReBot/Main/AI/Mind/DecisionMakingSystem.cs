@@ -29,7 +29,7 @@ internal class DecisionMakingSystem
                             playerPosition = bot.PlayerState.Position,
                             moveToPositionRef = bot.MovementState.MoveToPositionRef,
 
-                            obstacles = bot.ObstacleState.ObstaclesByTarget,
+                            obstaclesByTarget = bot.ObstacleState.ObstaclesByTarget,
                             obstacleLocations = ObstacleState.ObstacleLocations,
                             interactPositionRef = bot.InteractionState.InteractWithPositionRef,
 
