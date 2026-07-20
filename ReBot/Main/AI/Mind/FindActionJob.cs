@@ -12,6 +12,7 @@ internal struct FindActionJob : IJob
     public required Vector3 playerPosition;
 
     [ReadOnly] public required NativeList<Vector3> obstacleLocations;
+    [ReadOnly] public required NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget;
 
     [ReadOnly] public required NativeList<ObstacleRef> elevationTravelObstacles;
     [ReadOnly] public required NativeList<Vector3> elevationTravelEnterLocations;
@@ -19,9 +20,6 @@ internal struct FindActionJob : IJob
 
     [ReadOnly] public required NativeList<ObstacleRef> elevationCallObstacles;
     [ReadOnly] public required NativeList<Vector3> elevationCallInteractLocations;
-
-    [ReadOnly]
-    public required NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget;
 
     [ReadOnly]
     public required NativeList<Vector3> roomEnterLocations;

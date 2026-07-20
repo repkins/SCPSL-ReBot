@@ -13,6 +13,13 @@ public struct ObstacleState() : IDisposable
     internal static readonly Dictionary<TransformCell, ObstacleRef> ObstaclesByCell = [];
     internal static readonly Dictionary<ObstacleRef, TransformCell> CellsByObstacle = [];
 
+    public static readonly NativeList<ObstacleRef> ElevationTravelObstacles = new(Allocator.Persistent);
+    public static readonly NativeList<Vector3> ElevationTravelEnterLocations = new(Allocator.Persistent);
+    public static readonly NativeList<Vector3> ElevationTravelInteractLocations = new(Allocator.Persistent);
+
+    public static readonly NativeList<ObstacleRef> ElevationCallObstacles = new(Allocator.Persistent);
+    public static readonly NativeList<Vector3> ElevationCallInteractLocations = new(Allocator.Persistent);
+
     public NativeHashMap<Vector3, ObstacleRef> ObstaclesByTarget = new(1, Allocator.Persistent);
 
     public void Dispose()

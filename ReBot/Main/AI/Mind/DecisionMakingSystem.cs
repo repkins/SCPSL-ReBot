@@ -1,8 +1,4 @@
-﻿using ReBot.Main.AI.Cardiac;
-using ReBot.Main.AI.Interaction;
-using ReBot.Main.AI.Movement;
-using ReBot.Main.AI.Spacial;
-using ReBot.Main.AI.Termination;
+﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -31,6 +27,11 @@ internal class DecisionMakingSystem
 
                             obstaclesByTarget = bot.ObstacleState.ObstaclesByTarget,
                             obstacleLocations = ObstacleState.ObstacleLocations,
+                            elevationTravelObstacles = ObstacleState.ElevationTravelObstacles,
+                            elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations,
+                            elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations,
+                            elevationCallObstacles = ObstacleState.ElevationCallObstacles,
+                            elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations,
                             interactPositionRef = bot.InteractionState.InteractWithPositionRef,
 
                             roomEnterLocations = bot.RoomState.RoomEnterLocations,
