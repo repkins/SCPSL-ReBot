@@ -11,9 +11,9 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 {
     struct ObstacleSightBot()
     {
-        public NativeList<int> withinFovSightObstacles = new(Allocator.Temp);
-        public NativeList<RaycastHit> sightObstacleRaycastResults = new(Allocator.Temp);
         public NativeList<Vector3> sightObstacleDestinations = new(Allocator.Temp);
+        public NativeList<RaycastHit> sightObstacleRaycastResults = new(Allocator.Temp);
+        public NativeList<int> withinFovSightObstacles = new(Allocator.Temp);
 
         public NativeList<Vector3> elevationObstacleDestinations = new(Allocator.Temp);
     }
@@ -22,7 +22,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
     public JobHandle PrepareSensableObstacles()
     {
-        var obstacleRaycastCommandsHandles = new NativeArray<JobHandle>(botCount, Allocator.Temp);
+        var raycastBatchHandles = new NativeArray<JobHandle>(botCount, Allocator.Temp);
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
@@ -33,8 +33,8 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
             var cellsPath = PathfindingStore.CellsPath[botIdx];
 
-            var sightObstaclePositions = new NativeList<Vector3>(Allocator.Temp);
             var sightObstacleDestinations = obstacleSightBots[botIdx].sightObstacleDestinations;
+            var sightObstaclePositions = new NativeList<Vector3>(Allocator.Temp);
 
             var elevationObstacleDestinations = obstacleSightBots[botIdx].elevationObstacleDestinations;
 
@@ -52,8 +52,8 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                 {
                     var obstaclePosition = ObstacleState.ObstacleLocations[receiveObstacleRef.Idx];
 
-                    sightObstaclePositions.Add(obstaclePosition);
                     sightObstacleDestinations.Add(receivedGoalPos);
+                    sightObstaclePositions.Add(obstaclePosition);
                 }
             }
 
@@ -81,8 +81,8 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                 {
                     var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
 
-                    sightObstaclePositions.Add(obstaclePosition);
                     sightObstacleDestinations.Add(currentGoalPos);
+                    sightObstaclePositions.Add(obstaclePosition);
                 }
 
                 prevCell = cellInPath;
@@ -110,12 +110,12 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             var sightObstacleRaycastResults = obstacleSightBots[botIdx].sightObstacleRaycastResults;
             sightObstacleRaycastResults.ResizeUninitialized(sightObstacleRaycastCommands.Length);
 
-            var raycastCommandsHandle = RaycastCommand.ScheduleBatch(sightObstacleRaycastCommands, sightObstacleRaycastResults.AsArray(), sightObstacleRaycastCommands.Length, withinFovJobHandle);
+            var raycastBatchHandle = RaycastCommand.ScheduleBatch(sightObstacleRaycastCommands, sightObstacleRaycastResults.AsArray(), sightObstacleRaycastCommands.Length, withinFovJobHandle);
 
-            obstacleRaycastCommandsHandles[botIdx] = raycastCommandsHandle;
+            raycastBatchHandles[botIdx] = raycastBatchHandle;
         }
 
-        return JobHandle.CombineDependencies(obstacleRaycastCommandsHandles);
+        return JobHandle.CombineDependencies(raycastBatchHandles);
     }
 
     public void ProcessSensedObstacleResults()
