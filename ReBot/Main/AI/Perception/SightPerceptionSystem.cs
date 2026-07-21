@@ -11,17 +11,17 @@ internal class SightPerceptionSystem
     public static void Process()
     {
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
-        var obstacleSightPerception = new ObstacleSightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
+        var obstacleSightPerception = new ObstacleSensePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
 
         enemySightPerception.PrepareEnemiesWithinRadius();
 
         var enemiesRaycastCommandsHandle = enemySightPerception.ProcessEnemySighting();
-        var obstaclesRaycastCommandsHandle = obstacleSightPerception.ProcessObstacleSighting();
+        var obstaclesRaycastCommandsHandle = obstacleSightPerception.PrepareSensableObstacles();
 
         JobHandle.CompleteAll(ref enemiesRaycastCommandsHandle, ref obstaclesRaycastCommandsHandle);
 
         enemySightPerception.ProcessEnemySightResults();
-        obstacleSightPerception.ProcessObstacleSightResults();
+        obstacleSightPerception.ProcessSensedObstacleResults();
 
         enemySightPerception.ProcessEnemiesWithinDistance();
     }
