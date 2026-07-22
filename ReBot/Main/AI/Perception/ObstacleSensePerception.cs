@@ -9,11 +9,18 @@ namespace ReBot.Main.AI.Perception;
 
 public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
 {
+    enum TargetObstacleStatus
+    {
+        Unspecified,
+        Obstructing,
+        Unobstructing
+    }
+
     struct ObstacleSightBot()
     {
         public NativeList<ObstacleRef> targetObstacleRefs = new(Allocator.Temp);
         public NativeList<Vector3> targetObstacleDestinations = new(Allocator.Temp);
-        public NativeList<bool> targetObstacleObstructing = new(Allocator.Temp);
+        public NativeList<TargetObstacleStatus> targetObstacleStatus = new(Allocator.Temp);
 
         public NativeList<int> sightObstacleTargetObstacles = new(Allocator.Temp);
         public NativeList<Vector3> sightObstaclePositions = new(Allocator.Temp);
@@ -44,7 +51,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
             targetObstacleRefs.Add(obstacleRef);
             targetObstacleDestinations.Add(currentGoalPos);
-            targetObstacleObstructing.Add(default);
+            targetObstacleStatus.Add(default);
 
             return targetObstacleIdx;
         }
@@ -144,7 +151,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             var bot = BotStore.Bots[botIdx];
 
             var targetObstacleRefs = obstacleSightBots[botIdx].targetObstacleRefs;
-            var targetObstacleObstructing = obstacleSightBots[botIdx].targetObstacleObstructing;
+            var targetObstacleObstructing = obstacleSightBots[botIdx].targetObstacleStatus;
 
             var sightObstacleTargetObstacles = obstacleSightBots[botIdx].sightObstacleTargetObstacles;
 
@@ -159,7 +166,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                 var hit = sightObstacleRaycastResults[sightObstacleIdx];
                 if (hit.collider is null)
                 {
-                    targetObstacleObstructing[targetObstacleIdx] = false;
+                    targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                     continue;
                 }
 
@@ -171,7 +178,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                     continue;
                 }
 
-                targetObstacleObstructing[targetObstacleIdx] = true;
+                targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
             }
 
             var elevationObstacleTargetObstacles = obstacleSightBots[botIdx].elevationObstacleTargetObstacles;
@@ -185,11 +192,11 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
                 if (Mathf.Abs(playerPosition.y - obstaclePosition.y) < 1f)
                 {
-                    targetObstacleObstructing[targetObstacleIdx] = false;
+                    targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                     continue;
                 }
 
-                targetObstacleObstructing[targetObstacleIdx] = true;
+                targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
             }
 
             var obstacles = bot.ObstacleState.ObstaclesByTarget;
@@ -200,21 +207,25 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                 var obstacleRef = targetObstacleRefs[targetObstacleIdx];
                 var goalPos = targetObstacleDestinations[targetObstacleIdx];
 
-                if (!targetObstacleObstructing[targetObstacleIdx])
+                switch (targetObstacleObstructing[targetObstacleIdx])
                 {
-                    if (!obstacles.TryGetValue(goalPos, out var storedObstacleRef) || storedObstacleRef == obstacleRef)
-                    {
-                        obstacles.Remove(goalPos);
-                    }
-                    continue;
-                }
+                    case TargetObstacleStatus.Unobstructing:
+                        if (!obstacles.TryGetValue(goalPos, out var storedObstacleRef) || storedObstacleRef == obstacleRef)
+                        {
+                            obstacles.Remove(goalPos);
+                        }
 
-                if (obstacles.ContainsKey(goalPos))
-                {
-                    continue;
-                }
+                        break;
+                    case TargetObstacleStatus.Obstructing:
+                        if (obstacles.ContainsKey(goalPos))
+                        {
+                            continue;
+                        }
 
-                obstacles[goalPos] = obstacleRef;
+                        obstacles[goalPos] = obstacleRef;
+
+                        break;
+                }
             }
         }
     }
