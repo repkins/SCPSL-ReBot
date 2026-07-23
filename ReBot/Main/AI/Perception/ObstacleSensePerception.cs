@@ -90,9 +90,11 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             var currentGoalPos = PathfindingStore.GoalPositions[botIdx];
             var cellsPath = PathfindingStore.CellsPath[botIdx];
 
-            TransformCell? prevCell = null;
-            foreach (var cellInPath in cellsPath)
+            for (int cellIdx = cellsPath.Count - 1; cellIdx >= 0; cellIdx--)
             {
+                TransformCell cellInPath = cellsPath[cellIdx];
+                TransformCell? prevCell = cellIdx > 0 ? cellsPath[cellIdx - 1] : null;
+
                 if (ObstacleState.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
                 {
                     if (ObstacleState.ElevationTravelObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
@@ -110,8 +112,6 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                         obstacleSightBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
                     }
                 }
-
-                prevCell = cellInPath;
             }
 
             var sightObstaclePositions = obstacleSightBots[botIdx].sightObstaclePositions;
