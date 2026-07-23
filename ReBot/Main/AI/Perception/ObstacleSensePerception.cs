@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Movement.Pathfinding;
+﻿using Interactables.Interobjects;
+using ReBot.Main.AI.Movement.Pathfinding;
 using ReBot.Main.AI.Spacial;
 using ReBot.Navigation.Mesh;
 using Unity.Collections;
@@ -27,22 +28,34 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
         public NativeList<RaycastHit> sightObstacleRaycastResults = new(Allocator.Temp);
         public NativeList<int> withinFovSightObstacles = new(Allocator.Temp);
 
-        public NativeList<int> elevationObstacleTargetObstacles = new(Allocator.Temp);
+        public NativeList<int> elevationTravelObstacleTargetObstacles = new(Allocator.Temp);
+        public NativeList<int> elevationCallObstacleSightObstacles = new(Allocator.Temp);
 
-        public void AddSightObstacle(in ObstacleRef obstacleRef, in Vector3 currentGoalPos, Vector3 obstaclePosition)
+        public int AddSightObstacle(in ObstacleRef obstacleRef, in Vector3 currentGoalPos, Vector3 obstaclePosition)
         {
             var targetObstacleIdx = AddTargetObstacle(obstacleRef, currentGoalPos);
+
+            var sightObstacleIdx = sightObstacleTargetObstacles.Length;
 
             sightObstacleTargetObstacles.Add(targetObstacleIdx);
             sightObstaclePositions.Add(obstaclePosition);
             sightObstacleRaycastResults.Add(default);
+
+            return sightObstacleIdx;
         }
 
-        public void AddElevationObstacle(in ObstacleRef obstacleRef, in Vector3 currentGoalPos)
+        public void AddElevationTravelObstacle(in ObstacleRef obstacleRef, in Vector3 currentGoalPos)
         {
             var targetObstacleIdx = AddTargetObstacle(obstacleRef, currentGoalPos);
 
-            elevationObstacleTargetObstacles.Add(targetObstacleIdx);
+            elevationTravelObstacleTargetObstacles.Add(targetObstacleIdx);
+        }
+
+        public void AddElevationCallObstacle(in ObstacleRef obstacleRef, in Vector3 currentGoalPos, in Vector3 obstaclePosition)
+        {
+            var sightObstacleIdx = AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
+
+            elevationCallObstacleSightObstacles.Add(sightObstacleIdx);
         }
 
         private int AddTargetObstacle(ObstacleRef obstacleRef, Vector3 currentGoalPos)
@@ -76,9 +89,14 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             {
                 pair.GetKeyValue(out var receivedGoalPos, out var receiveObstacleRef);
 
-                if (ObstacleState.ElevationTravelObstacles.IndexOf(receiveObstacleRef) is var elevationIdx && elevationIdx > -1)
+                if (ObstacleState.ElevationTravelObstacles.Contains(receiveObstacleRef))
                 {
-                    obstacleSightBots[botIdx].AddElevationObstacle(receiveObstacleRef, receivedGoalPos);
+                    obstacleSightBots[botIdx].AddElevationTravelObstacle(receiveObstacleRef, receivedGoalPos);
+                }
+                else if (ObstacleState.ElevationCallObstacles.Contains(receiveObstacleRef))
+                {
+                    var obstaclePosition = ObstacleState.ObstacleLocations[receiveObstacleRef.Idx];
+                    obstacleSightBots[botIdx].AddElevationCallObstacle(receiveObstacleRef, receivedGoalPos, obstaclePosition);
                 }
                 else
                 {
@@ -97,13 +115,20 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
                 if (ObstacleState.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
                 {
-                    if (ObstacleState.ElevationTravelObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
+                    if (ObstacleState.ElevationObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
                     {
-                        if (prevCell.HasValue && 
+                        if (prevCell.HasValue &&
                             !prevCell.Value.AdjacentCellEdges.ContainsKey(cellInPath) &&
                             !NavigationMesh.ForeignConnectedCellEdges[prevCell.Value].ContainsKey(cellInPath))
                         {
-                            obstacleSightBots[botIdx].AddElevationObstacle(obstacleRef, currentGoalPos);
+                            var travelObstacleRef = ObstacleState.ElevationTravelObstacles[elevationIdx];
+                            obstacleSightBots[botIdx].AddElevationTravelObstacle(travelObstacleRef, currentGoalPos);
+                        }
+                        else
+                        {
+                            var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
+                            var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
+                            obstacleSightBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
                         }
                     }
                     else
@@ -158,35 +183,57 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             var withinFovSightObstacles = obstacleSightBots[botIdx].withinFovSightObstacles;
             var sightObstacleRaycastResults = obstacleSightBots[botIdx].sightObstacleRaycastResults;
 
+            var elevationCallObstacleSightObstacles = obstacleSightBots[botIdx].elevationCallObstacleSightObstacles;
+
             for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovSightObstacles.Length; withinFovResultIdx++)
             {
                 var sightObstacleIdx = withinFovSightObstacles[withinFovResultIdx];
                 var targetObstacleIdx = sightObstacleTargetObstacles[sightObstacleIdx];
-
                 var hit = sightObstacleRaycastResults[sightObstacleIdx];
-                if (hit.collider is null)
-                {
-                    targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
-                    continue;
-                }
 
-                var obstacleRef = targetObstacleRefs[targetObstacleIdx];
-                var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
-                var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
-                if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
+                if (elevationCallObstacleSightObstacles.Contains(sightObstacleIdx))
                 {
-                    continue;
+                    // platform (elevator) obstacle
+                    if (hit.collider is null)
+                    {
+                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
+                    }
+                    else if (hit.collider.GetComponentInParent<ElevatorChamber>() is null)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
+                    }
                 }
+                else
+                {
+                    // solid obstacle
+                    if (hit.collider is null)
+                    {
+                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
+                        continue;
+                    }
 
-                targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
+                    var obstacleRef = targetObstacleRefs[targetObstacleIdx];
+                    var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
+                    var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
+                    if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
+                    {
+                        continue;
+                    }
+
+                    targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
+                }
             }
 
-            var elevationObstacleTargetObstacles = obstacleSightBots[botIdx].elevationObstacleTargetObstacles;
+            var elevationTravelObstacleTargetObstacles = obstacleSightBots[botIdx].elevationTravelObstacleTargetObstacles;
             var playerPosition = bot.PlayerState.Position;
 
-            for (var elevationObstacleIdx = 0; elevationObstacleIdx < elevationObstacleTargetObstacles.Length; elevationObstacleIdx++)
+            for (var elevationTravelObstacleIdx = 0; elevationTravelObstacleIdx < elevationTravelObstacleTargetObstacles.Length; elevationTravelObstacleIdx++)
             {
-                var targetObstacleIdx = elevationObstacleTargetObstacles[elevationObstacleIdx];
+                var targetObstacleIdx = elevationTravelObstacleTargetObstacles[elevationTravelObstacleIdx];
                 var obstacleRef = targetObstacleRefs[targetObstacleIdx];
                 var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
 
