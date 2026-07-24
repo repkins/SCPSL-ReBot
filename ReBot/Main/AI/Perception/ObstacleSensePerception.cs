@@ -72,6 +72,51 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
     private NativeArray<ObstacleSightBot> obstacleSightBots = new(botCount, Allocator.Temp);
 
+    public static void Initialize()
+    {
+        foreach (var (cell, solidObstacle) in NavigationMesh.CellsWithSolidObstacles)
+        {
+            var obstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
+            var obstaclePosition = solidObstacle.position + Vector3.up;
+            ObstacleState.ObstacleLocations.Add(obstaclePosition);
+            ObstacleState.ObstaclesByCell.Add(cell, obstacleRef);
+            ObstacleState.CellsByObstacle.Add(obstacleRef, cell);
+        }
+
+        foreach (var (toCell, fromCell, toCallPanel, travelPanel) in NavigationMesh.ElevationObstacles)
+        {
+            var levelObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
+            var levelObstaclePosition = toCell.MeanPosition;
+            ObstacleState.ObstacleLocations.Add(levelObstaclePosition);
+            ObstacleState.ObstaclesByCell.Add(toCell, levelObstacleRef);
+            ObstacleState.CellsByObstacle.Add(levelObstacleRef, toCell);
+
+            var elevationIdx = ObstacleState.ElevationObstacles.Length;
+            ObstacleState.ElevationObstacles.Add(levelObstacleRef);
+
+
+            var travelObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
+            var travelObstaclePosition = toCell.MeanPosition;
+            ObstacleState.ObstacleLocations.Add(travelObstaclePosition);
+            ObstacleState.CellsByObstacle.Add(travelObstacleRef, toCell);
+
+            var travelEnterPosition = fromCell.MeanPosition;
+            ObstacleState.ElevationTravelObstacles.Add(travelObstacleRef);
+            ObstacleState.ElevationTravelEnterLocations.Add(travelEnterPosition);
+            ObstacleState.ElevationTravelInteractPanels.Add(travelPanel);
+
+
+            var callObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
+            var callObstaclePosition = travelPanel.GetComponentInParent<ElevatorChamber>().transform.position;
+            ObstacleState.ObstacleLocations.Add(callObstaclePosition);
+            ObstacleState.CellsByObstacle.Add(callObstacleRef, toCell);
+
+            var callInteractPosition = toCallPanel.GetComponent<Collider>().bounds.center;
+            ObstacleState.ElevationCallObstacles.Add(callObstacleRef);
+            ObstacleState.ElevationCallInteractLocations.Add(callInteractPosition);
+        }
+    }
+
     public JobHandle PrepareSensableObstacles()
     {
         var raycastBatchHandles = new NativeArray<JobHandle>(botCount, Allocator.Temp);
@@ -218,7 +263,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
                     var obstacleRef = targetObstacleRefs[targetObstacleIdx];
                     var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
-                    var obstacleTransform = NavigationMesh.CellsWithObstacles[cellInPath];
+                    var obstacleTransform = NavigationMesh.CellsWithSolidObstacles[cellInPath];
                     if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
                     {
                         continue;
@@ -274,6 +319,16 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                         break;
                 }
             }
+        }
+    }
+
+    public void ProcessSharedElevationState()
+    {
+        for (var elevationTravelIdx = 0; elevationTravelIdx < ObstacleState.ElevationTravelInteractPanels.Count; elevationTravelIdx++)
+        {
+            var travelPanel = ObstacleState.ElevationTravelInteractPanels[elevationTravelIdx];
+
+            ObstacleState.ElevationTravelInteractLocations[elevationTravelIdx] = travelPanel.GetComponent<Collider>().bounds.center;
         }
     }
 }

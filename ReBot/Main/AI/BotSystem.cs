@@ -23,6 +23,8 @@ public static class BotSystem
         PlayerRoleManager.OnRoleChanged += OnRoleChanged;
         ReferenceHub.OnPlayerRemoved += RemovePlayerIfBot;
         ServerEvents.RoundRestarted += OnRoundRestarted;
+
+        PerceptionSystem.Initialize();
     }
 
     public static void Teardown()
@@ -56,9 +58,8 @@ public static class BotSystem
 
     public static IEnumerator<float> RunPlayerUpdates()
     {
-        // Perception systems
-        SightPerceptionSystem.Process();
-        RoomPerceptionSystem.Process();
+        // Perception system
+        PerceptionSystem.Process();
 
         DecisionMakingSystem.Process();
 

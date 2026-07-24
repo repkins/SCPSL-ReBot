@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Spacial;
 
-internal class RoomPerceptionSystem
+internal struct RoomPerception(int botCount)
 {
-    public static void Process()
+    public void Process()
     {
-        for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        for (var botIdx = 0; botIdx < botCount; botIdx++)
         {
             var bot = BotStore.Bots[botIdx];
 

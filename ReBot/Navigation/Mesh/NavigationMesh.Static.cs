@@ -1,4 +1,5 @@
-﻿using LabApi.Features.Wrappers;
+﻿using Interactables.Interobjects;
+using LabApi.Features.Wrappers;
 using MapGeneration;
 using System.Collections.Generic;
 using System.IO;
@@ -17,8 +18,8 @@ namespace ReBot.Navigation.Mesh
         public static Dictionary<TransformCell, List<TransformCell>> ForeignConnectedCells = new();
         public static Dictionary<TransformCell, Dictionary<TransformCell, TransformEdge>> ForeignConnectedCellEdges = new();
 
-        public static Dictionary<TransformCell, Transform> CellsWithObstacles = [];
-        public static Dictionary<TransformCell, (TransformCell ToCell, Transform InteractPanel)> ElevationObstacles = [];
+        public static Dictionary<TransformCell, Transform> CellsWithSolidObstacles = [];
+        public static List<(TransformCell ToCell, TransformCell FromCell, ElevatorPanel ToCallPanel, ElevatorPanel TravelPanel)> ElevationObstacles = [];
 
         public static NavigationMesh CreateMesh(string form)
         {
@@ -380,7 +381,7 @@ namespace ReBot.Navigation.Mesh
             LocalMeshesByRoom.Clear();
             ForeignConnectedCells.Clear();
             ForeignConnectedCellEdges.Clear();
-            CellsWithObstacles.Clear();
+            CellsWithSolidObstacles.Clear();
         }
 
         #endregion

@@ -107,7 +107,7 @@ namespace ReBot.Navigation
                         Span<TransformCell> cells = [cellInFront, cellInBack];
                         foreach (var cell in cells)
                         {
-                            NavigationMesh.CellsWithObstacles.Add(cell, door.transform);
+                            NavigationMesh.CellsWithSolidObstacles.Add(cell, door.transform);
                         }
                     }
                 }
@@ -125,7 +125,7 @@ namespace ReBot.Navigation
                     Debug.Log($"{door}, {door.transform.position}");
 
                     var cell = cellResult.Value;
-                    NavigationMesh.CellsWithObstacles.Add(cell, door.transform);
+                    NavigationMesh.CellsWithSolidObstacles.Add(cell, door.transform);
                 }
             }
 
@@ -137,6 +137,12 @@ namespace ReBot.Navigation
                 if (elevatorDoors.Count != 2)
                 {
                     Debug.LogWarning($"Irregular elevator level count ({elevatorDoors.Count}) of group {group}");
+                    continue;
+                }
+
+                if (!ElevatorChamber.TryGetChamber(group, out var chamber))
+                {
+                    Debug.LogWarning($"Could not get elevator chamber of group {group}");
                     continue;
                 }
 
@@ -188,10 +194,13 @@ namespace ReBot.Navigation
                     NavigationMesh.ForeignConnectedCells[cellAt1InShaft].Add(cellAt0InShaft);
 
                     // Add elevation cells
-                    var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>().transform;
-                    var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>().transform;
-                    NavigationMesh.ElevationObstacles.Add(cellAt0InShaft, (cellAt1InShaft, panelAt0));
-                    NavigationMesh.ElevationObstacles.Add(cellAt1InShaft, (cellAt0InShaft, panelAt1));
+                    var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>();
+                    var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>();
+
+                    var travelPanel = chamber.GetComponentInChildren<ElevatorPanel>();
+
+                    NavigationMesh.ElevationObstacles.Add((cellAt0InShaft, cellAt1InShaft, panelAt0, travelPanel));
+                    NavigationMesh.ElevationObstacles.Add((cellAt1InShaft, cellAt0InShaft, panelAt1, travelPanel));
                 }
             }
             Debug.Log($"Connecting cells and adding cells with obstacles cells finished.");
