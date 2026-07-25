@@ -5,7 +5,7 @@ public enum BeliefEnum : byte
     Default,
 
     ObstacleToOvercome,
-    WithinObstacleLocation,
+    WithinObstacleInteractionLocation,
 
     WithinRoomEnterLocation,
     InteractingWithObstacle,
