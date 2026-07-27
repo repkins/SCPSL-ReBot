@@ -14,6 +14,11 @@ internal class PerceptionSystem
         ObstacleSensePerception.Initialize();
     }
 
+    public static void Teardown()
+    {
+        ObstacleSensePerception.Teardown();
+    }
+
     public static void Process()
     {
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);

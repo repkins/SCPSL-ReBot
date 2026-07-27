@@ -3,8 +3,11 @@ using LabApi.Features;
 using LabApi.Features.Console;
 using LabApi.Loader.Features.Plugins;
 using Mirror.LiteNetLib4Mirror;
+using ReBot.Main.AI;
 using ReBot.Navigation;
+using ReBot.Navigation.Mesh;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace ReBot
@@ -25,9 +28,15 @@ namespace ReBot
             harmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
             Logger.Info("Patching successful.");
 
+            NavigationSystem.Instance.BaseDir = Path.Combine(Path.GetDirectoryName(FilePath), Path.GetFileNameWithoutExtension(FilePath));
+            if (!Directory.Exists(NavigationSystem.Instance.BaseDir))
+            {
+                Directory.CreateDirectory(NavigationSystem.Instance.BaseDir);
+            }
             NavigationSystem.Instance.Init();
-            //BotManager.Instance.Init();
+            NavigationMeshEditor.Instance.Init();
 
+            BotSystem.Initalize();
 
             Logger.Info("Enabled plugin.");
 
@@ -37,7 +46,9 @@ namespace ReBot
 
         public override void Disable()
         {
-            //BotManager.Instance.Teardown();
+            BotSystem.Teardown();
+
+            NavigationMeshEditor.Instance.Teardown();
             NavigationSystem.Instance.Teardown();
 
             harmonyInstance.UnpatchAll();

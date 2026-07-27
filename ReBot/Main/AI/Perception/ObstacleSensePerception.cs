@@ -1,6 +1,7 @@
 ﻿using Interactables.Interobjects;
 using ReBot.Main.AI.Movement.Pathfinding;
 using ReBot.Main.AI.Spacial;
+using ReBot.Navigation;
 using ReBot.Navigation.Mesh;
 using Unity.Collections;
 using Unity.Jobs;
@@ -74,6 +75,18 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
     public static void Initialize()
     {
+        NavigationSystem.Instance.OnMeshesConnected += UpdateStaticState;
+    }
+
+    public static void Teardown()
+    {
+        NavigationSystem.Instance.OnMeshesConnected -= UpdateStaticState;
+    }
+
+    private static void UpdateStaticState()
+    {
+        Debug.Log("Updating bot static state");
+
         foreach (var (cell, solidObstacle) in NavigationMesh.CellsWithSolidObstacles)
         {
             var obstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
@@ -104,7 +117,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             ObstacleState.ElevationTravelObstacles.Add(travelObstacleRef);
             ObstacleState.ElevationTravelEnterLocations.Add(travelEnterPosition);
             ObstacleState.ElevationTravelInteractPanels.Add(travelPanel);
-
+            ObstacleState.ElevationTravelInteractLocations.Add(default);
 
             var callObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             var callObstaclePosition = travelPanel.GetComponentInParent<ElevatorChamber>().transform.position;
@@ -115,6 +128,8 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             ObstacleState.ElevationCallObstacles.Add(callObstacleRef);
             ObstacleState.ElevationCallInteractLocations.Add(callInteractPosition);
         }
+
+        Debug.Log("Updating bot static state finished");
     }
 
     public JobHandle PrepareSensableObstacles()

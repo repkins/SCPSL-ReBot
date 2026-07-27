@@ -1,4 +1,5 @@
 ﻿using CentralAuth;
+using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
 using System.Collections.Generic;
@@ -51,12 +52,14 @@ public static class BotStore
         Debug.Log($"referenceHub = {referenceHub}");
         Debug.Log($"connectionToClient.identity = {connectionToClient.identity}");
 
-        Timing.CallDelayed(1f, delegate
-        {
-            PlayerAuthenticationManager playerAuthManager = player.GetComponent<PlayerAuthenticationManager>();
-            playerAuthManager.UserId = $"BotUserId{lastConnNum}";
-        });
+        Timing.CallDelayed(1f, () => AssignUserId(player));
 
         return referenceHub;
+    }
+
+    private static void AssignUserId(GameObject player)
+    {
+        PlayerAuthenticationManager playerAuthManager = player.GetComponent<PlayerAuthenticationManager>();
+        playerAuthManager.UserId = $"BotUserId{lastConnNum}";
     }
 }

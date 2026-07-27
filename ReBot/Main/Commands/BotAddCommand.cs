@@ -4,6 +4,7 @@ using System;
 
 namespace ReBot.Main.Commands
 {
+    [CommandHandler(typeof(GameConsoleCommandHandler))]
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     internal class BotAddCommand : ICommand
     {

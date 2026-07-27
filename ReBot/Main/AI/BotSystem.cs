@@ -29,11 +29,13 @@ public static class BotSystem
 
     public static void Teardown()
     {
-        Timing.KillCoroutines(handle);
+        PerceptionSystem.Teardown();
 
         PlayerRoleManager.OnRoleChanged -= OnRoleChanged;
         ReferenceHub.OnPlayerRemoved -= RemovePlayerIfBot;
         ServerEvents.RoundRestarted -= OnRoundRestarted;
+
+        Timing.KillCoroutines(handle);
     }
 
     private static void OnRoundRestarted()
@@ -58,17 +60,20 @@ public static class BotSystem
 
     public static IEnumerator<float> RunPlayerUpdates()
     {
-        // Perception system
-        PerceptionSystem.Process();
+        while (true)
+        {
+            // Perception system
+            PerceptionSystem.Process();
 
-        DecisionMakingSystem.Process();
+            DecisionMakingSystem.Process();
 
-        MovementSystem.Process();
-        InteractionSystem.Process();
+            MovementSystem.Process();
+            InteractionSystem.Process();
 
-        // SCP 049 Role
-        CardiacSystem.Process();
+            // SCP 049 Role
+            CardiacSystem.Process();
 
-        yield break;
+            yield return Timing.WaitForOneFrame;
+        }
     }
 }

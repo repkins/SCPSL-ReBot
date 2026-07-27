@@ -50,7 +50,7 @@ namespace ReBot.Navigation.Mesh
             };
         }
 
-        public void Terminate()
+        public void Teardown()
         {
             Visuals.Terminate();
 

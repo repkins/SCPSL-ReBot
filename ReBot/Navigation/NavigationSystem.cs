@@ -21,6 +21,7 @@ namespace ReBot.Navigation
         public string BaseDir { get; set; }
         public string MeshFileName { get; } = "navmesh.slnmf";
         public bool Initialized { get; private set; } = false;
+        public event Action OnMeshesConnected;
 
         public void Init()
         {
@@ -193,7 +194,9 @@ namespace ReBot.Navigation
                     NavigationMesh.ForeignConnectedCells[cellAt0InShaft].Add(cellAt1InShaft);
                     NavigationMesh.ForeignConnectedCells[cellAt1InShaft].Add(cellAt0InShaft);
 
-                    // Add elevation cells
+                    Debug.Log($"{group} elevation cells connections added between {cellAt0InShaft.MeanPosition} and {cellAt1InShaft.MeanPosition}");
+
+                    // Add elevation obstacles
                     var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>();
                     var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>();
 
@@ -201,9 +204,14 @@ namespace ReBot.Navigation
 
                     NavigationMesh.ElevationObstacles.Add((cellAt0InShaft, cellAt1InShaft, panelAt0, travelPanel));
                     NavigationMesh.ElevationObstacles.Add((cellAt1InShaft, cellAt0InShaft, panelAt1, travelPanel));
+
+                    Debug.Log($"{group} elevation obstacles added between call panels at {panelAt0.transform.position} and {panelAt1.transform.position} with travel panel at {travelPanel.transform.position}");
+
                 }
             }
             Debug.Log($"Connecting cells and adding cells with obstacles cells finished.");
+
+            OnMeshesConnected?.Invoke();
         }
 
         public void LoadMeshes(string fileName)
