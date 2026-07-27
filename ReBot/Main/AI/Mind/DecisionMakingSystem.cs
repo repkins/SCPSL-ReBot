@@ -10,7 +10,7 @@ internal class DecisionMakingSystem
     {
         var botCount = BotStore.Bots.Count;
 
-        var findActionHandles = new NativeArray<JobHandle>(botCount, Allocator.TempJob);
+        var findActionHandles = new NativeArray<JobHandle>(botCount, Allocator.Temp);
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
@@ -41,7 +41,7 @@ internal class DecisionMakingSystem
                             cardiacPositionRef = bot.CardiacState.CardiacPositionRef,
                         };
 
-                        findActionHandles[botIdx] = findActionJob.Schedule();
+                        findActionHandles[botIdx] = findActionJob.ScheduleByRef();
                     }
                     break;
             }
@@ -49,7 +49,5 @@ internal class DecisionMakingSystem
 
         var decisionMakingHandle = JobHandle.CombineDependencies(findActionHandles);
         decisionMakingHandle.Complete();
-
-        findActionHandles.Dispose();
     }
 }

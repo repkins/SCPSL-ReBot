@@ -8,7 +8,7 @@ namespace ReBot.Main.AI.Mind;
 
 internal struct FindActionJob : IJob
 {
-    [ReadOnly] public required Vector3 playerPosition;
+    public required Vector3 playerPosition;
 
     [ReadOnly] public required NativeList<Vector3> obstacleLocations;
     [ReadOnly] public required NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget;
