@@ -2,6 +2,7 @@
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
+using ReBot.Main.AI.Movement.Pathfinding;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,10 +22,14 @@ public static class BotStore
         var nextBotIdx = Bots.Count;
         Bots.Add(new(referenceHub));
         BotHubRefs.Add(referenceHub, new(nextBotIdx));
+
+        PathfindingStore.AddBot(new(nextBotIdx));
     }
 
     public static void RemoveBotPlayer(BotRef botRef)
     {
+        PathfindingStore.RemoveBot(botRef);
+
         var hub = Bots[botRef.Idx].Hub;
         BotHubRefs.Remove(hub);
 

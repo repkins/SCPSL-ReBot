@@ -1,4 +1,5 @@
 ﻿using Interactables.Interobjects;
+using ReBot.Collections;
 using ReBot.Main.AI.Movement.Pathfinding;
 using ReBot.Main.AI.Spacial;
 using ReBot.Navigation;
@@ -71,7 +72,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
         }
     }
 
-    private NativeArray<ObstacleSightBot> obstacleSightBots = new(botCount, Allocator.Temp);
+    private NativeArray<ObstacleSightBot> obstacleSightBots = NativeArray<ObstacleSightBot>.CreateInitialized(botCount, Allocator.Temp);
 
     public static void Initialize()
     {

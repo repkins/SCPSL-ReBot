@@ -15,14 +15,14 @@ public class Bot(ReferenceHub hub) : IDisposable
     public Transform PlayerTransform;
     public Transform CameraTransform;
 
-    public PlayerState PlayerState;
-    public RoomState RoomState;
-    public ObstacleState ObstacleState;
-    public TerminationState TerminationState;
+    public PlayerState PlayerState = new();
+    public RoomState RoomState = new();
+    public ObstacleState ObstacleState = new();
+    public TerminationState TerminationState = new();
 
-    public MovementState MovementState;
-    public InteractionState InteractionState;
-    public CardiacState CardiacState;
+    public MovementState MovementState = new();
+    public InteractionState InteractionState = new();
+    public CardiacState CardiacState = new();
 
     public void Dispose()
     {

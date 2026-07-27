@@ -1,5 +1,6 @@
 ﻿using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
+using ReBot.Collections;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -18,14 +19,14 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
     }
 
     private const int maxHits = 10;
-    private readonly int playerLayerMask = LayerMask.GetMask("Ignore Raycast");
+    private static readonly int playerLayerMask = LayerMask.GetMask("Ignore Raycast");
 
-    private NativeArray<EnemySightBot> enemySightBots = new(botCount, Allocator.Temp);
+    private NativeArray<EnemySightBot> enemySightBots = NativeArray<EnemySightBot>.CreateInitialized(botCount, Allocator.Temp);
 
     public void PrepareEnemiesWithinRadius()
     {
         var overlapSphereCommands = new NativeArray<OverlapSphereCommand>(botCount, Allocator.Temp);
-        var overlapSphereResults = new NativeArray<ColliderHit>(botCount, Allocator.Temp);
+        var overlapSphereResults = new NativeArray<ColliderHit>(botCount * maxHits, Allocator.Temp);
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
