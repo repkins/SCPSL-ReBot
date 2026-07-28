@@ -72,7 +72,7 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
         }
     }
 
-    private NativeArray<ObstacleSightBot> obstacleSightBots = NativeArray<ObstacleSightBot>.CreateInitialized(botCount, Allocator.Temp);
+    private NativeArray<ObstacleSightBot> obstacleSightBots = NativeArray<ObstacleSightBot>.CreateConstructed(botCount, Allocator.Temp);
 
     public static void Initialize()
     {

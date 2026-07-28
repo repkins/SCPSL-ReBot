@@ -21,7 +21,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
     private const int maxHits = 10;
     private static readonly int playerLayerMask = LayerMask.GetMask("Ignore Raycast");
 
-    private NativeArray<EnemySightBot> enemySightBots = NativeArray<EnemySightBot>.CreateInitialized(botCount, Allocator.Temp);
+    private NativeArray<EnemySightBot> enemySightBots = NativeArray<EnemySightBot>.CreateConstructed(botCount, Allocator.Temp);
 
     public void PrepareEnemiesWithinRadius()
     {

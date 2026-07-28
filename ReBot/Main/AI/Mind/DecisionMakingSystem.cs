@@ -47,7 +47,6 @@ internal class DecisionMakingSystem
             }
         }
 
-        var decisionMakingHandle = JobHandle.CombineDependencies(findActionHandles);
-        decisionMakingHandle.Complete();
+        JobHandle.CompleteAll(findActionHandles);
     }
 }

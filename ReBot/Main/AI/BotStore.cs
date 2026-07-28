@@ -4,6 +4,8 @@ using MEC;
 using Mirror;
 using ReBot.Main.AI.Movement.Pathfinding;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI;
@@ -35,6 +37,12 @@ public static class BotStore
 
         Bots[botRef.Idx].Dispose();
         Bots.RemoveAt(botRef.Idx);
+
+        for (int botIdx = 0; botIdx < Bots.Count; botIdx++)
+        {
+            var botHub = Bots[botIdx].Hub;
+            BotHubRefs[botHub] = new(botIdx);
+        }
     }
 
     private static ReferenceHub InstantiatePlayerObject()
