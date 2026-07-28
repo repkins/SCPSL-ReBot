@@ -25,6 +25,7 @@ public static class BotSystem
         ReferenceHub.OnPlayerRemoved += RemovePlayerIfBot;
         ServerEvents.RoundRestarted += OnRoundRestarted;
         PlayerEvents.Kicked += PrintKickReasonIfBot;
+        ServerEvents.RoundStarted += AssignSupportedRole;
 
         PerceptionSystem.Initialize();
     }
@@ -37,6 +38,7 @@ public static class BotSystem
         ReferenceHub.OnPlayerRemoved -= RemovePlayerIfBot;
         ServerEvents.RoundRestarted -= OnRoundRestarted;
         PlayerEvents.Kicked -= PrintKickReasonIfBot;
+        ServerEvents.RoundStarted -= AssignSupportedRole;
 
         Timing.KillCoroutines(handle);
     }
@@ -49,13 +51,6 @@ public static class BotSystem
     private static void OnRoleChanged(ReferenceHub userHub, PlayerRoleBase prevRole, PlayerRoleBase newRole)
     {
         Debug.Log($"Bot \"{userHub}\" got new role {newRole.RoleTypeId}");
-
-        //if (newRole.RoleTypeId is not (RoleTypeId.Spectator or RoleTypeId.Overwatch or RoleTypeId.Scp049))
-        //{
-        //    userHub.roleManager.ServerSetRole(RoleTypeId.Spectator, RoleChangeReason.None);
-            
-        //    Debug.Log($"Bot \"{userHub}\" role {newRole.RoleTypeId} is unsupported. Assigned to Spectator");
-        //}
     }
 
     private static void RemovePlayerIfBot(ReferenceHub userHub)
@@ -74,6 +69,18 @@ public static class BotSystem
         if (BotStore.BotHubRefs.ContainsKey(hub))
         {
             Debug.Log($"Bot player \"{hub}\" got kicked, reason: {args.Reason}");
+        }
+    }
+
+    private static void AssignSupportedRole()
+    {
+        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        {
+            var hub = BotStore.Bots[botIdx].Hub;
+            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp049)
+            {
+                hub.roleManager.ServerSetRole(RoleTypeId.Scp049, RoleChangeReason.None);
+            }
         }
     }
 

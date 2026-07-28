@@ -52,7 +52,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                     break;
                 }
 
-                if (hit.collider.GetComponentInParent<FpcStandardRoleBase>() is FpcStandardRoleBase fpcRole
+                if (hit.collider.gameObject.GetComponent<ReferenceHub>().roleManager.CurrentRole is FpcStandardRoleBase fpcRole
                     && fpcRole.Team.GetFaction() != playerHub.GetFaction()
                     && fpcRole.Team.GetFaction() != Faction.Unclassified)
                 {
