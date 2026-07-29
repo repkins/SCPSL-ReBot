@@ -21,9 +21,9 @@ internal class DecisionMakingSystem
             {
                 case PlayerRoles.RoleTypeId.Scp049:
                     {
-                        var findActionJob = new FindActionJob<Scp049Mind>
+                        var findActionJob = new FindActionJob<Scp049Mind, Scp049Mind.Factory>
                         {
-                            mind = new(new(botIdx)),
+                            botRef = new(botIdx),
                         };
 
                         findActionHandles[botIdx] = findActionJob.ScheduleByRef();
