@@ -35,9 +35,9 @@ public struct BeliefPathfinding()
         return false;
     }
 
-    public void EnqueueIfLess((BeliefEnum, BeliefRef) enablingBelief, float cost, (BeliefEnum, BeliefRef) impactingBelief)
+    public void EnqueueIfLess((BeliefEnum, BeliefRef) beliefToEnable, float cost, (BeliefEnum, BeliefRef) impactingBelief)
     {
-        var enablingBeliefCost = generalCosts[enablingBelief];
+        var enablingBeliefCost = generalCosts[beliefToEnable];
         var generalCost = enablingBeliefCost + cost;
 
         if (!generalCosts.TryGetValue(impactingBelief, out var visitedCost)
