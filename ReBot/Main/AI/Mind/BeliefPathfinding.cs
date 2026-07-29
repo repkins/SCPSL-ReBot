@@ -4,10 +4,10 @@ namespace ReBot.Main.AI.Mind;
 
 public struct BeliefPathfinding()
 {
-    private NativeList<(float, (BeliefEnum, BeliefRef))> beliefsToVisit = new(Allocator.Temp);
-    private NativeHashMap<(BeliefEnum, BeliefRef), float> generalCosts = new(1, Allocator.Temp);
+    private NativeList<(float, BeliefRef)> beliefsToVisit = new(Allocator.Temp);
+    private NativeHashMap<BeliefRef, float> generalCosts = new(1, Allocator.Temp);
 
-    public bool TryDequeueMin(out (BeliefEnum beliefEnum, BeliefRef beliefRef) best)
+    public bool TryDequeueMin(out BeliefRef best)
     {
         best = default;
 
@@ -35,7 +35,7 @@ public struct BeliefPathfinding()
         return false;
     }
 
-    public void EnqueueIfLess((BeliefEnum, BeliefRef) beliefToEnable, float cost, (BeliefEnum, BeliefRef) impactingBelief)
+    public void EnqueueIfLess(BeliefRef beliefToEnable, float cost, BeliefRef impactingBelief)
     {
         var enablingBeliefCost = generalCosts[beliefToEnable];
         var generalCost = enablingBeliefCost + cost;
