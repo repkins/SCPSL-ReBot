@@ -8,31 +8,32 @@ namespace ReBot.Main.AI.Mind;
 
 internal struct FindActionJob : IJob
 {
-    public required Vector3 playerPosition;
-
-    [ReadOnly] public required NativeList<Vector3> obstacleLocations;
-    [ReadOnly] public required NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget;
-
-    [ReadOnly] public required NativeList<ObstacleRef> elevationTravelObstacles;
-    [ReadOnly] public required NativeList<Vector3> elevationTravelEnterLocations;
-    [ReadOnly] public required NativeList<Vector3> elevationTravelInteractLocations;
-
-    [ReadOnly] public required NativeList<ObstacleRef> elevationCallObstacles;
-    [ReadOnly] public required NativeList<Vector3> elevationCallInteractLocations;
-
-    [ReadOnly] public required NativeList<Vector3> roomEnterLocations;
-
-    [ReadOnly] public required NativeList<Vector3> enemiesWithinSight;
-    [ReadOnly] public required NativeList<EnemyRef> enemiesWithinDistance;
-
-    [WriteOnly] public required NativeReference<(bool HasPosition, Vector3 Position)> moveToPositionRef;
-    [WriteOnly] public required NativeReference<(bool HasPosition, Vector3 Position)> interactPositionRef;
-
-    [WriteOnly] public required NativeReference<(bool HasPosition, Vector3 Position)> cardiacPositionRef;
+    public required BotRef botRef;
 
     public void Execute()
     {
         var beliefPathfinding = new BeliefPathfinding();
+
+        var bot = BotStore.Bots[botRef.Idx];
+
+        var playerPosition = bot.PlayerState.Position;
+        var moveToPositionRef = bot.MovementState.MoveToPositionRef;
+
+        var obstaclesByTarget = bot.ObstacleState.ObstaclesByTarget;
+        var obstacleLocations = ObstacleState.ObstacleLocations;
+        var elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
+        var elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
+        var elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
+        var elevationCallObstacles = ObstacleState.ElevationCallObstacles;
+        var elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
+        var interactPositionRef = bot.InteractionState.InteractWithPositionRef;
+
+        var roomEnterLocations = bot.RoomState.RoomEnterLocations;
+
+        var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
+        var enemiesWithinDistance = bot.TerminationState.EnemiesWithinDistance;
+
+        var cardiacPositionRef = bot.CardiacState.CardiacPositionRef;
 
         var actionFound = false;
 

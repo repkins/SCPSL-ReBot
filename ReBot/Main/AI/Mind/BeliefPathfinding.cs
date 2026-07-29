@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Mind;
 
-internal struct BeliefPathfinding()
+public struct BeliefPathfinding()
 {
     private NativeList<(float, (BeliefEnum, BeliefRef))> beliefsToVisit = new(Allocator.Temp);
     private NativeHashMap<(BeliefEnum, BeliefRef), float> generalCosts = new(1, Allocator.Temp);

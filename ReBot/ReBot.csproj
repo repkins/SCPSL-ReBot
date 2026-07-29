@@ -36,7 +36,7 @@
     </Copy>
     <Message Text="Files copied to @(FilesCopied)" Importance="high" />
   </Target>
-  
+
   <ItemGroup>
     <PackageReference Include="IsExternalInit" Version="1.0.3" />
     <PackageReference Include="Lib.Harmony" Version="2.3.6" />
@@ -97,9 +97,5 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Main\AI\Mind\Common\" />
-    <Folder Include="Main\AI\Mind\Scp049\" />
-  </ItemGroup>
 
 </Project>

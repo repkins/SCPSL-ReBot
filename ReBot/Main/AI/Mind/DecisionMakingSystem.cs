@@ -22,26 +22,16 @@ internal class DecisionMakingSystem
                     {
                         var findActionJob = new FindActionJob
                         {
-                            playerPosition = bot.PlayerState.Position,
-                            moveToPositionRef = bot.MovementState.MoveToPositionRef,
-
-                            obstaclesByTarget = bot.ObstacleState.ObstaclesByTarget,
-                            obstacleLocations = ObstacleState.ObstacleLocations,
-                            elevationTravelObstacles = ObstacleState.ElevationTravelObstacles,
-                            elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations,
-                            elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations,
-                            elevationCallObstacles = ObstacleState.ElevationCallObstacles,
-                            elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations,
-                            interactPositionRef = bot.InteractionState.InteractWithPositionRef,
-
-                            roomEnterLocations = bot.RoomState.RoomEnterLocations,
-
-                            enemiesWithinSight = bot.TerminationState.EnemiesWithinSight,
-                            enemiesWithinDistance = bot.TerminationState.EnemiesWithinDistance,
-                            cardiacPositionRef = bot.CardiacState.CardiacPositionRef,
+                            botRef = new(botIdx),
                         };
 
                         findActionHandles[botIdx] = findActionJob.ScheduleByRef();
+                    }
+                    break;
+
+                case PlayerRoles.RoleTypeId.Scp106:
+                    {
+
                     }
                     break;
             }
