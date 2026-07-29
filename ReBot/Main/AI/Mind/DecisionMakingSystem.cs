@@ -1,5 +1,4 @@
 ﻿using ReBot.Main.AI.Mind.Role;
-using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -32,7 +31,12 @@ internal class DecisionMakingSystem
 
                 case PlayerRoles.RoleTypeId.Scp106:
                     {
+                        var findActionJob = new FindActionJob<Scp106Mind, Scp106Mind.Factory>
+                        {
+                            botRef = new(botIdx),
+                        };
 
+                        findActionHandles[botIdx] = findActionJob.ScheduleByRef();
                     }
                     break;
             }

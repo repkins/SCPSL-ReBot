@@ -17,7 +17,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         var mind = mindFactory.Create(botRef);
 
         var actionFound = false;
-        var impactingBeliefs = new NativeList<(float cost, BeliefRef)>(4, Allocator.Temp);
+        var impactingBeliefs = new NativeList<ImpactingBelief>(4, Allocator.Temp);
 
         while (!actionFound && beliefPathfinding.TryDequeueMin(out var beliefToEnable))
         {

@@ -29,7 +29,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
-    public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<(float cost, BeliefRef beliefRef)> enablingBeliefs)
+    public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var actionFound = false;
 
@@ -43,14 +43,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
                         {
                             var cost = 1f;  // cardiac attack cost, constant
 
-                            enablingBeliefs.Add((cost, new(BeliefEnum.CardiacEnemy, enemyIdx)));
+                            impactingBeliefs.Add(cost, BeliefEnum.CardiacEnemy, enemyIdx);
                         }
                     }
                     else
                     {
                         var cost = 30; // max sight distance
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.SightedEnemies, default)));
+                        impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
                     }
                 }
                 break;
@@ -72,14 +72,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
                         {
                             var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                            enablingBeliefs.Add((cost, new(BeliefEnum.WithinEnemyLocation, enemyIdx)));
+                            impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyIdx);
                         }
                     }
                     else
                     {
                         var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.ObstacleToOvercome, obstacleRef.Idx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
                     }
                 }
                 break;
@@ -98,13 +98,13 @@ public struct Scp049Mind(BotRef botRef) : IMind
                             {
                                 cost *= Vector3.Distance(roomEnterLocationPosition, playerPosition);
 
-                                enablingBeliefs.Add((cost, new(BeliefEnum.WithinRoomEnterLocation, roomEnterLocationIdx)));
+                                impactingBeliefs.Add(cost, BeliefEnum.WithinRoomEnterLocation, roomEnterLocationIdx);
                             }
                             else
                             {
                                 cost *= Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
 
-                                enablingBeliefs.Add((cost, new(BeliefEnum.ObstacleToOvercome, obstacleRef.Idx)));
+                                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
                             }
                         }
                     }
@@ -137,7 +137,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                     {
                         var cost = 5f;
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.TravelingOnElevator, elevationIdx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.TravelingOnElevator, elevationIdx);
                     }
                     else if (elevationCallObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationCallIdx && elevationCallIdx > -1)
                     {
@@ -145,7 +145,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
                         var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.ElevatorCalled, elevationCallIdx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.ElevatorCalled, elevationCallIdx);
                     }
                     else
                     {
@@ -153,7 +153,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
                         var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition) + 1f;
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.InteractingWithObstacle, beliefToEnable.Idx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.InteractingWithObstacle, beliefToEnable.Idx);
                     }
                 }
                 break;
@@ -175,14 +175,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
                         {
                             var cost = Vector3.Distance(obstacleInteractPosition, playerPosition);
 
-                            enablingBeliefs.Add((cost, new(BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx)));
+                            impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
                         }
                     }
                     else
                     {
                         var cost = Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
                     }
 
                 }
@@ -215,13 +215,13 @@ public struct Scp049Mind(BotRef botRef) : IMind
                         {
                             var cost = Vector3.Distance(elevationEnterPosition, playerPosition);
 
-                            enablingBeliefs.Add((cost, new(BeliefEnum.InElevator, elevationIdx)));
+                            impactingBeliefs.Add(cost, BeliefEnum.InElevator, elevationIdx);
                         }
                         else
                         {
                             var cost = Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                            enablingBeliefs.Add((cost, new(BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx)));
+                            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
                         }
                     }
                 }
@@ -259,7 +259,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                     {
                         var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                        enablingBeliefs.Add((cost, new(BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx)));
+                        impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
                     }
                 }
                 break;
