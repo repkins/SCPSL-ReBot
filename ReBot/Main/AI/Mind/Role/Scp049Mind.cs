@@ -1,17 +1,11 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Spacial;
-using ReBot.Main.AI.Termination;
-using System;
-using System.Linq;
 using Unity.Collections;
-using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 public struct Scp049Mind(BotRef botRef) : IMind
 {
-    NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
-
     CardiacableEnemy cardiacableEnemy = new(botRef);
     Enemy enemy = new(botRef);
     InteractableObstacle interactableObstacle = new(botRef);
@@ -27,21 +21,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
         {
             case BeliefEnum.EnemiesTerminated:
                 {
-                    if (enemiesWithinSight.Length > 0)
-                    {
-                        for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
-                        {
-                            var cost = 1f;  // attack cost, constant
-
-                            impactingBeliefs.Add(cost, BeliefEnum.AttackEnemy, enemyIdx);
-                        }
-                    }
-                    else
-                    {
-                        var cost = 30; // max sight distance
-
-                        impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
-                    }
+                    cardiacableEnemy.Terminates(impactingBeliefs);
                 }
                 break;
 

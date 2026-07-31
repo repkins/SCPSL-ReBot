@@ -20,6 +20,25 @@ internal struct CardiacableEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
+    public void Terminates(NativeList<ImpactingBelief> impactingBeliefs)
+    {
+        if (enemiesWithinSight.Length > 0)
+        {
+            for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
+            {
+                var cost = 1f;  // cardiac attack cost, constant
+
+                impactingBeliefs.Add(cost, BeliefEnum.AttackEnemy, enemyIdx);
+            }
+        }
+        else
+        {
+            var cost = 30; // max sight distance
+
+            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+        }
+    }
+
     public bool Attacks(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var enemyPosition = enemiesWithinSight[enemyRef.Idx];
