@@ -19,10 +19,8 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeList<ObstacleRef> elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
     NativeList<Vector3> elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
-    NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
@@ -136,11 +134,11 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
             case BeliefEnum.ObstacleToOvercome:
                 {
-                    if (elevationTravelObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationIdx && elevationIdx > -1)
+                    if (elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx))
                     {
                         elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs);
                     }
-                    else if (elevationCallObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationCallIdx && elevationCallIdx > -1)
+                    else if (elevationCallObstacle.TryGetElevationCallIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationCallIdx))
                     {
                         elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs);
                     }
