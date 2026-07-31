@@ -4,11 +4,17 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-public struct ElevationCallObstacle()
+public struct ElevationCallObstacle(BotRef botRef)
 {
+    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
+
+    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
 
     public bool TryGetElevationCallIdx(ObstacleRef obstacleRef, out int elevationCallIdx)
     {
@@ -30,5 +36,32 @@ public struct ElevationCallObstacle()
         var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
 
         impactingBeliefs.Add(cost, BeliefEnum.ElevatorCalled, elevationCallIdx);
+    }
+
+    public bool Calls(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    {
+        var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
+
+        if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
+        {
+            if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
+            {
+                interactPositionRef.Value = (true, elevationCallInteractPosition);
+            }
+            else
+            {
+                moveToPositionRef.Value = (true, elevationCallInteractPosition);
+            }
+
+            return true;
+        }
+        else
+        {
+            var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+
+            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
+        }
+
+        return false;
     }
 }

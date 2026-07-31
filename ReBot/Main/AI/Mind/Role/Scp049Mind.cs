@@ -19,18 +19,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
-    NativeList<Vector3> elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
-    NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
-    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
 
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
     InteractableObstacle interactableObstacle = new(botRef);
-    ElevationTravelObstacle elevationTravelObstacle = new();
-    ElevationCallObstacle elevationCallObstacle = new();
+    ElevationTravelObstacle elevationTravelObstacle = new(botRef);
+    ElevationCallObstacle elevationCallObstacle = new(botRef);
 
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -87,6 +83,15 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 }
                 break;
 
+            case BeliefEnum.WithinEnemyLocation:
+                {
+                    var targetPosition = enemiesWithinSight[beliefToEnable.Idx];
+                    moveToPositionRef.Value = (true, targetPosition);
+
+                    actionFound = true;
+                }
+                break;
+
             case BeliefEnum.SightedEnemies:
                 {
                     if (roomEnterLocations.Length > 0)
@@ -111,15 +116,6 @@ public struct Scp049Mind(BotRef botRef) : IMind
                             }
                         }
                     }
-                }
-                break;
-
-            case BeliefEnum.WithinEnemyLocation:
-                {
-                    var targetPosition = enemiesWithinSight[beliefToEnable.Idx];
-                    moveToPositionRef.Value = (true, targetPosition);
-
-                    actionFound = true;
                 }
                 break;
 
@@ -163,68 +159,19 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
             case BeliefEnum.TravelingOnElevator:
                 {
-                    var elevationIdx = beliefToEnable.Idx;
-                    var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
-
-                    if (Vector3.Distance(elevationEnterPosition, playerPosition) < 1f)
-                    {
-                        var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
-                        interactPositionRef.Value = (true, travelInteractPosition);
-
-                        actionFound = true;
-                    }
-                    else
-                    {
-                        if (!obstaclesByTarget.TryGetValue(elevationEnterPosition, out var obstacle2Ref))
-                        {
-                            var cost = Vector3.Distance(elevationEnterPosition, playerPosition);
-
-                            impactingBeliefs.Add(cost, BeliefEnum.InElevator, elevationIdx);
-                        }
-                        else
-                        {
-                            var cost = Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
-
-                            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
-                        }
-                    }
+                    actionFound = elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs);
                 }
                 break;
 
             case BeliefEnum.InElevator:
                 {
-                    var elevationIdx = beliefToEnable.Idx;
-                    var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
-                    moveToPositionRef.Value = (true, elevationEnterPosition);
-
-                    actionFound = true;
+                    actionFound = elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx);
                 }
                 break;
 
             case BeliefEnum.ElevatorCalled:
                 {
-                    var elevationCallIdx = beliefToEnable.Idx;
-                    var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
-
-                    if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
-                    {
-                        if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
-                        {
-                            interactPositionRef.Value = (true, elevationCallInteractPosition);
-                        }
-                        else
-                        {
-                            moveToPositionRef.Value = (true, elevationCallInteractPosition);
-                        }
-
-                        actionFound = true;
-                    }
-                    else
-                    {
-                        var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
-
-                        impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
-                    }
+                    actionFound = elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs);
                 }
                 break;
         }
