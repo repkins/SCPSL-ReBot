@@ -13,8 +13,8 @@ public enum BeliefEnum : byte
     InElevator,
     ElevatorCalled,
 
-    TargetsTerminated,
+    EnemiesTerminated,
     SightedEnemies,
     WithinEnemyLocation,
-    CardiacEnemy,
+    AttackEnemy,
 }
