@@ -30,11 +30,9 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
-    InteractsWithObstacle interactsWithObstacle = new(botRef);
-    OvercomesInteractableObstacle overcomesInteractableObstacle = new();
-    OvercomesElevationTravelObstacle overcomesElevationTravelObstacle = new();
-    OvercomesElevationCallObstacle overcomesElevationCallObstacle = new();
-    MovesToObstacleInteractLocation movesToObstacleInteractLocation = new(botRef);
+    InteractableObstacle interactableObstacle = new(botRef);
+    ElevationTravelObstacle elevationTravelObstacle = new();
+    ElevationCallObstacle elevationCallObstacle = new();
 
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -140,28 +138,28 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 {
                     if (elevationTravelObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationIdx && elevationIdx > -1)
                     {
-                        overcomesElevationTravelObstacle.Process(elevationIdx, impactingBeliefs);
+                        elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs);
                     }
                     else if (elevationCallObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationCallIdx && elevationCallIdx > -1)
                     {
-                        overcomesElevationCallObstacle.Process(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs);
+                        elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs);
                     }
                     else
                     {
-                        overcomesInteractableObstacle.Process(new(beliefToEnable.Idx), impactingBeliefs);
+                        interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs);
                     }
                 }
                 break;
 
             case BeliefEnum.InteractingWithObstacle:
                 {
-                    actionFound = interactsWithObstacle.Process(beliefToEnable.Idx, impactingBeliefs);
+                    actionFound = interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs);
                 }
                 break;
 
             case BeliefEnum.WithinObstacleInteractionLocation:
                 {
-                    actionFound = movesToObstacleInteractLocation.Process(beliefToEnable.Idx);
+                    actionFound = interactableObstacle.MovesTo(beliefToEnable.Idx);
                 }
                 break;
 

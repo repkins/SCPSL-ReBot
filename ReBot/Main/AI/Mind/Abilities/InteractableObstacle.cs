@@ -1,10 +1,10 @@
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-public struct InteractsWithObstacle(BotRef botRef)
+internal struct InteractableObstacle(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -12,8 +12,19 @@ public struct InteractsWithObstacle(BotRef botRef)
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
-    public bool Process(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public void Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
+    {
+        var obstaclePosition = obstacleLocations[obstacleRef.Idx];
+        var obstacleInteractPosition = obstacleLocations[obstacleRef.Idx];
+
+        var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition) + 1f;
+
+        impactingBeliefs.Add(cost, BeliefEnum.InteractingWithObstacle, obstacleRef.Idx);
+    }
+
+    public bool Interacts(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var obstacleInteractPosition = obstacleLocations[obstacleInteractIdx];
 
@@ -40,5 +51,13 @@ public struct InteractsWithObstacle(BotRef botRef)
         }
 
         return false;
+    }
+
+    public bool MovesTo(int obstacleInteractIdx)
+    {
+        var targetPosition = obstacleLocations[obstacleInteractIdx];
+        moveToPositionRef.Value = (true, targetPosition);
+
+        return true;
     }
 }

@@ -1,13 +1,14 @@
 using ReBot.Main.AI.Spacial;
-using System.Runtime.Remoting;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-public struct OvercomesElevationTravelObstacle()
+public struct ElevationTravelObstacle()
 {
-    public void Process(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
+
+    public void Overcomes(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var cost = 5f;
 
