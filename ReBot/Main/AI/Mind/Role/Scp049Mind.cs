@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
 using System.Linq;
@@ -28,6 +29,12 @@ public struct Scp049Mind(BotRef botRef) : IMind
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
 
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
+
+    InteractsWithObstacle interactsWithObstacle = new(botRef);
+    OvercomesInteractableObstacle overcomesInteractableObstacle = new();
+    OvercomesElevationTravelObstacle overcomesElevationTravelObstacle = new();
+    OvercomesElevationCallObstacle overcomesElevationCallObstacle = new();
+    MovesToObstacleInteractLocation movesToObstacleInteractLocation = new(botRef);
 
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -131,69 +138,30 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
             case BeliefEnum.ObstacleToOvercome:
                 {
-                    var obstaclePosition = obstacleLocations[beliefToEnable.Idx];
-
                     if (elevationTravelObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationIdx && elevationIdx > -1)
                     {
-                        var cost = 5f;
-
-                        impactingBeliefs.Add(cost, BeliefEnum.TravelingOnElevator, elevationIdx);
+                        overcomesElevationTravelObstacle.Process(elevationIdx, impactingBeliefs);
                     }
                     else if (elevationCallObstacles.IndexOf(new ObstacleRef(beliefToEnable.Idx)) is var elevationCallIdx && elevationCallIdx > -1)
                     {
-                        var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
-
-                        var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
-
-                        impactingBeliefs.Add(cost, BeliefEnum.ElevatorCalled, elevationCallIdx);
+                        overcomesElevationCallObstacle.Process(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs);
                     }
                     else
                     {
-                        var obstacleInteractPosition = obstacleLocations[beliefToEnable.Idx];
-
-                        var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition) + 1f;
-
-                        impactingBeliefs.Add(cost, BeliefEnum.InteractingWithObstacle, beliefToEnable.Idx);
+                        overcomesInteractableObstacle.Process(new(beliefToEnable.Idx), impactingBeliefs);
                     }
                 }
                 break;
 
             case BeliefEnum.InteractingWithObstacle:
                 {
-                    var obstacleInteractIdx = beliefToEnable.Idx;
-                    var obstacleInteractPosition = obstacleLocations[obstacleInteractIdx];
-
-                    if (!obstaclesByTarget.TryGetValue(obstacleInteractPosition, out var obstacle2Ref))
-                    {
-                        if (Vector3.Distance(obstacleInteractPosition, playerPosition) < 2f)
-                        {
-                            interactPositionRef.Value = (true, obstacleInteractPosition);
-
-                            actionFound = true;
-                        }
-                        else
-                        {
-                            var cost = Vector3.Distance(obstacleInteractPosition, playerPosition);
-
-                            impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
-                        }
-                    }
-                    else
-                    {
-                        var cost = Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
-
-                        impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
-                    }
-
+                    actionFound = interactsWithObstacle.Process(beliefToEnable.Idx, impactingBeliefs);
                 }
                 break;
 
             case BeliefEnum.WithinObstacleInteractionLocation:
                 {
-                    var targetPosition = obstacleLocations[beliefToEnable.Idx];
-                    moveToPositionRef.Value = (true, targetPosition);
-
-                    actionFound = true;
+                    actionFound = movesToObstacleInteractLocation.Process(beliefToEnable.Idx);
                 }
                 break;
 
