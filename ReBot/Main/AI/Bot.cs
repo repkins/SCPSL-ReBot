@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Cardiac;
+﻿using ReBot.Main.AI.Capture;
+using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Movement;
 using ReBot.Main.AI.Spacial;
@@ -22,15 +23,21 @@ public class Bot(ReferenceHub hub) : IDisposable
 
     public MovementState MovementState = new();
     public InteractionState InteractionState = new();
+
     public CardiacState CardiacState = new();
+    public CaptureState CaptureState = new();
 
     public void Dispose()
     {
+        PlayerState.Dispose();
         RoomState.Dispose();
         ObstacleState.Dispose();
         TerminationState.Dispose();
 
         MovementState.Dispose();
         InteractionState.Dispose();
+
+        CardiacState.Dispose();
+        CaptureState.Dispose();
     }
 }

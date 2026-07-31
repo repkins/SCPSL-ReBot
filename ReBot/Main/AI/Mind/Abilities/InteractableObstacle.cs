@@ -14,7 +14,7 @@ internal struct InteractableObstacle(BotRef botRef)
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
-    public void Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var obstaclePosition = obstacleLocations[obstacleRef.Idx];
         var obstacleInteractPosition = obstacleLocations[obstacleRef.Idx];
@@ -22,6 +22,8 @@ internal struct InteractableObstacle(BotRef botRef)
         var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition) + 1f;
 
         impactingBeliefs.Add(cost, BeliefEnum.InteractingWithObstacle, obstacleRef.Idx);
+
+        return false;
     }
 
     public bool Interacts(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)

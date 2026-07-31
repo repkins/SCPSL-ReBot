@@ -13,7 +13,7 @@ internal struct Enemy(BotRef botRef)
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
-    public void Searches(NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Searches(NativeList<ImpactingBelief> impactingBeliefs)
     {
         if (roomEnterLocations.Length > 0)
         {
@@ -37,5 +37,7 @@ internal struct Enemy(BotRef botRef)
                 }
             }
         }
+
+        return false;
     }
 }

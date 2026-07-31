@@ -1,18 +1,61 @@
-﻿using System;
+﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 internal struct Scp106Mind(BotRef botRef) : IMind
 {
+    CapturableEnemy capturableEnemy = new(botRef);
+    Enemy enemy = new(botRef);
+    Room room = new(botRef);
+    InteractableObstacle interactableObstacle = new(botRef);
+    ElevationTravelObstacle elevationTravelObstacle = new(botRef);
+    ElevationCallObstacle elevationCallObstacle = new(botRef);
+
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        switch (beliefToEnable.Type)
+        return beliefToEnable.Type switch
         {
+            BeliefEnum.EnemiesTerminated => 
+                capturableEnemy.Terminates(impactingBeliefs),
 
-        }
+            BeliefEnum.AttackEnemy => 
+                capturableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
-        return false;
+            BeliefEnum.WithinEnemyLocation => 
+                capturableEnemy.MovesTo(new(beliefToEnable.Idx)),
+
+            BeliefEnum.SightedEnemies => 
+                enemy.Searches(impactingBeliefs),
+
+            BeliefEnum.WithinRoomEnterLocation => 
+                room.MovesToEnterLocation(beliefToEnable.Idx),
+
+            BeliefEnum.ObstacleToOvercome =>
+                elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)
+                    ? elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs)
+                    : elevationCallObstacle.TryGetElevationCallIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationCallIdx)
+                        ? elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs)
+                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
+
+            BeliefEnum.InteractingWithObstacle => 
+                interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.WithinObstacleInteractionLocation => 
+                interactableObstacle.MovesTo(beliefToEnable.Idx),
+
+            BeliefEnum.TravelingOnElevator => 
+                elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.InElevator => 
+                elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
+
+            BeliefEnum.ElevatorCalled => 
+                elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),
+
+            _ => false
+        };
     }
 
     public struct Factory : IMind.IFactory<Scp106Mind>

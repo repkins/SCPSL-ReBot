@@ -30,11 +30,13 @@ public struct ElevationTravelObstacle(BotRef botRef)
         return false;
     }
 
-    public void Overcomes(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Overcomes(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var cost = 5f;
 
         impactingBeliefs.Add(cost, BeliefEnum.TravelingOnElevator, elevationIdx);
+
+        return false;
     }
 
     public bool Travels(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)

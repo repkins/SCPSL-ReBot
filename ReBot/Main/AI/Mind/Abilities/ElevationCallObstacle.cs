@@ -28,7 +28,7 @@ public struct ElevationCallObstacle(BotRef botRef)
         return false;
     }
 
-    public void Overcomes(ObstacleRef obstacleRef, int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Overcomes(ObstacleRef obstacleRef, int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var obstaclePosition = obstacleLocations[obstacleRef.Idx];
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
@@ -36,6 +36,8 @@ public struct ElevationCallObstacle(BotRef botRef)
         var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
 
         impactingBeliefs.Add(cost, BeliefEnum.ElevatorCalled, elevationCallIdx);
+
+        return false;
     }
 
     public bool Calls(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)

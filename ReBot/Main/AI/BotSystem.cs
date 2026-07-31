@@ -2,6 +2,7 @@
 using LabApi.Events.Handlers;
 using MEC;
 using PlayerRoles;
+using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Mind;
@@ -89,7 +90,6 @@ public static class BotSystem
     {
         while (true)
         {
-            // Perception system
             PerceptionSystem.Process();
 
             DecisionMakingSystem.Process();
@@ -97,8 +97,8 @@ public static class BotSystem
             MovementSystem.Process();
             InteractionSystem.Process();
 
-            // SCP 049 Role
-            CardiacSystem.Process();
+            CardiacSystem.Process(); // SCP 049 Role
+            CaptureSystem.Process(); // SCP 106 Role
 
             yield return Timing.WaitForOneFrame;
         }
