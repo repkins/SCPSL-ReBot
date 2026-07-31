@@ -10,6 +10,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
     Enemy enemy = new(botRef);
     Room room = new(botRef);
     InteractableObstacle interactableObstacle = new(botRef);
+    PassthroughObstacle passthroughObstacle = new(botRef);
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
@@ -37,7 +38,8 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                     ? elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs)
                     : elevationCallObstacle.TryGetElevationCallIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationCallIdx)
                         ? elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs)
-                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
+                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs)
+                            || passthroughObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
 
             BeliefEnum.InteractingWithObstacle => 
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),

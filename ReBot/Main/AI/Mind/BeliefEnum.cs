@@ -6,9 +6,11 @@ public enum BeliefEnum : byte
 
     ObstacleToOvercome,
     WithinObstacleInteractionLocation,
+    WithinObstacleLocation,
 
     WithinRoomEnterLocation,
     InteractingWithObstacle,
+    PassingThroughObstacle,
     TravelingOnElevator,
     InElevator,
     ElevatorCalled,
