@@ -1,8 +1,11 @@
 ﻿using HarmonyLib;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Handlers;
 using LabApi.Features;
 using LabApi.Features.Console;
 using LabApi.Loader.Features.Plugins;
 using Mirror.LiteNetLib4Mirror;
+using PlayerRoles;
 using ReBot.Main.AI;
 using ReBot.Navigation;
 using ReBot.Navigation.Mesh;
@@ -42,10 +45,22 @@ namespace ReBot
 
             // TODO: remove for release build
             LiteNetLib4MirrorTransport.Singleton.disconnectTimeout = 1000 * 60 * 60 * 1;
+
+            PlayerRoleManager.OnRoleChanged += OnRoleChanged;
+            ReferenceHub.OnPlayerRemoved += OnPlayerRemoved;
+            ServerEvents.RoundRestarted += OnRoundRestarted;
+            PlayerEvents.Kicked += Kicked;
+            ServerEvents.RoundStarted += RoundStarted;
         }
 
         public override void Disable()
         {
+            PlayerRoleManager.OnRoleChanged -= OnRoleChanged;
+            ReferenceHub.OnPlayerRemoved -= OnPlayerRemoved;
+            ServerEvents.RoundRestarted -= OnRoundRestarted;
+            PlayerEvents.Kicked -= Kicked;
+            ServerEvents.RoundStarted -= RoundStarted;
+
             BotSystem.Teardown();
 
             NavigationMeshEditor.Instance.Teardown();
@@ -55,6 +70,41 @@ namespace ReBot
             Logger.Info("Unpatching successful.");
 
             Logger.Info("Disabled plugin.");
+        }
+
+        private static void OnRoundRestarted()
+        {
+
+        }
+
+        private static void OnRoleChanged(ReferenceHub userHub, PlayerRoleBase prevRole, PlayerRoleBase newRole)
+        {
+            if (BotStore.BotHubRefs.TryGetValue(userHub, out var botRef))
+            {
+                BotSystem.PrintRoleChanged(userHub, prevRole, newRole);
+            }
+        }
+
+        private static void OnPlayerRemoved(ReferenceHub userHub)
+        {
+            if (BotStore.BotHubRefs.TryGetValue(userHub, out var botRef))
+            {
+                BotSystem.RemoveBotPlayer(userHub, botRef);
+            }
+        }
+
+        private static void Kicked(PlayerKickedEventArgs args)
+        {
+            var hub = args.Player.ReferenceHub;
+            if (BotStore.BotHubRefs.ContainsKey(hub))
+            {
+                BotSystem.PrintKickReason(hub, args.Reason);
+            }
+        }
+
+        private static void RoundStarted()
+        {
+            BotSystem.AssignSupportedRole();
         }
     }
 }

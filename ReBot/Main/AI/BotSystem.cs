@@ -22,12 +22,6 @@ public static class BotSystem
     {
         handle = Timing.RunCoroutine(RunPlayerUpdates());
 
-        PlayerRoleManager.OnRoleChanged += OnRoleChanged;
-        ReferenceHub.OnPlayerRemoved += RemovePlayerIfBot;
-        ServerEvents.RoundRestarted += OnRoundRestarted;
-        PlayerEvents.Kicked += PrintKickReasonIfBot;
-        ServerEvents.RoundStarted += AssignSupportedRole;
-
         PerceptionSystem.Initialize();
     }
 
@@ -35,45 +29,32 @@ public static class BotSystem
     {
         PerceptionSystem.Teardown();
 
-        PlayerRoleManager.OnRoleChanged -= OnRoleChanged;
-        ReferenceHub.OnPlayerRemoved -= RemovePlayerIfBot;
-        ServerEvents.RoundRestarted -= OnRoundRestarted;
-        PlayerEvents.Kicked -= PrintKickReasonIfBot;
-        ServerEvents.RoundStarted -= AssignSupportedRole;
-
         Timing.KillCoroutines(handle);
     }
 
-    private static void OnRoundRestarted()
+    public static void OnRoundRestarted()
     {
 
     }
 
-    private static void OnRoleChanged(ReferenceHub userHub, PlayerRoleBase prevRole, PlayerRoleBase newRole)
+    public static void PrintRoleChanged(ReferenceHub userHub, PlayerRoleBase prevRole, PlayerRoleBase newRole)
     {
         Debug.Log($"Bot \"{userHub}\" got new role {newRole.RoleTypeId}");
     }
 
-    private static void RemovePlayerIfBot(ReferenceHub userHub)
+    public static void RemoveBotPlayer(ReferenceHub userHub, BotRef botRef)
     {
-        if (BotStore.BotHubRefs.TryGetValue(userHub, out var botRef))
-        {
-            BotStore.RemoveBotPlayer(botRef);
+        BotStore.RemoveBotPlayer(botRef);
 
-            Debug.Log($"Bot player removed: {userHub}");
-        }
+        Debug.Log($"Bot player removed: {userHub}");
     }
 
-    private static void PrintKickReasonIfBot(PlayerKickedEventArgs args)
+    public static void PrintKickReason(ReferenceHub hub, string reason)
     {
-        var hub = args.Player.ReferenceHub;
-        if (BotStore.BotHubRefs.ContainsKey(hub))
-        {
-            Debug.Log($"Bot player \"{hub}\" got kicked, reason: {args.Reason}");
-        }
+        Debug.Log($"Bot player \"{hub}\" got kicked, reason: {reason}");
     }
 
-    private static void AssignSupportedRole()
+    public static void AssignSupportedRole()
     {
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
