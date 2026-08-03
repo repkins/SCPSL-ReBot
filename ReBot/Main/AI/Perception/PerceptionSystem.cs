@@ -21,9 +21,13 @@ internal class PerceptionSystem
 
     public static void Process()
     {
+        var playerPerception = new PlayerPerception(BotStore.Bots.Count);
+        var roomPerception = new RoomPerception(BotStore.Bots.Count);
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
         var obstacleSensePerception = new ObstacleSensePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
-        var roomPerception = new RoomPerception(BotStore.Bots.Count);
+
+        playerPerception.Process();
+        roomPerception.Process();
 
         enemySightPerception.PrepareEnemiesWithinRadius();
 
@@ -37,7 +41,5 @@ internal class PerceptionSystem
 
         obstacleSensePerception.ProcessSharedElevationState();
         enemySightPerception.ProcessEnemiesWithinDistance();
-
-        roomPerception.Process();
     }
 }

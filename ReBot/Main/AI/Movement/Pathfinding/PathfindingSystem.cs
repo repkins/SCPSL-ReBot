@@ -25,8 +25,9 @@ internal static class PathfindingSystem
 
             var startingPos = bot.PlayerState.Position;
 
-            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos);
-            var targetCellResult = NavigationMesh.GetCellWithinOrClosest(targetPos);
+            var playerRadius = .5f;
+            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, playerRadius);
+            var targetCellResult = NavigationMesh.GetCellWithinOrClosest(targetPos, playerRadius);
 
             if (!startingCellResult.HasValue || !targetCellResult.HasValue)
             {
@@ -37,6 +38,7 @@ internal static class PathfindingSystem
             var closestPosition = GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value);
 
             PathfindingStore.ClosestPositions.Add((new(botIdx), closestPosition));
+            PathfindingStore.GoalPositions[botIdx] = targetPos;
 
             var pointsPath = PathfindingStore.PointsPath[botIdx];
             pointsPath.Clear();

@@ -16,9 +16,18 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         var mindFactory = new TMindFactory();
         var mind = mindFactory.Create(botRef);
 
-        var actionFound = false;
         var impactingBeliefs = new NativeList<ImpactingBelief>(4, Allocator.Temp);
 
+        mind.ProcessGoals(impactingBeliefs);
+
+        foreach (var (cost, impactingBelief) in impactingBeliefs)
+        {
+            beliefPathfinding.EnqueueIfLess(cost, impactingBelief);
+        }
+
+        impactingBeliefs.Clear();
+
+        var actionFound = false;
         while (!actionFound && beliefPathfinding.TryDequeueMin(out var beliefToEnable))
         {
             actionFound = mind.ProcessBeliefToEnable(beliefToEnable, impactingBeliefs);
@@ -27,6 +36,8 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
             {
                 beliefPathfinding.EnqueueIfLess(beliefToEnable, cost, impactingBelief);
             }
+
+            impactingBeliefs.Clear();
         }
     }
 }

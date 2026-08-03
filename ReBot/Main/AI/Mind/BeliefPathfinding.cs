@@ -40,6 +40,11 @@ public struct BeliefPathfinding()
         var enablingBeliefCost = generalCosts[beliefToEnable];
         var generalCost = enablingBeliefCost + cost;
 
+        EnqueueIfLess(generalCost, impactingBelief);
+    }
+
+    public void EnqueueIfLess(float generalCost, BeliefRef impactingBelief)
+    {
         if (!generalCosts.TryGetValue(impactingBelief, out var visitedCost)
             || visitedCost > generalCost)
         {

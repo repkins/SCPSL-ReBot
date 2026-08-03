@@ -13,6 +13,11 @@ public struct Scp049Mind(BotRef botRef) : IMind
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
+    public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
+    {
+        impactingBeliefs.Add(0, BeliefEnum.EnemiesTerminated, default);
+    }
+
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var actionFound = false;

@@ -10,21 +10,6 @@ public static class MovementSystem
 
     public static void Process()
     {
-        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
-        {
-            var bot = BotStore.Bots[botIdx];
-            if (bot.Hub.roleManager.CurrentRole is not FpcStandardRoleBase fpcRole)
-            {
-                continue;
-            }
-
-            bot.PlayerTransform = fpcRole.FpcModule.transform;
-            bot.CameraTransform = bot.Hub.PlayerCameraReference;
-
-            bot.PlayerState.CameraPosition = fpcRole.CameraPosition;
-            bot.PlayerState.Position = fpcRole.FpcModule.Position;
-        }
-
         PathfindingSystem.Process();
 
         foreach (var (botRef, position) in PathfindingStore.ClosestPositions)
