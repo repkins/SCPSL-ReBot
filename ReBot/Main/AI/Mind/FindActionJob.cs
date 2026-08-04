@@ -26,7 +26,8 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
         var impactingBeliefs = new NativeList<ImpactingBelief>(4, Allocator.Temp);
         var actionFound = false;
-        while (!actionFound && beliefPathfinding.TryDequeueMin(out var beliefToEnable))
+        var beliefToEnable = default(BeliefRef);
+        while (!actionFound && beliefPathfinding.TryDequeueMin(out beliefToEnable))
         {
             actionFound = mind.ProcessBeliefToEnable(beliefToEnable, impactingBeliefs);
 
@@ -38,24 +39,30 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
             impactingBeliefs.Clear();
         }
 
+        if (MindStore.ActionBeliefRefs[botRef.Idx] != beliefToEnable)
+        {
+            MindStore.ActionBeliefRefs[botRef.Idx] = actionFound ? beliefToEnable : default;
 
-
-        PrintVisitedBeliefs(beliefPathfinding, goalImpactingBeliefs);
+            PrintVisitedBeliefs(beliefPathfinding, goalImpactingBeliefs);
+        }
     }
 
-    private static void PrintVisitedBeliefs(BeliefPathfinding beliefPathfinding, NativeList<ImpactingBelief> goalImpactingBeliefs)
+    private void PrintVisitedBeliefs(BeliefPathfinding beliefPathfinding, NativeList<ImpactingBelief> goalImpactingBeliefs)
     {
         var impactingBeliefIteratorStack = new NativeList<NativeParallelMultiHashMapIterator<BeliefRef>>(Allocator.Temp);
-        foreach (var (_, goalBeliefToEnable) in goalImpactingBeliefs)
+        var beliefToEnable = MindStore.ActionBeliefRefs[botRef.Idx];
+
+        foreach (var (_, goalImpactingBelief) in goalImpactingBeliefs)
         {
-            var outImpactingBelief = goalBeliefToEnable;
+            var impactingBelief = goalImpactingBelief;
 
             do
             {
                 var prefix = new string(' ', 4 * impactingBeliefIteratorStack.Length);
-                Debug.Log($"{prefix}{outImpactingBelief}");
+                var cost = beliefPathfinding.generalCosts[impactingBelief];
+                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}) ({cost}){(impactingBelief == beliefToEnable ? " <--" : "")}");
 
-                if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(outImpactingBelief, out outImpactingBelief, out var beliefToEnableIterator))
+                if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(impactingBelief, out impactingBelief, out var beliefToEnableIterator))
                 {
                     impactingBeliefIteratorStack.Add(beliefToEnableIterator);
                 }
@@ -64,7 +71,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
                     while (impactingBeliefIteratorStack.Length > 0
                         && impactingBeliefIteratorStack[^1] is var beliefToEnableIteratorNext)
                     {
-                        if (beliefPathfinding.visitedImpactingBeliefs.TryGetNextValue(out outImpactingBelief, ref beliefToEnableIteratorNext))
+                        if (beliefPathfinding.visitedImpactingBeliefs.TryGetNextValue(out impactingBelief, ref beliefToEnableIteratorNext))
                         {
                             impactingBeliefIteratorStack[^1] = beliefToEnableIteratorNext;
                             break;

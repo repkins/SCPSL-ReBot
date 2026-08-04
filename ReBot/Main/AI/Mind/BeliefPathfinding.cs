@@ -5,7 +5,7 @@ namespace ReBot.Main.AI.Mind;
 public struct BeliefPathfinding()
 {
     private NativeList<(float, BeliefRef)> beliefsToVisit = new(Allocator.Temp);
-    private NativeHashMap<BeliefRef, float> generalCosts = new(1, Allocator.Temp);
+    public NativeHashMap<BeliefRef, float> generalCosts = new(1, Allocator.Temp);
     //private NativeHashMap<BeliefRef, BeliefRef> visitedBeliefsToEnable = new(1, Allocator.Temp);
     
     public NativeParallelMultiHashMap<BeliefRef, BeliefRef> visitedImpactingBeliefs = new(1, Allocator.Temp);
