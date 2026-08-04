@@ -6,6 +6,9 @@ public struct BeliefPathfinding()
 {
     private NativeList<(float, BeliefRef)> beliefsToVisit = new(Allocator.Temp);
     private NativeHashMap<BeliefRef, float> generalCosts = new(1, Allocator.Temp);
+    //private NativeHashMap<BeliefRef, BeliefRef> visitedBeliefsToEnable = new(1, Allocator.Temp);
+    
+    public NativeParallelMultiHashMap<BeliefRef, BeliefRef> visitedImpactingBeliefs = new(1, Allocator.Temp);
 
     public bool TryDequeueMin(out BeliefRef best)
     {
@@ -40,18 +43,20 @@ public struct BeliefPathfinding()
         var enablingBeliefCost = generalCosts[beliefToEnable];
         var generalCost = enablingBeliefCost + cost;
 
-        EnqueueIfLess(generalCost, impactingBelief);
+        if (!generalCosts.TryGetValue(impactingBelief, out var visitedCost)
+            || visitedCost > generalCost)
+        {
+            EnqueueIfLess(generalCost, impactingBelief);
+            visitedImpactingBeliefs.Add(beliefToEnable, impactingBelief);
+            //visitedBeliefsToEnable[impactingBelief] = beliefToEnable;
+        }
     }
 
     public void EnqueueIfLess(float generalCost, BeliefRef impactingBelief)
     {
-        if (!generalCosts.TryGetValue(impactingBelief, out var visitedCost)
-            || visitedCost > generalCost)
-        {
-            generalCosts[impactingBelief] = generalCost;
-            var totalCost = generalCost;
+        generalCosts[impactingBelief] = generalCost;
+        var totalCost = generalCost;
 
-            beliefsToVisit.Add((totalCost, impactingBelief));
-        }
+        beliefsToVisit.Add((totalCost, impactingBelief));
     }
 }
