@@ -37,7 +37,11 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 break;
 
             case BeliefEnum.SightedEnemies:
-                enemy.Searches(impactingBeliefs);
+                enemy.SearchesInRoom(impactingBeliefs);
+                break;
+
+            case BeliefEnum.WithinRoom:
+                actionFound = room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
             case BeliefEnum.WithinRoomEnterLocation:

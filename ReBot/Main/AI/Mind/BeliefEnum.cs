@@ -8,6 +8,7 @@ public enum BeliefEnum : byte
     WithinObstacleInteractionLocation,
     WithinObstacleLocation,
 
+    WithinRoom,
     WithinRoomEnterLocation,
     InteractingWithObstacle,
     PassingThroughObstacle,
