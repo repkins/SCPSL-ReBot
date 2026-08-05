@@ -41,7 +41,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
         if (MindStore.ActionBeliefRefs[botRef.Idx] != beliefToEnable)
         {
-            MindStore.ActionBeliefRefs[botRef.Idx] = actionFound ? beliefToEnable : default;
+            MindStore.ActionBeliefRefs[botRef.Idx] = beliefToEnable;
 
             PrintVisitedBeliefs(beliefPathfinding, goalImpactingBeliefs);
         }
@@ -60,7 +60,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
             {
                 var prefix = new string(' ', 4 * impactingBeliefIteratorStack.Length);
                 var cost = beliefPathfinding.generalCosts[impactingBelief];
-                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}) ({cost}){(impactingBelief == beliefToEnable ? " <--" : "")}");
+                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}) {cost}{(impactingBelief == beliefToEnable ? " <--" : "")}");
 
                 if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(impactingBelief, out impactingBelief, out var beliefToEnableIterator))
                 {

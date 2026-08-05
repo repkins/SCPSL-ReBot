@@ -6,7 +6,6 @@ public struct BeliefPathfinding()
 {
     private NativeList<(float, BeliefRef)> beliefsToVisit = new(Allocator.Temp);
     public NativeHashMap<BeliefRef, float> generalCosts = new(1, Allocator.Temp);
-    //private NativeHashMap<BeliefRef, BeliefRef> visitedBeliefsToEnable = new(1, Allocator.Temp);
     
     public NativeParallelMultiHashMap<BeliefRef, BeliefRef> visitedImpactingBeliefs = new(1, Allocator.Temp);
 
@@ -47,9 +46,9 @@ public struct BeliefPathfinding()
             || visitedCost > generalCost)
         {
             EnqueueIfLess(generalCost, impactingBelief);
-            visitedImpactingBeliefs.Add(beliefToEnable, impactingBelief);
-            //visitedBeliefsToEnable[impactingBelief] = beliefToEnable;
         }
+
+        visitedImpactingBeliefs.Add(beliefToEnable, impactingBelief);
     }
 
     public void EnqueueIfLess(float generalCost, BeliefRef impactingBelief)
