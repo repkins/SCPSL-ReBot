@@ -1,6 +1,4 @@
-﻿using LabApi.Events.Arguments.PlayerEvents;
-using LabApi.Events.Handlers;
-using MEC;
+﻿using MEC;
 using PlayerRoles;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
@@ -8,7 +6,7 @@ using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Mind;
 using ReBot.Main.AI.Movement;
 using ReBot.Main.AI.Perception;
-using ReBot.Main.AI.Spacial;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -71,15 +69,25 @@ public static class BotSystem
     {
         while (true)
         {
-            PerceptionSystem.Process();
+            try
+            {
+                PerceptionSystem.Process();
 
-            DecisionMakingSystem.Process();
+                DecisionMakingSystem.Process();
 
-            MovementSystem.Process();
-            InteractionSystem.Process();
+                MovementSystem.Process();
+                InteractionSystem.Process();
 
-            CardiacSystem.Process(); // SCP 049 Role
-            CaptureSystem.Process(); // SCP 106 Role
+                CardiacSystem.Process(); // SCP 049 Role
+                CaptureSystem.Process(); // SCP 106 Role
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debugger.Break();
+
+                Debug.LogException(e);
+                break;
+            }
 
             yield return Timing.WaitForOneFrame;
         }

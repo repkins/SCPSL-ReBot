@@ -21,19 +21,19 @@ internal struct Enemy(BotRef botRef)
             {
                 var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
 
-                var cost = 10f; // multiplier is odds of seeing enemies
+                var multiplier = 10f; // multiplier is odds of seeing enemies
 
                 if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
                 {
-                    cost *= Vector3.Distance(roomEnterLocationPosition, playerPosition);
+                    var cost = Vector3.Distance(roomEnterLocationPosition, playerPosition);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.WithinRoomEnterLocation, roomEnterLocationIdx);
+                    impactingBeliefs.Add(cost, multiplier, BeliefEnum.WithinRoomEnterLocation, roomEnterLocationIdx);
                 }
                 else
                 {
-                    cost *= Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
+                    var cost = Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
+                    impactingBeliefs.Add(cost, multiplier, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
                 }
             }
         }

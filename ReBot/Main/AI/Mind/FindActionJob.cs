@@ -19,9 +19,9 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
         var goalImpactingBeliefs = new NativeList<ImpactingBelief>(1, Allocator.Temp);
         mind.ProcessGoals(goalImpactingBeliefs);
-        foreach (var (cost, impactingBelief) in goalImpactingBeliefs)
+        foreach (var (cost, multiplier, impactingBelief) in goalImpactingBeliefs)
         {
-            beliefPathfinding.EnqueueIfLess(cost, impactingBelief);
+            beliefPathfinding.EnqueueIfLess(cost, multiplier, impactingBelief);
         }
 
         var impactingBeliefs = new NativeList<ImpactingBelief>(4, Allocator.Temp);
@@ -31,9 +31,9 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         {
             actionFound = mind.ProcessBeliefToEnable(beliefToEnable, impactingBeliefs);
 
-            foreach (var (cost, impactingBelief) in impactingBeliefs)
+            foreach (var (cost, multiplier, impactingBelief) in impactingBeliefs)
             {
-                beliefPathfinding.EnqueueIfLess(beliefToEnable, cost, impactingBelief);
+                beliefPathfinding.EnqueueIfLess(beliefToEnable, cost, multiplier, impactingBelief);
             }
 
             impactingBeliefs.Clear();
@@ -52,15 +52,15 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         var impactingBeliefIteratorStack = new NativeList<NativeParallelMultiHashMapIterator<BeliefRef>>(Allocator.Temp);
         var beliefToEnable = MindStore.ActionBeliefRefs[botRef.Idx];
 
-        foreach (var (_, goalImpactingBelief) in goalImpactingBeliefs)
+        foreach (var (_, _, goalImpactingBelief) in goalImpactingBeliefs)
         {
             var impactingBelief = goalImpactingBelief;
 
             do
             {
                 var prefix = new string(' ', 4 * impactingBeliefIteratorStack.Length);
-                var cost = beliefPathfinding.generalCosts[impactingBelief];
-                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}) {cost}{(impactingBelief == beliefToEnable ? " <--" : "")}");
+                var (cost, multiplier) = beliefPathfinding.generalCosts[impactingBelief];
+                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}), {cost} ({multiplier}x){(impactingBelief == beliefToEnable ? " <--" : "")}");
 
                 if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(impactingBelief, out impactingBelief, out var beliefToEnableIterator))
                 {

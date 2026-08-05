@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace ReBot.Main.AI.Mind;
 
-public record struct ImpactingBelief(float Cost, BeliefRef BeliefRef);
+public record struct ImpactingBelief(float Cost, float Multiplier, BeliefRef BeliefRef);
