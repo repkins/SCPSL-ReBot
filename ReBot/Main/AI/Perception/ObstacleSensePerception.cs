@@ -176,6 +176,12 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
 
                 if (ObstacleState.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
                 {
+                    var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
+                    if (obstaclePosition == currentGoalPos)
+                    {
+                        continue;
+                    }
+
                     if (ObstacleState.ElevationObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
                     {
                         if (prevCell.HasValue &&
@@ -188,13 +194,12 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
                         else
                         {
                             var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
-                            var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
+                            obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
                             obstacleSightBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
                         }
                     }
                     else
                     {
-                        var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
                         obstacleSightBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
                     }
                 }
