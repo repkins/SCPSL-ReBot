@@ -9,15 +9,17 @@ internal class CardiacSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var bot = BotStore.Bots[botIdx];
+            var cardiacPositionRef = BotStore.Bots[botIdx].CardiacState.CardiacPositionRef;
 
-            var (hasPosition, position) = bot.CardiacState.CardiacPositionRef.Value;
+            var (hasPosition, _) = cardiacPositionRef.Value;
+            cardiacPositionRef.Value = default;
+
             if (!hasPosition)
             {
                 continue;
             }
 
-            var hub = bot.Hub;
+            var hub = BotStore.Bots[botIdx].Hub;
             if (hub.roleManager.CurrentRole is not Scp049Role scp049Role)
             {
                 DebugLog.LogWarning($"Role is not SCP 049 but has set cardiac position for player {hub}");

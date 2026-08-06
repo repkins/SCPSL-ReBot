@@ -12,6 +12,7 @@ internal struct InteractableObstacle(BotRef botRef)
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
     public bool Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
@@ -35,6 +36,7 @@ internal struct InteractableObstacle(BotRef botRef)
             if (Vector3.Distance(obstacleInteractPosition, playerPosition) < 2f)
             {
                 interactPositionRef.Value = (true, obstacleInteractPosition);
+                lookAtPositionRef.Value = (true, obstacleInteractPosition);
 
                 return true;
             }

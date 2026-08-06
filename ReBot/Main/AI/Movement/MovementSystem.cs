@@ -16,6 +16,21 @@ public static class MovementSystem
         {
             SteerToPosition(botRef, position);
         }
+
+        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        {
+            var lookAtPositionRef = BotStore.Bots[botIdx].MovementState.LookAtPositionRef;
+
+            var (hasLookAtPosition, lookAtPosition) = lookAtPositionRef.Value;
+            lookAtPositionRef.Value = default;
+
+            if (!hasLookAtPosition)
+            {
+                continue;
+            }
+
+            LookToPosition(new(botIdx), lookAtPosition);
+        }
     }
 
     private static void SteerToPosition(BotRef botRef, Vector3 targetPosition)
@@ -26,7 +41,7 @@ public static class MovementSystem
         var relativeHorizontalPos = Vector3.ProjectOnPlane(relativePos, Vector3.up);
         var turnPosition = relativeHorizontalPos + bot.PlayerState.CameraPosition;
 
-        ToPosition(botRef, turnPosition);
+        LookToPosition(botRef, turnPosition);
 
         var playerDirection = bot.PlayerState.Forward;
         var dirTowardsTarget = Vector3.Normalize(relativeHorizontalPos);
@@ -41,7 +56,7 @@ public static class MovementSystem
         }
     }
 
-    private static void ToPosition(BotRef botRef, Vector3 targetPosition)
+    private static void LookToPosition(BotRef botRef, Vector3 targetPosition)
     {
         var bot = BotStore.Bots[botRef.Idx];
 
