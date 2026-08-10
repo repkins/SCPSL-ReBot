@@ -11,12 +11,12 @@ internal class PerceptionSystem
 
     public static void Initialize()
     {
-        ObstacleSensePerception.Initialize();
+        ObstaclePerception.Initialize();
     }
 
     public static void Teardown()
     {
-        ObstacleSensePerception.Teardown();
+        ObstaclePerception.Teardown();
     }
 
     public static void Process()
@@ -24,7 +24,7 @@ internal class PerceptionSystem
         var playerPerception = new PlayerPerception(BotStore.Bots.Count);
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
-        var obstacleSensePerception = new ObstacleSensePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
+        var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
 
         playerPerception.Process();
         roomPerception.Process();
@@ -32,14 +32,14 @@ internal class PerceptionSystem
         enemySightPerception.PrepareEnemiesWithinRadius();
 
         var enemiesSightingHandle = enemySightPerception.ProcessEnemySighting();
-        var obstaclesSensingHandle = obstacleSensePerception.PrepareSensableObstacles();
+        var obstaclesSensingHandle = obstaclePerception.PrepareSensableObstacles();
 
         JobHandle.CompleteAll(ref enemiesSightingHandle, ref obstaclesSensingHandle);
 
         enemySightPerception.ProcessEnemySightResults();
-        obstacleSensePerception.ProcessSensedObstacleResults();
+        obstaclePerception.ProcessSensedObstacleResults();
 
-        obstacleSensePerception.ProcessSharedElevationState();
+        obstaclePerception.ProcessSharedElevationState();
         enemySightPerception.ProcessEnemiesWithinDistance();
     }
 }

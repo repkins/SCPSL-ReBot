@@ -50,7 +50,7 @@ public static class BotStore
     private static ReferenceHub InstantiatePlayerObject()
     {
         var player = Object.Instantiate(NetworkManager.singleton.playerPrefab);
-        player.name = string.Format("{0} [bot]", NetworkManager.singleton.playerPrefab.name);
+        player.name = string.Format("{0} [ReBot]", NetworkManager.singleton.playerPrefab.name);
 
         var connectionToClient = new LocalNetworking.LocalConnectionToClient(--lastConnNum);
         var connectionToServer = new LocalNetworking.LocalConnectionToServer() { connectionToClient = connectionToClient };

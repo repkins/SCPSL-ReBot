@@ -83,13 +83,13 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
             var withinFovJob = new WithinFovJob
             {
                 fromPosition = cameraPosition,
-                direction = cameraForward,
+                facingDirection = cameraForward,
                 targetPositions = enemyPlayerPositions.AsArray(),
 
                 outWithinFovTargets = withinFovTargets,
 
                 outRaycastCommands = raycastCommands,
-                raycastDistance = maxSightRadius,
+                maxSightRadius = maxSightRadius,
                 raycastMask = sightLayerMask
             };
             var withinFovJobHandle = withinFovJob.Schedule(enemyPlayerPositions.Length, default);

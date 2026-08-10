@@ -9,12 +9,12 @@ public struct WithinFovJob : IJobFor
     [ReadOnly]
     public required LayerMask raycastMask;
     [ReadOnly]
-    public required float raycastDistance;
+    public required float maxSightRadius;
 
     [ReadOnly]
     public required Vector3 fromPosition;
     [ReadOnly]
-    public required Vector3 direction;
+    public required Vector3 facingDirection;
     [ReadOnly]
     public required NativeArray<Vector3> targetPositions;
 
@@ -27,10 +27,10 @@ public struct WithinFovJob : IJobFor
     {
         var targetPosition = targetPositions[index];
 
-        var facingDir = direction;
-        var diff = Vector3.Normalize(targetPosition - fromPosition);
+        var relTargetPosition = targetPosition - fromPosition;
+        var directionToTarget = Vector3.Normalize(relTargetPosition);
 
-        if (Vector3.Dot(facingDir, diff) < 0)
+        if (Vector3.Dot(facingDirection, directionToTarget) < 0)
         {
             return;
         }
@@ -39,12 +39,12 @@ public struct WithinFovJob : IJobFor
         var fovRadians = fovDegrees * Mathf.Deg2Rad;
         var cosineOfFov = Mathf.Cos(fovRadians / 2f);
 
-        if (Vector3.Dot(facingDir, diff) < cosineOfFov)
+        if (Vector3.Dot(facingDirection, directionToTarget) < cosineOfFov)
         {
             return;
         }
 
         outWithinFovTargets.Add(index);
-        outRaycastCommands[index] = new(fromPosition, direction, new(raycastMask), raycastDistance);
+        outRaycastCommands[index] = new(fromPosition, directionToTarget, new(raycastMask), relTargetPosition.magnitude);
     }
 }

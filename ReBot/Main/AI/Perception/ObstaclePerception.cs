@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Perception;
 
-public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
+public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
 {
     enum TargetObstacleStatus
     {
@@ -215,13 +215,13 @@ public struct ObstacleSensePerception(int botCount, float maxSightRadius, LayerM
             var withinFovJob = new WithinFovJob
             {
                 fromPosition = cameraPosition,
-                direction = cameraForward,
+                facingDirection = cameraForward,
                 targetPositions = sightObstaclePositions.AsArray(),
 
                 outWithinFovTargets = withinFovSightObstacles,
 
                 outRaycastCommands = sightObstacleRaycastCommands,
-                raycastDistance = maxSightRadius,
+                maxSightRadius = maxSightRadius,
                 raycastMask = sightLayerMask
             };
             var withinFovJobHandle = withinFovJob.Schedule(sightObstaclePositions.Length, default);
