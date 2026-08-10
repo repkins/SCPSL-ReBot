@@ -87,8 +87,10 @@ namespace ReBot.Navigation.Mesh
             TransformCell? closestCell = null;
             float sqrDistToClosestCell = maxDist * maxDist;
 
-            foreach (var localCell in roomMesh.Cells)
+            for (int cellIdx = 0; cellIdx < roomMesh.Cells.Count; cellIdx++)
             {
+                var localCell = roomMesh.Cells[cellIdx];
+
                 if (IsLocalPointWithinCell(localCell, localPosition, out var sqrNearestDist))
                 {
                     return new TransformCell(localCell, room.transform);
@@ -278,13 +280,13 @@ namespace ReBot.Navigation.Mesh
             return Vector3Int.RoundToInt(room.transform.InverseTransformDirection(connectorTransformForward));
         }
 
-        private static Vector3 ClampWithinEdgePoints(Edge edge, Vector3 planeClosestPoint)
+        private static Vector3 ClampWithinEdgePoints(Edge edge, Vector3 planePoint)
         {
             var dir1To2 = edge.To.Position - edge.From.Position;
-            var dir1ToPoint = planeClosestPoint - edge.From.Position;
+            var dir1ToPoint = planePoint - edge.From.Position;
 
             var dir2To1 = edge.From.Position - edge.To.Position;
-            var dir2ToPoint = planeClosestPoint - edge.To.Position;
+            var dir2ToPoint = planePoint - edge.To.Position;
 
             if (Vector3.Dot(dir1ToPoint, dir1To2) < 0f)
             {
@@ -295,7 +297,13 @@ namespace ReBot.Navigation.Mesh
                 return edge.To.Position;
             }
 
-            return planeClosestPoint;
+            planePoint.y = edge.From.Position.y + 1f < planePoint.y
+                ? edge.From.Position.y + 1f
+                : edge.From.Position.y - 1f > planePoint.y
+                    ? edge.From.Position.y - 1f
+                    : planePoint.y;
+
+            return planePoint;
         }
 
         #endregion
@@ -406,6 +414,8 @@ namespace ReBot.Navigation.Mesh
                     isAnyVertexWithinVerticalRange =
                         e.From.Position.y > pointLocalPosition.y - 1f
                         && e.From.Position.y < pointLocalPosition.y + 1f;
+
+                    sqrDist = Vector3.SqrMagnitude(e.From.Position - pointLocalPosition);
                 }
             }
 
