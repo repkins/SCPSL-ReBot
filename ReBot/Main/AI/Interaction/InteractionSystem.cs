@@ -8,7 +8,7 @@ internal static class InteractionSystem
 {
     private const float MaxInteractDistance = 2f;
 
-    private static readonly int RaycastLayerMask = LayerMask.GetMask("Door", "InteractableNoPlayerCollision");
+    private static readonly int RaycastLayerMask = LayerMask.GetMask("Door", "InteractableNoPlayerCollision", "Default");
 
     public static void Process()
     {

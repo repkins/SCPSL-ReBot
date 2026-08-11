@@ -120,8 +120,8 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             ObstacleState.ElevationTravelInteractPanels.Add(travelPanel);
             ObstacleState.ElevationTravelInteractLocations.Add(default);
 
+            var callObstaclePosition = toCell.MeanPosition + Vector3.down;
             var callObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
-            var callObstaclePosition = travelPanel.GetComponentInParent<ElevatorChamber>().transform.position;
             ObstacleState.ObstacleLocations.Add(callObstaclePosition);
             ObstacleState.CellsByObstacle.Add(callObstacleRef, toCell);
 
@@ -176,12 +176,6 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
 
                 if (ObstacleState.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
                 {
-                    var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
-                    if (obstaclePosition == currentGoalPos)
-                    {
-                        continue;
-                    }
-
                     if (ObstacleState.ElevationObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
                     {
                         if (prevCell.HasValue &&
@@ -194,12 +188,18 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                         else
                         {
                             var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
-                            obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
+                            var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
                             obstacleSightBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
                         }
                     }
                     else
                     {
+                        var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
+                        if (obstaclePosition == currentGoalPos)
+                        {
+                            continue;
+                        }
+
                         obstacleSightBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
                     }
                 }
@@ -260,7 +260,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 if (elevationCallObstacleSightObstacles.Contains(sightObstacleIdx))
                 {
                     // platform (elevator) obstacle
-                    if (hit.collider is null)
+                    if (hit.collider is null || hit.collider.GetComponentInParent<ElevatorDoor>() is not null)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
                     }

@@ -51,6 +51,11 @@ namespace ReBot
             ServerEvents.RoundRestarted += OnRoundRestarted;
             PlayerEvents.Kicked += Kicked;
             ServerEvents.RoundStarted += RoundStarted;
+
+            //var seed = (int)DateTime.Now.Ticks;
+            var seed = 239597313;
+            Logger.Info($"Seed value: {seed}");
+            UnityEngine.Random.InitState(seed);
         }
 
         public override void Disable()

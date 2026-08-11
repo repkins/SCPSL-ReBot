@@ -15,6 +15,7 @@ public struct ElevationCallObstacle(BotRef botRef)
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
     public bool TryGetElevationCallIdx(ObstacleRef obstacleRef, out int elevationCallIdx)
     {
@@ -48,6 +49,7 @@ public struct ElevationCallObstacle(BotRef botRef)
         {
             if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
             {
+                lookAtPositionRef.Value = (true, elevationCallInteractPosition);
                 interactPositionRef.Value = (true, elevationCallInteractPosition);
             }
             else
