@@ -19,7 +19,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         Unobstructing
     }
 
-    struct ObstacleSightBot()
+    struct ObstacleBot()
     {
         public NativeList<ObstacleRef> targetObstacleRefs = new(Allocator.Temp);
         public NativeList<Vector3> targetObstacleDestinations = new(Allocator.Temp);
@@ -72,7 +72,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         }
     }
 
-    private NativeArray<ObstacleSightBot> obstacleSightBots = NativeArray<ObstacleSightBot>.CreateConstructed(botCount, Allocator.Temp);
+    private NativeArray<ObstacleBot> obstacleBots = NativeArray<ObstacleBot>.CreateConstructed(botCount, Allocator.Temp);
 
     public static void Initialize()
     {
@@ -152,17 +152,17 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
 
                 if (ObstacleState.ElevationTravelObstacles.Contains(receiveObstacleRef))
                 {
-                    obstacleSightBots[botIdx].AddElevationTravelObstacle(receiveObstacleRef, receivedGoalPos);
+                    obstacleBots[botIdx].AddElevationTravelObstacle(receiveObstacleRef, receivedGoalPos);
                 }
                 else if (ObstacleState.ElevationCallObstacles.Contains(receiveObstacleRef))
                 {
                     var obstaclePosition = ObstacleState.ObstacleLocations[receiveObstacleRef.Idx];
-                    obstacleSightBots[botIdx].AddElevationCallObstacle(receiveObstacleRef, receivedGoalPos, obstaclePosition);
+                    obstacleBots[botIdx].AddElevationCallObstacle(receiveObstacleRef, receivedGoalPos, obstaclePosition);
                 }
                 else
                 {
                     var obstaclePosition = ObstacleState.ObstacleLocations[receiveObstacleRef.Idx];
-                    obstacleSightBots[botIdx].AddSightObstacle(receiveObstacleRef, receivedGoalPos, obstaclePosition);
+                    obstacleBots[botIdx].AddSightObstacle(receiveObstacleRef, receivedGoalPos, obstaclePosition);
                 }
             }
 
@@ -183,13 +183,13 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                             !NavigationMesh.ForeignConnectedCellEdges[prevCell.Value].ContainsKey(cellInPath))
                         {
                             var travelObstacleRef = ObstacleState.ElevationTravelObstacles[elevationIdx];
-                            obstacleSightBots[botIdx].AddElevationTravelObstacle(travelObstacleRef, currentGoalPos);
+                            obstacleBots[botIdx].AddElevationTravelObstacle(travelObstacleRef, currentGoalPos);
                         }
                         else
                         {
                             var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
                             var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
-                            obstacleSightBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
+                            obstacleBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
                         }
                     }
                     else
@@ -200,14 +200,14 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                             continue;
                         }
 
-                        obstacleSightBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
+                        obstacleBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
                     }
                 }
             }
 
-            var sightObstaclePositions = obstacleSightBots[botIdx].sightObstaclePositions;
+            var sightObstaclePositions = obstacleBots[botIdx].sightObstaclePositions;
 
-            var withinFovSightObstacles = obstacleSightBots[botIdx].withinFovSightObstacles;
+            var withinFovSightObstacles = obstacleBots[botIdx].withinFovSightObstacles;
             withinFovSightObstacles.SetCapacity(sightObstaclePositions.Length);
 
             var sightObstacleRaycastCommands = new NativeArray<RaycastCommand>(sightObstaclePositions.Length, Allocator.Temp);
@@ -226,7 +226,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             };
             var withinFovJobHandle = withinFovJob.Schedule(sightObstaclePositions.Length, default);
 
-            var sightObstacleRaycastResults = obstacleSightBots[botIdx].sightObstacleRaycastResults;
+            var sightObstacleRaycastResults = obstacleBots[botIdx].sightObstacleRaycastResults;
             var raycastBatchHandle = RaycastCommand.ScheduleBatch(sightObstacleRaycastCommands, sightObstacleRaycastResults.AsArray(), sightObstacleRaycastCommands.Length, withinFovJobHandle);
 
             raycastBatchHandles[botIdx] = raycastBatchHandle;
@@ -241,15 +241,15 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         {
             var bot = BotStore.Bots[botIdx];
 
-            var targetObstacleRefs = obstacleSightBots[botIdx].targetObstacleRefs;
-            var targetObstacleObstructing = obstacleSightBots[botIdx].targetObstacleStatus;
+            var targetObstacleRefs = obstacleBots[botIdx].targetObstacleRefs;
+            var targetObstacleObstructing = obstacleBots[botIdx].targetObstacleStatus;
 
-            var sightObstacleTargetObstacles = obstacleSightBots[botIdx].sightObstacleTargetObstacles;
+            var sightObstacleTargetObstacles = obstacleBots[botIdx].sightObstacleTargetObstacles;
 
-            var withinFovSightObstacles = obstacleSightBots[botIdx].withinFovSightObstacles;
-            var sightObstacleRaycastResults = obstacleSightBots[botIdx].sightObstacleRaycastResults;
+            var withinFovSightObstacles = obstacleBots[botIdx].withinFovSightObstacles;
+            var sightObstacleRaycastResults = obstacleBots[botIdx].sightObstacleRaycastResults;
 
-            var elevationCallObstacleSightObstacles = obstacleSightBots[botIdx].elevationCallObstacleSightObstacles;
+            var elevationCallObstacleSightObstacles = obstacleBots[botIdx].elevationCallObstacleSightObstacles;
 
             for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovSightObstacles.Length; withinFovResultIdx++)
             {
@@ -294,7 +294,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 }
             }
 
-            var elevationTravelObstacleTargetObstacles = obstacleSightBots[botIdx].elevationTravelObstacleTargetObstacles;
+            var elevationTravelObstacleTargetObstacles = obstacleBots[botIdx].elevationTravelObstacleTargetObstacles;
             var playerPosition = bot.PlayerState.Position;
 
             for (var elevationTravelObstacleIdx = 0; elevationTravelObstacleIdx < elevationTravelObstacleTargetObstacles.Length; elevationTravelObstacleIdx++)
@@ -313,7 +313,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             }
 
             var obstacles = bot.ObstacleState.ObstaclesByTarget;
-            var targetObstacleDestinations = obstacleSightBots[botIdx].targetObstacleDestinations;
+            var targetObstacleDestinations = obstacleBots[botIdx].targetObstacleDestinations;
 
             for (var targetObstacleIdx = 0; targetObstacleIdx < targetObstacleRefs.Length; targetObstacleIdx++)
             {
