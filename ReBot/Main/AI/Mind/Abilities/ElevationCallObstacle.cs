@@ -12,6 +12,7 @@ public struct ElevationCallObstacle(BotRef botRef)
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
+    NativeList<bool> elevationCallInteractAbles = ObstacleState.ElevationCallInteractAbles;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
@@ -44,13 +45,24 @@ public struct ElevationCallObstacle(BotRef botRef)
     public bool Calls(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
+        var elevationCallInteractAble = elevationCallInteractAbles[elevationCallIdx];
 
         if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
         {
             if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
             {
-                lookAtPositionRef.Value = (true, elevationCallInteractPosition);
-                interactPositionRef.Value = (true, elevationCallInteractPosition);
+                if (elevationCallInteractAble)
+                {
+                    lookAtPositionRef.Value = (true, elevationCallInteractPosition);
+                    interactPositionRef.Value = (true, elevationCallInteractPosition);
+                }
+                else
+                {
+                    var obstacleRef = elevationCallObstacles[elevationCallIdx];
+                    var obstaclePosition = obstacleLocations[obstacleRef.Idx];
+
+                    lookAtPositionRef.Value = (true, obstaclePosition);
+                }
             }
             else
             {

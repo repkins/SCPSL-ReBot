@@ -128,9 +128,34 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             var callInteractPosition = toCallPanel.GetComponent<Collider>().bounds.center;
             ObstacleState.ElevationCallObstacles.Add(callObstacleRef);
             ObstacleState.ElevationCallInteractLocations.Add(callInteractPosition);
+            ObstacleState.ElevationCallInteractPanels.Add(toCallPanel);
+            ObstacleState.ElevationCallInteractAbles.Add(default);
         }
 
         Debug.Log("Updating bot static state finished");
+    }
+
+    public void ProcessSharedElevationState()
+    {
+        for (var elevationTravelIdx = 0; elevationTravelIdx < ObstacleState.ElevationTravelInteractPanels.Count; elevationTravelIdx++)
+        {
+            var travelPanel = ObstacleState.ElevationTravelInteractPanels[elevationTravelIdx];
+
+            ObstacleState.ElevationTravelInteractLocations[elevationTravelIdx] = travelPanel.GetComponent<Collider>().bounds.center;
+        }
+
+        for (var elevationCallIdx = 0; elevationCallIdx < ObstacleState.ElevationCallInteractPanels.Count; elevationCallIdx++)
+        {
+            var callPanel = ObstacleState.ElevationTravelInteractPanels[elevationCallIdx];
+
+            if (callPanel.Target is not ElevatorChamber chamber)
+            {
+                Debug.LogWarning($"Elevator call panel \"{callPanel}\" interaction target is not instance of {nameof(ElevatorChamber)}");
+                continue;
+            }
+
+            ObstacleState.ElevationCallInteractAbles[elevationCallIdx] = chamber.IsReadyForUserInput;
+        }
     }
 
     public JobHandle PrepareSensableObstacles()
@@ -260,17 +285,21 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 if (elevationCallObstacleSightObstacles.Contains(sightObstacleIdx))
                 {
                     // platform (elevator) obstacle
-                    if (hit.collider is null || hit.collider.GetComponentInParent<ElevatorDoor>() is not null)
+                    if (hit.collider is null)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
                     }
-                    else if (hit.collider.GetComponentInParent<ElevatorChamber>() is null)
+                    else if (hit.collider.GetComponentInParent<ElevatorDoor>() is ElevatorDoor elevatorDoor)
                     {
-                        continue;
+                        targetObstacleObstructing[targetObstacleIdx] = elevatorDoor.IsConsideredOpen() ? TargetObstacleStatus.Unobstructing : TargetObstacleStatus.Obstructing;
+                    }
+                    else if (hit.collider.GetComponentInParent<ElevatorChamber>() is not null)
+                    {
+                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                     }
                     else
                     {
-                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
+                        continue;
                     }
                 }
                 else
@@ -340,16 +369,6 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                         break;
                 }
             }
-        }
-    }
-
-    public void ProcessSharedElevationState()
-    {
-        for (var elevationTravelIdx = 0; elevationTravelIdx < ObstacleState.ElevationTravelInteractPanels.Count; elevationTravelIdx++)
-        {
-            var travelPanel = ObstacleState.ElevationTravelInteractPanels[elevationTravelIdx];
-
-            ObstacleState.ElevationTravelInteractLocations[elevationTravelIdx] = travelPanel.GetComponent<Collider>().bounds.center;
         }
     }
 }
