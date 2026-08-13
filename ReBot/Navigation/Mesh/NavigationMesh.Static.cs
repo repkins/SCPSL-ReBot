@@ -227,7 +227,7 @@ namespace ReBot.Navigation.Mesh
             results.Clear();
             var shortestPath = results;
 
-            if (cameFromCells.ContainsKey(endCell))
+            if (cell == endCell)
             {
                 cell = endCell;
                 do

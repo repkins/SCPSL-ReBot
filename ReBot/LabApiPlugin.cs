@@ -53,7 +53,7 @@ namespace ReBot
             ServerEvents.RoundStarted += RoundStarted;
 
             //var seed = (int)DateTime.Now.Ticks;
-            var seed = 239597313;
+            var seed = -810608422;
             Logger.Info($"Seed value: {seed}");
             UnityEngine.Random.InitState(seed);
         }

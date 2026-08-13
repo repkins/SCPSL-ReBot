@@ -35,7 +35,14 @@ internal static class PathfindingSystem
             }
 
             NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, PathfindingStore.CellsPath[botIdx]);
-            var closestPosition = GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value);
+            if (PathfindingStore.CellsPath[botIdx].Count < 1)
+            {
+                continue;
+            }
+
+            var closestPosition = PathfindingStore.CellsPath[botIdx].Count > 1
+                ? GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value) 
+                : targetPos;
 
             PathfindingStore.ClosestPositions.Add((new(botIdx), closestPosition));
             PathfindingStore.GoalPositions[botIdx] = targetPos;
