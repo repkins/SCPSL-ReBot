@@ -91,11 +91,5 @@
     <ProjectCapability Remove="ReferenceManagerAssemblies" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Main\AI\Mind\BeliefRef.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
 
 </Project>
