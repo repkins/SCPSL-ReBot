@@ -297,10 +297,10 @@ namespace ReBot.Navigation.Mesh
                 return edge.To.Position;
             }
 
-            planePoint.y = edge.From.Position.y + 1f < planePoint.y
-                ? edge.From.Position.y + 1f
-                : edge.From.Position.y - 1f > planePoint.y
-                    ? edge.From.Position.y - 1f
+            planePoint.y = edge.From.Position.y + 2f < planePoint.y
+                ? edge.From.Position.y + 2f
+                : edge.From.Position.y - 2f > planePoint.y
+                    ? edge.From.Position.y - 2f
                     : planePoint.y;
 
             return planePoint;
@@ -412,8 +412,8 @@ namespace ReBot.Navigation.Mesh
                 if (!isAnyVertexWithinVerticalRange)
                 {
                     isAnyVertexWithinVerticalRange =
-                        e.From.Position.y > pointLocalPosition.y - 1f
-                        && e.From.Position.y < pointLocalPosition.y + 1f;
+                        e.From.Position.y > pointLocalPosition.y - 2f
+                        && e.From.Position.y < pointLocalPosition.y + 2f;
 
                     sqrDist = Vector3.SqrMagnitude(e.From.Position - pointLocalPosition);
                 }

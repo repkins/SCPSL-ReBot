@@ -12,7 +12,7 @@ internal struct Enemy(BotRef botRef)
     {
         if (roomEnterLocations.Length > 0)
         {
-            for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < roomEnterLocations.Length; roomEnterLocationIdx++)
+            for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < 1; roomEnterLocationIdx++)
             {
                 var cost = 0f;
                 var multiplier = 10f; // multiplier is odds of seeing enemies

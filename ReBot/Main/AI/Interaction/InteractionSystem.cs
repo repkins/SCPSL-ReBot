@@ -32,7 +32,7 @@ internal static class InteractionSystem
             var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
             var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
 
-            var raycastCommand = new RaycastCommand(playerCameraPosition, playerCameraForward, new(RaycastLayerMask), MaxInteractDistance);
+            var raycastCommand = new RaycastCommand(playerCameraPosition, playerCameraForward, new(RaycastLayerMask), MaxInteractDistance + 1f);
 
             raycastCommands.Add(raycastCommand);
             raycastBotRefs.Add(new(botIdx));
