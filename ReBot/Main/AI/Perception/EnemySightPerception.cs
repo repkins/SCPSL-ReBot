@@ -52,7 +52,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                     break;
                 }
 
-                if (hit.collider.gameObject.GetComponent<ReferenceHub>().roleManager.CurrentRole is FpcStandardRoleBase fpcRole
+                if (hit.collider.gameObject.GetComponent<PlayerRoleManager>().CurrentRole is FpcStandardRoleBase fpcRole
                     && fpcRole.Team.GetFaction() != playerHub.GetFaction()
                     && fpcRole.Team.GetFaction() != Faction.Unclassified)
                 {
@@ -128,8 +128,8 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                     continue;
                 }
 
-                if (raycastHit.collider.GetComponentInParent<FpcStandardRoleBase>() is not FpcStandardRoleBase fpcRole
-                    || otherEnemyPlayersInstanceIds.Contains(fpcRole.GetInstanceID()))
+                if (raycastHit.collider.gameObject.GetComponent<PlayerRoleManager>()?.CurrentRole is not FpcStandardRoleBase fpcRole
+                    || !otherEnemyPlayersInstanceIds.Contains(fpcRole.GetInstanceID()))
                 {
                     continue;
                 }

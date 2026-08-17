@@ -35,7 +35,7 @@ internal struct CardiacableEnemy(BotRef botRef)
         {
             var cost = 30; // max sight distance
 
-            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
         }
     }
 

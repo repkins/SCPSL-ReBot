@@ -49,42 +49,51 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
     private void PrintVisitedBeliefs(BeliefPathfinding beliefPathfinding, NativeList<ImpactingBelief> goalImpactingBeliefs)
     {
-        var impactingBeliefIteratorStack = new NativeList<NativeParallelMultiHashMapIterator<BeliefRef>>(Allocator.Temp);
-        var beliefToEnable = MindStore.ActionBeliefRefs[botRef.Idx];
+        var impactingBeliefStack = new NativeList<(NativeParallelMultiHashMapIterator<BeliefRef> iterator, BeliefRef beliefToEnable)>(Allocator.Temp);
+        var actionBelief = MindStore.ActionBeliefRefs[botRef.Idx];
 
         foreach (var (_, _, goalImpactingBelief) in goalImpactingBeliefs)
         {
             var impactingBelief = goalImpactingBelief;
+            var beliefToEnable = default(BeliefRef);
+            var beliefToEnableGeneralCost = 0f;
 
             do
             {
-                var prefix = new string(' ', 4 * impactingBeliefIteratorStack.Length);
-                var (cost, multiplier) = beliefPathfinding.generalCosts[impactingBelief];
-                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}), {cost} ({multiplier}x){(impactingBelief == beliefToEnable ? " <--" : "")}");
+                var prefix = new string(' ', 4 * impactingBeliefStack.Length);
+                var (generalCost, multiplier) = beliefPathfinding.generalCosts[impactingBelief];
+                var cost = generalCost - beliefToEnableGeneralCost;
 
-                if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(impactingBelief, out impactingBelief, out var beliefToEnableIterator))
+                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}), {cost} ({multiplier}x){(impactingBelief == actionBelief ? " <--" : "")}");
+
+                beliefToEnable = impactingBelief;
+                if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(beliefToEnable, out impactingBelief, out var impactingIterator))
                 {
-                    impactingBeliefIteratorStack.Add(beliefToEnableIterator);
+                    impactingBeliefStack.Add((impactingIterator, beliefToEnable));
+                    (beliefToEnableGeneralCost, _) = beliefPathfinding.generalCosts[beliefToEnable];
                 }
                 else
                 {
-                    while (impactingBeliefIteratorStack.Length > 0
-                        && impactingBeliefIteratorStack[^1] is var beliefToEnableIteratorNext)
+                    while (impactingBeliefStack.Length > 0
+                        && impactingBeliefStack[^1] is var beliefToEnableFrame)
                     {
-                        if (beliefPathfinding.visitedImpactingBeliefs.TryGetNextValue(out impactingBelief, ref beliefToEnableIteratorNext))
+                        beliefToEnable = beliefToEnableFrame.beliefToEnable;
+                        (beliefToEnableGeneralCost, _) = beliefPathfinding.generalCosts[beliefToEnable];
+
+                        if (beliefPathfinding.visitedImpactingBeliefs.TryGetNextValue(out impactingBelief, ref beliefToEnableFrame.iterator))
                         {
-                            impactingBeliefIteratorStack[^1] = beliefToEnableIteratorNext;
+                            impactingBeliefStack[^1] = beliefToEnableFrame;
                             break;
                         }
                         else
                         {
-                            impactingBeliefIteratorStack.RemoveAt(impactingBeliefIteratorStack.Length - 1);
+                            impactingBeliefStack.RemoveAt(impactingBeliefStack.Length - 1);
                         }
                     }
 
                 }
             }
-            while (impactingBeliefIteratorStack.Length > 0);
+            while (impactingBeliefStack.Length > 0);
         }
     }
 }
