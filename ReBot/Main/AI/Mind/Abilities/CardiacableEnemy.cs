@@ -18,6 +18,7 @@ internal struct CardiacableEnemy(BotRef botRef)
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
     public void Terminates(NativeList<ImpactingBelief> impactingBeliefs)
@@ -47,6 +48,7 @@ internal struct CardiacableEnemy(BotRef botRef)
         {
             if (enemiesWithinDistance.Contains(enemyRef))
             {
+                lookAtPositionRef.Value = (true, enemyPosition);
                 cardiacPositionRef.Value = (true, enemyPosition);
 
                 return true;

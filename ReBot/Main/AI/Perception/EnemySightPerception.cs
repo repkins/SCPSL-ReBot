@@ -158,7 +158,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
             {
                 var enemyPosition = enemyPlayerPositions[enemyIdx];
 
-                if (Vector3.Distance(cameraPosition, enemyPosition) < 2f)
+                if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f)
                 {
                     enemiesWithinDistance.Add(new(enemyIdx));
                 }
