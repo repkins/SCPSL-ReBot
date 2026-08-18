@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ReBot.LocalNetworking
 {
-    internal class LocalConnectionToServer : NetworkConnectionToServer
+    public class LocalConnectionToServer : NetworkConnectionToServer
     {
         public override void Send(ArraySegment<byte> segment, int channelId = 0)
         {

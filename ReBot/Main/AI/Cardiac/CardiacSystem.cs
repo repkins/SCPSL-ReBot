@@ -32,7 +32,10 @@ internal class CardiacSystem
                 continue;
             }
 
-            hub.connectionToServer.Send<SubroutineMessage>(new(attackAbility, false));
+
+
+            var connectionToServer = BotStore.Bots[botIdx].ConnectionToServer;
+            connectionToServer.Send<SubroutineMessage>(new(attackAbility, false));
         }
     }
 }

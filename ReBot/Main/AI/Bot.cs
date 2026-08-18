@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Capture;
+﻿using ReBot.LocalNetworking;
+using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Movement;
@@ -9,9 +10,10 @@ using UnityEngine;
 
 namespace ReBot.Main.AI;
 
-public class Bot(ReferenceHub hub) : IDisposable
+public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) : IDisposable
 {
     public readonly ReferenceHub Hub = hub;
+    public readonly LocalConnectionToServer ConnectionToServer = connectionToServer;
 
     public Transform PlayerTransform;
     public Transform CameraTransform;

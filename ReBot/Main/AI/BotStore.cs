@@ -20,10 +20,10 @@ public static class BotStore
 
     public static void AddBotPlayer()
     {
-        var referenceHub = InstantiatePlayerObject();
+        var (referenceHub, connectionToServer) = InstantiatePlayerObject();
 
         var nextBotIdx = Bots.Count;
-        Bots.Add(new(referenceHub));
+        Bots.Add(new(referenceHub, connectionToServer));
         BotHubRefs.Add(referenceHub, new(nextBotIdx));
 
         PathfindingStore.AddBot(new(nextBotIdx));
@@ -47,7 +47,7 @@ public static class BotStore
         }
     }
 
-    private static ReferenceHub InstantiatePlayerObject()
+    private static (ReferenceHub, LocalNetworking.LocalConnectionToServer) InstantiatePlayerObject()
     {
         var player = Object.Instantiate(NetworkManager.singleton.playerPrefab);
         player.name = string.Format("{0} [ReBot]", NetworkManager.singleton.playerPrefab.name);
@@ -69,7 +69,7 @@ public static class BotStore
 
         Timing.CallDelayed(1f, () => AssignUserId(player));
 
-        return referenceHub;
+        return (referenceHub, connectionToServer);
     }
 
     private static void AssignUserId(GameObject player)
