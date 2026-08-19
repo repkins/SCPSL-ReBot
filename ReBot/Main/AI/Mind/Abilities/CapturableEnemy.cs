@@ -18,6 +18,7 @@ internal struct CapturableEnemy(BotRef botRef)
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> capturePositionRef = botRef.Value.CaptureState.CapturePositionRef;
 
     public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
@@ -35,7 +36,7 @@ internal struct CapturableEnemy(BotRef botRef)
         {
             var cost = 30; // max sight distance
 
-            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
         }
 
         return false;
@@ -49,6 +50,7 @@ internal struct CapturableEnemy(BotRef botRef)
         {
             if (enemiesWithinDistance.Contains(enemyRef))
             {
+                lookAtPositionRef.Value = (true, enemyPosition);
                 capturePositionRef.Value = (true, enemyPosition);
 
                 return true;

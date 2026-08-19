@@ -57,9 +57,9 @@ public static class BotSystem
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
             var hub = BotStore.Bots[botIdx].Hub;
-            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp049)
+            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp106)
             {
-                hub.roleManager.ServerSetRole(RoleTypeId.Scp049, RoleChangeReason.None);
+                hub.roleManager.ServerSetRole(RoleTypeId.Scp106, RoleChangeReason.None);
             }
         }
     }

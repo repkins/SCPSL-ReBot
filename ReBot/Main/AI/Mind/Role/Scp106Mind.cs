@@ -35,6 +35,9 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.SightedEnemies => 
                 enemy.SearchesInRoom(impactingBeliefs),
 
+            BeliefEnum.WithinRoom =>
+                room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs),
+
             BeliefEnum.WithinRoomEnterLocation => 
                 room.MovesToEnterLocation(beliefToEnable.Idx),
 
@@ -45,6 +48,12 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                         ? elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs)
                         : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs)
                             || passthroughObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
+
+            BeliefEnum.PassingThroughObstacle => 
+                passthroughObstacle.PassesThrough(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.WithinObstacleLocation =>
+                passthroughObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.InteractingWithObstacle => 
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
