@@ -26,13 +26,15 @@ internal static class PathfindingSystem
             var startingPos = bot.PlayerState.Position;
 
             var playerRadius = .5f;
-            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, playerRadius);
+            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, playerRadius) ?? PathfindingStore.CellWithins[botIdx];
             var targetCellResult = NavigationMesh.GetCellWithinOrClosest(targetPos, playerRadius);
 
             if (!startingCellResult.HasValue || !targetCellResult.HasValue)
             {
                 continue;
             }
+
+            PathfindingStore.CellWithins[botIdx] = startingCellResult;
 
             NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, PathfindingStore.CellsPath[botIdx]);
             if (PathfindingStore.CellsPath[botIdx].Count < 1)

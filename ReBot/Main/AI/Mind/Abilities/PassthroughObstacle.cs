@@ -1,10 +1,4 @@
 ﻿using ReBot.Main.AI.Spacial;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
 
@@ -21,7 +15,7 @@ internal struct PassthroughObstacle(BotRef botRef)
 
     public bool Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var cost = 0f;
+        var cost = 1f;
 
         impactingBeliefs.Add(cost, BeliefEnum.PassingThroughObstacle, obstacleRef.Idx);
 
@@ -34,13 +28,13 @@ internal struct PassthroughObstacle(BotRef botRef)
 
         if (!obstaclesByTarget.TryGetValue(obstaclePosition, out var obstacle2Ref))
         {
-            var cost = Vector3.Distance(obstaclePosition, playerPosition) + 1f;
+            var cost = Vector3.Distance(obstaclePosition, playerPosition);
 
             impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleLocation, obstacleIdx);
         }
         else
         {
-            var cost = Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]) + 1f;
+            var cost = Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
 
             impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
         }

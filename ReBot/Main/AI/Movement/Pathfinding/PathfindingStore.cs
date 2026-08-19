@@ -18,6 +18,8 @@ internal static class PathfindingStore
     public static readonly List<List<Vector3>> PointsPath = [];
     public static readonly List<IEnumerable<(Vector3 point, Vector3 nextPoint)>> PathSegments = [];
 
+    public static readonly List<TransformCell?> CellWithins = [];
+
     public static void AddBot(BotRef botRef)
     {
         GoalPositions.Add(default);
@@ -27,10 +29,14 @@ internal static class PathfindingStore
 
         PointsPath.Add([]);
         PathSegments.Add(PointsPath[botRef.Idx].Zip(PointsPath[botRef.Idx].Skip(1), (point, nextPoint) => (point, nextPoint)));
+
+        CellWithins.Add(default);
     }
 
     public static void RemoveBot(BotRef botRef)
     {
+        CellWithins.RemoveAt(botRef.Idx);
+
         PathSegments.RemoveAt(botRef.Idx);
         PointsPath.RemoveAt(botRef.Idx);
 
