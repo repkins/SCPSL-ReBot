@@ -305,7 +305,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 else
                 {
                     // solid obstacle
-                    if (hit.collider is null)
+                    if (hit.collider is null || hit.distance < .4f)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                         continue;
