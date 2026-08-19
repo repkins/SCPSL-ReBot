@@ -12,6 +12,7 @@ internal struct PassthroughObstacle(BotRef botRef)
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
     public bool Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -42,10 +43,11 @@ internal struct PassthroughObstacle(BotRef botRef)
         return false;
     }
 
-    public bool MovesTo(int obstacleIdx)
+    public bool MovesLooksTo(int obstacleIdx)
     {
         var obstaclePosition = obstacleLocations[obstacleIdx];
         moveToPositionRef.Value = (true, obstaclePosition);
+        lookAtPositionRef.Value = (true, obstaclePosition);
 
         return true;
     }

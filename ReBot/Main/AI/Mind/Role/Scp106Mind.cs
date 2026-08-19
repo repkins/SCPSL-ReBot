@@ -53,7 +53,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 passthroughObstacle.PassesThrough(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.WithinObstacleLocation =>
-                passthroughObstacle.MovesTo(beliefToEnable.Idx),
+                passthroughObstacle.MovesLooksTo(beliefToEnable.Idx),
 
             BeliefEnum.InteractingWithObstacle => 
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),

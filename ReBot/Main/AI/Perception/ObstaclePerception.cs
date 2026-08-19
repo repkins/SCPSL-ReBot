@@ -1,4 +1,5 @@
 ﻿using Interactables.Interobjects;
+using Interactables.Interobjects.DoorUtils;
 using ReBot.Collections;
 using ReBot.Main.AI.Movement.Pathfinding;
 using ReBot.Main.AI.Spacial;
@@ -92,7 +93,10 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         {
             var obstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             var obstaclePosition = solidObstacle.position + Vector3.up;
+            var doorVariant = solidObstacle.GetComponentInParent<CheckpointDoor>() ?? solidObstacle.GetComponent<DoorVariant>();
+            var doorObstaclePermissions = doorVariant.RequiredPermissions.RequiredPermissions;
             ObstacleState.ObstacleLocations.Add(obstaclePosition);
+            ObstacleState.DoorObstaclePermissions.Add(doorObstaclePermissions);
             ObstacleState.ObstaclesByCell.Add(cell, obstacleRef);
             ObstacleState.CellsByObstacle.Add(obstacleRef, cell);
         }
@@ -102,6 +106,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             var levelObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             var levelObstaclePosition = toCell.MeanPosition;
             ObstacleState.ObstacleLocations.Add(levelObstaclePosition);
+            ObstacleState.DoorObstaclePermissions.Add(default);
             ObstacleState.ObstaclesByCell.Add(toCell, levelObstacleRef);
             ObstacleState.CellsByObstacle.Add(levelObstacleRef, toCell);
 
@@ -112,6 +117,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             var travelObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             var travelObstaclePosition = toCell.MeanPosition;
             ObstacleState.ObstacleLocations.Add(travelObstaclePosition);
+            ObstacleState.DoorObstaclePermissions.Add(default);
             ObstacleState.CellsByObstacle.Add(travelObstacleRef, toCell);
 
             var travelEnterPosition = fromCell.MeanPosition;
@@ -123,6 +129,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             var callObstaclePosition = toCell.MeanPosition + Vector3.down;
             var callObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             ObstacleState.ObstacleLocations.Add(callObstaclePosition);
+            ObstacleState.DoorObstaclePermissions.Add(default);
             ObstacleState.CellsByObstacle.Add(callObstacleRef, toCell);
 
             var callInteractPosition = toCallPanel.GetComponent<Collider>().bounds.center;
