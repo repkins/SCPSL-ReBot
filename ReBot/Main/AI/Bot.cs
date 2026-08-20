@@ -3,6 +3,7 @@ using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Movement;
+using ReBot.Main.AI.NeckSnap;
 using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
@@ -28,6 +29,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
 
     public CardiacState CardiacState = new();
     public CaptureState CaptureState = new();
+    public NeckSnapState NeckSnapState = new();
 
     public void Dispose()
     {

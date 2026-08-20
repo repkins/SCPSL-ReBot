@@ -5,6 +5,7 @@ using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Mind;
 using ReBot.Main.AI.Movement;
+using ReBot.Main.AI.NeckSnap;
 using ReBot.Main.AI.Perception;
 using System;
 using System.Collections.Generic;
@@ -57,9 +58,9 @@ public static class BotSystem
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
             var hub = BotStore.Bots[botIdx].Hub;
-            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp106)
+            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp173)
             {
-                hub.roleManager.ServerSetRole(RoleTypeId.Scp106, RoleChangeReason.None);
+                hub.roleManager.ServerSetRole(RoleTypeId.Scp173, RoleChangeReason.None);
             }
         }
     }
@@ -80,6 +81,7 @@ public static class BotSystem
 
                 CardiacSystem.Process(); // SCP 049 Role
                 CaptureSystem.Process(); // SCP 106 Role
+                NeckSnapSystem.Process(); // SCP 173 Role
             }
             catch (Exception e)
             {

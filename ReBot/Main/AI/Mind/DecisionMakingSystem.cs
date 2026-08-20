@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Mind.Role;
+﻿using PlayerRoles;
+using ReBot.Main.AI.Mind.Role;
 using Unity.Collections;
 using Unity.Jobs;
 
@@ -18,7 +19,7 @@ internal class DecisionMakingSystem
 
             switch (bot.Hub.roleManager.CurrentRole.RoleTypeId)
             {
-                case PlayerRoles.RoleTypeId.Scp049:
+                case RoleTypeId.Scp049:
                     {
                         var findActionJob = new FindActionJob<Scp049Mind, Scp049Mind.Factory>
                         {
@@ -29,9 +30,20 @@ internal class DecisionMakingSystem
                     }
                     break;
 
-                case PlayerRoles.RoleTypeId.Scp106:
+                case RoleTypeId.Scp106:
                     {
                         var findActionJob = new FindActionJob<Scp106Mind, Scp106Mind.Factory>
+                        {
+                            botRef = new(botIdx),
+                        };
+
+                        findActionHandles[botIdx] = findActionJob.ScheduleByRef();
+                    }
+                    break;
+
+                case RoleTypeId.Scp173:
+                    {
+                        var findActionJob = new FindActionJob<Scp173Mind, Scp173Mind.Factory>
                         {
                             botRef = new(botIdx),
                         };
