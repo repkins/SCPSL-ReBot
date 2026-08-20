@@ -28,11 +28,11 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 cardiacableEnemy.Terminates(impactingBeliefs);
                 break;
 
-            case BeliefEnum.AttackEnemy:
+            case BeliefEnum.AttackedEnemy:
                 actionFound = cardiacableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs);
                 break;
 
-            case BeliefEnum.WithinEnemyLocation:
+            case BeliefEnum.MovedToEnemyLocation:
                 actionFound = cardiacableEnemy.MovesTo(new(beliefToEnable.Idx));
                 break;
 
@@ -44,7 +44,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
-            case BeliefEnum.WithinRoomEnterLocation:
+            case BeliefEnum.MovedToRoomEnterLocation:
                 actionFound = room.MovesToEnterLocation(beliefToEnable.Idx);
                 break;
 
@@ -67,7 +67,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
-            case BeliefEnum.WithinObstacleInteractionLocation:
+            case BeliefEnum.MovedToObstacleInteractionLocation:
                 actionFound = interactableObstacle.MovesTo(beliefToEnable.Idx);
                 break;
 
@@ -75,7 +75,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
-            case BeliefEnum.InElevator:
+            case BeliefEnum.MovedToElevator:
                 actionFound = elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx);
                 break;
 

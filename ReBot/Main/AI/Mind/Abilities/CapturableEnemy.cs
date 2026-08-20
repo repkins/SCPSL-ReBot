@@ -29,7 +29,7 @@ internal struct CapturableEnemy(BotRef botRef)
             {
                 var cost = 1f;  // cardiac attack cost, constant
 
-                impactingBeliefs.Add(cost, BeliefEnum.AttackEnemy, enemyIdx);
+                impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
             }
         }
         else
@@ -59,7 +59,7 @@ internal struct CapturableEnemy(BotRef botRef)
             {
                 var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
             }
         }
         else

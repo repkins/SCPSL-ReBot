@@ -26,10 +26,10 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.EnemiesTerminated => 
                 capturableEnemy.Terminates(impactingBeliefs),
 
-            BeliefEnum.AttackEnemy => 
+            BeliefEnum.AttackedEnemy => 
                 capturableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
-            BeliefEnum.WithinEnemyLocation => 
+            BeliefEnum.MovedToEnemyLocation => 
                 capturableEnemy.MovesTo(new(beliefToEnable.Idx)),
 
             BeliefEnum.SightedEnemies => 
@@ -38,7 +38,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.WithinRoom =>
                 room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.WithinRoomEnterLocation => 
+            BeliefEnum.MovedToRoomEnterLocation => 
                 room.MovesToEnterLocation(beliefToEnable.Idx),
 
             BeliefEnum.ObstacleToOvercome =>
@@ -52,19 +52,19 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.PassingThroughObstacle => 
                 passthroughObstacle.PassesThrough(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.WithinObstacleLocation =>
+            BeliefEnum.MovedToObstacleLocation =>
                 passthroughObstacle.MovesLooksTo(beliefToEnable.Idx),
 
             BeliefEnum.InteractingWithObstacle => 
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.WithinObstacleInteractionLocation => 
+            BeliefEnum.MovedToObstacleInteractionLocation => 
                 interactableObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.TravelingOnElevator => 
                 elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.InElevator => 
+            BeliefEnum.MovedToElevator => 
                 elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
 
             BeliefEnum.ElevatorCalled => 

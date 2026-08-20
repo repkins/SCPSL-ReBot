@@ -23,7 +23,7 @@ internal struct Room(BotRef botRef)
         {
             var cost = Vector3.Distance(roomEnterLocationPosition, playerPosition);
 
-            impactingBeliefs.Add(cost, BeliefEnum.WithinRoomEnterLocation, roomEnterLocationIdx);
+            impactingBeliefs.Add(cost, BeliefEnum.MovedToRoomEnterLocation, roomEnterLocationIdx);
         }
         else
         {

@@ -58,7 +58,7 @@ public struct ElevationTravelObstacle(BotRef botRef)
             {
                 var cost = Vector3.Distance(elevationEnterPosition, playerPosition);
 
-                impactingBeliefs.Add(cost, BeliefEnum.InElevator, elevationIdx);
+                impactingBeliefs.Add(cost, BeliefEnum.MovedToElevator, elevationIdx);
             }
             else
             {

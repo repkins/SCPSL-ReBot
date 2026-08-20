@@ -31,7 +31,7 @@ internal struct PassthroughObstacle(BotRef botRef)
         {
             var cost = Vector3.Distance(obstaclePosition, playerPosition);
 
-            impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleLocation, obstacleIdx);
+            impactingBeliefs.Add(cost, BeliefEnum.MovedToObstacleLocation, obstacleIdx);
         }
         else
         {

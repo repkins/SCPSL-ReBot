@@ -50,7 +50,7 @@ internal struct InteractableObstacle(BotRef botRef)
                 {
                     var cost = Vector3.Distance(obstacleInteractPosition, playerPosition);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
+                    impactingBeliefs.Add(cost, BeliefEnum.MovedToObstacleInteractionLocation, obstacleInteractIdx);
                 }
             }
             else
