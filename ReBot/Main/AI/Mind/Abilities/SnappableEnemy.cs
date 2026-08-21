@@ -69,7 +69,8 @@ internal struct SnappableEnemy(BotRef botRef)
                     impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
                 }
             }
-            else
+
+            if (isObserved)
             {
                 var cost = remainingSecondsToBlink;
 
@@ -98,14 +99,7 @@ internal struct SnappableEnemy(BotRef botRef)
     {
         var targetPosition = enemiesWithinSight[enemyRef.Idx];
 
-        var relTargetPos = targetPosition - playerPosition;
-
-        if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerForward) < 1f)
-        {
-            blinkToPositionRef.Value = (true, targetPosition);
-        }
-
-        lookAtPositionRef.Value = (true, targetPosition);
+        blinkToPositionRef.Value = (true, targetPosition);
 
         return true;
     }

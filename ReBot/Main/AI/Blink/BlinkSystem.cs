@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using PlayerRoles.PlayableScps.Scp173;
 using System.Reflection;
+using UnityEngine;
 
 namespace ReBot.Main.AI.Blink;
 
@@ -14,7 +15,7 @@ internal class BlinkSystem
         {
             var blinkToPositionRef = BotStore.Bots[botIdx].BlinkState.BlinkToPositionRef;
 
-            var (hasPosition, _) = blinkToPositionRef.Value;
+            var (hasPosition, position) = blinkToPositionRef.Value;
             blinkToPositionRef.Value = default;
 
             if (!hasPosition)
@@ -36,7 +37,23 @@ internal class BlinkSystem
                 continue;
             }
 
-            m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [true]);
+            if (!Physics.Raycast(position, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
+            {
+                continue;
+            }
+
+            var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
+            var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
+            var tpPosition = hitInfo.point;
+
+            var relTargetPos = tpPosition - playerCameraPosition;
+            if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) < .1f)
+            {
+                m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [false]);
+                m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [true]);
+            }
+
+            BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, tpPosition);
         }
     }
 }
