@@ -28,8 +28,11 @@ internal struct Scp173Mind(BotRef botRef) : IMind
             BeliefEnum.AttackedEnemy =>
                 snappableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
-            BeliefEnum.MovedToEnemyLocation =>
+            BeliefEnum.WithinEnemyLocation =>
                 snappableEnemy.MovesTo(new(beliefToEnable.Idx)),
+
+            BeliefEnum.BlinkedToEnemy =>
+                snappableEnemy.BlinksTo(new(beliefToEnable.Idx)),
 
             BeliefEnum.SightedEnemies => 
                 enemy.SearchesInRoom(impactingBeliefs),

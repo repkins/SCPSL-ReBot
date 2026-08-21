@@ -18,6 +18,7 @@ public enum BeliefEnum : byte
 
     EnemiesTerminated,
     SightedEnemies,
-    MovedToEnemyLocation,
+    WithinEnemyLocation,
     AttackedEnemy,
+    BlinkedToEnemy,
 }

@@ -1,4 +1,5 @@
 ﻿using ReBot.LocalNetworking;
+using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
@@ -30,6 +31,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
     public CardiacState CardiacState = new();
     public CaptureState CaptureState = new();
     public NeckSnapState NeckSnapState = new();
+    public BlinkState BlinkState = new();
 
     public void Dispose()
     {
@@ -43,5 +45,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
 
         CardiacState.Dispose();
         CaptureState.Dispose();
+        NeckSnapState.Dispose();
+        BlinkState.Dispose();
     }
 }

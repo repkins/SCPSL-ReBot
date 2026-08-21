@@ -1,5 +1,6 @@
 ﻿using MEC;
 using PlayerRoles;
+using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
@@ -82,6 +83,7 @@ public static class BotSystem
                 CardiacSystem.Process(); // SCP 049 Role
                 CaptureSystem.Process(); // SCP 106 Role
                 NeckSnapSystem.Process(); // SCP 173 Role
+                BlinkSystem.Process(); // SCP 173 Role
             }
             catch (Exception e)
             {

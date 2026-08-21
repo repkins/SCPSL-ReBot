@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Blink;
+using ReBot.Main.AI.Spacial;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -25,9 +26,11 @@ internal class PerceptionSystem
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
         var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
+        var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
 
         playerPerception.Process();
         roomPerception.Process();
+        blinkPerception.Process();
 
         enemySightPerception.PrepareEnemiesWithinRadius();
 

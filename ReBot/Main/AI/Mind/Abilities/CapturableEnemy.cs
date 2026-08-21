@@ -59,7 +59,7 @@ internal struct CapturableEnemy(BotRef botRef)
             {
                 var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
             }
         }
         else

@@ -32,7 +32,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = cardiacableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs);
                 break;
 
-            case BeliefEnum.MovedToEnemyLocation:
+            case BeliefEnum.WithinEnemyLocation:
                 actionFound = cardiacableEnemy.MovesTo(new(beliefToEnable.Idx));
                 break;
 

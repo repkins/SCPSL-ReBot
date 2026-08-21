@@ -29,7 +29,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.AttackedEnemy => 
                 capturableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
-            BeliefEnum.MovedToEnemyLocation => 
+            BeliefEnum.WithinEnemyLocation => 
                 capturableEnemy.MovesTo(new(beliefToEnable.Idx)),
 
             BeliefEnum.SightedEnemies => 
