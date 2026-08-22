@@ -48,9 +48,9 @@ internal struct InteractableObstacle(BotRef botRef)
                 }
                 else
                 {
-                    var cost = Vector3.Distance(obstacleInteractPosition, playerPosition);
+                    var cost = 0f;
 
-                    impactingBeliefs.Add(cost, BeliefEnum.MovedToObstacleInteractionLocation, obstacleInteractIdx);
+                    impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
                 }
             }
             else
@@ -62,13 +62,5 @@ internal struct InteractableObstacle(BotRef botRef)
         }
 
         return false;
-    }
-
-    public bool MovesTo(int obstacleInteractIdx)
-    {
-        var targetPosition = obstacleLocations[obstacleInteractIdx];
-        moveToPositionRef.Value = (true, targetPosition);
-
-        return true;
     }
 }

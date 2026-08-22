@@ -2,28 +2,28 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Mind.Abilities;
+namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
-internal struct Room(BotRef botRef)
+internal struct BlinkableToRoom(BotRef botRef)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
-    public bool MovesToRoom(int roomEnterLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool GoesTo(int roomEnterLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
 
         if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
         {
-            var cost = Vector3.Distance(roomEnterLocationPosition, playerPosition);
+            var cost = remainingSecondsToBlink;
 
-            impactingBeliefs.Add(cost, BeliefEnum.MovedToRoomEnterLocation, roomEnterLocationIdx);
+            impactingBeliefs.Add(cost, BeliefEnum.BlinkedToRoomEnterLocation, roomEnterLocationIdx);
         }
         else
         {
@@ -35,10 +35,10 @@ internal struct Room(BotRef botRef)
         return false;
     }
 
-    public bool MovesToEnterLocation(int roomEnterLocationIdx)
+    public bool BlinksToEnterLocation(int roomEnterLocationIdx)
     {
         var targetPosition = roomEnterLocations[roomEnterLocationIdx];
-        moveToPositionRef.Value = (true, targetPosition);
+        blinkToPositionRef.Value = (true, targetPosition);
 
         return true;
     }

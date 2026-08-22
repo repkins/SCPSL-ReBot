@@ -10,7 +10,6 @@ namespace ReBot.Main.AI.Mind.Abilities;
 internal struct SnappableEnemy(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
-    Vector3 playerForward = botRef.Value.PlayerState.Forward;
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
@@ -41,7 +40,7 @@ internal struct SnappableEnemy(BotRef botRef)
         {
             var cost = 30; // max sight distance
 
-            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
         }
 
         return false;
@@ -66,7 +65,7 @@ internal struct SnappableEnemy(BotRef botRef)
                 {
                     var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
+                    impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
                 }
             }
 

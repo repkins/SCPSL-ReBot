@@ -1,4 +1,5 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
@@ -8,10 +9,16 @@ internal struct Scp106Mind(BotRef botRef) : IMind
 {
     CapturableEnemy capturableEnemy = new(botRef);
     Enemy enemy = new(botRef);
-    Room room = new(botRef);
+    MovableToRoom room = new(botRef);
+
     InteractableObstacle interactableObstacle = new(botRef);
+    MovableToInteractableObstacle movableToInteractableObstacle = new(botRef);
+
     PassthroughObstacle passthroughObstacle = new(botRef);
+
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
+    MovableToElevationTravelObstacle movableToElevationTravelObstacle = new(botRef);
+
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
@@ -29,14 +36,14 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.AttackedEnemy => 
                 capturableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
-            BeliefEnum.WithinEnemyLocation => 
+            BeliefEnum.MovedToEnemyLocation => 
                 capturableEnemy.MovesTo(new(beliefToEnable.Idx)),
 
             BeliefEnum.SightedEnemies => 
                 enemy.SearchesInRoom(impactingBeliefs),
 
             BeliefEnum.WithinRoom =>
-                room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs),
+                room.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToRoomEnterLocation => 
                 room.MovesToEnterLocation(beliefToEnable.Idx),
@@ -58,14 +65,20 @@ internal struct Scp106Mind(BotRef botRef) : IMind
             BeliefEnum.InteractingWithObstacle => 
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.MovedToObstacleInteractionLocation => 
-                interactableObstacle.MovesTo(beliefToEnable.Idx),
+            BeliefEnum.WithinObstacleInteractionLocation =>
+                movableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.MovedToObstacleInteractionLocation =>
+                movableToInteractableObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.TravelingOnElevator => 
                 elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.MovedToElevator => 
-                elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
+            BeliefEnum.WithinElevator =>
+                movableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.MovedToElevator =>
+                movableToElevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
 
             BeliefEnum.ElevatorCalled => 
                 elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),

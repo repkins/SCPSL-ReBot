@@ -56,9 +56,9 @@ public struct ElevationTravelObstacle(BotRef botRef)
         {
             if (!obstaclesByTarget.TryGetValue(elevationEnterPosition, out var obstacle2Ref))
             {
-                var cost = Vector3.Distance(elevationEnterPosition, playerPosition);
+                var cost = 0f;
 
-                impactingBeliefs.Add(cost, BeliefEnum.MovedToElevator, elevationIdx);
+                impactingBeliefs.Add(cost, BeliefEnum.WithinElevator, elevationIdx);
             }
             else
             {
@@ -69,13 +69,5 @@ public struct ElevationTravelObstacle(BotRef botRef)
         }
 
         return false;
-    }
-
-    public bool MovesToElevator(int elevationIdx)
-    {
-        var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
-        moveToPositionRef.Value = (true, elevationEnterPosition);
-
-        return true;
     }
 }

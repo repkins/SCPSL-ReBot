@@ -91,10 +91,5 @@
     <ProjectCapability Remove="ReferenceManagerAssemblies" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Main\AI\Mind\Abilities\Blink\" />
-    <Folder Include="Main\AI\Mind\Abilities\Move\" />
-  </ItemGroup>
-
 
 </Project>

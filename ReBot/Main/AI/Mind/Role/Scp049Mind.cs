@@ -1,4 +1,5 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
@@ -8,9 +9,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
 {
     CardiacableEnemy cardiacableEnemy = new(botRef);
     Enemy enemy = new(botRef);
-    Room room = new(botRef);
+    MovableToRoom room = new(botRef);
+
     InteractableObstacle interactableObstacle = new(botRef);
+    MovableToInteractableObstacle movableToInteractableObstacle = new(botRef);
+
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
+    MovableToElevationTravelObstacle movableToElevationTravelObstacle = new(botRef);
+
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
@@ -32,7 +38,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = cardiacableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs);
                 break;
 
-            case BeliefEnum.WithinEnemyLocation:
+            case BeliefEnum.MovedToEnemyLocation:
                 actionFound = cardiacableEnemy.MovesTo(new(beliefToEnable.Idx));
                 break;
 
@@ -41,7 +47,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 break;
 
             case BeliefEnum.WithinRoom:
-                actionFound = room.MovesToRoom(beliefToEnable.Idx, impactingBeliefs);
+                actionFound = room.GoesTo(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
             case BeliefEnum.MovedToRoomEnterLocation:
@@ -67,16 +73,24 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 actionFound = interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
+            case BeliefEnum.WithinObstacleInteractionLocation:
+                actionFound = movableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs);
+                break;
+
             case BeliefEnum.MovedToObstacleInteractionLocation:
-                actionFound = interactableObstacle.MovesTo(beliefToEnable.Idx);
+                actionFound = movableToInteractableObstacle.MovesTo(beliefToEnable.Idx);
                 break;
 
             case BeliefEnum.TravelingOnElevator:
                 actionFound = elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
+            case BeliefEnum.WithinElevator:
+                actionFound = movableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs);
+                break;
+
             case BeliefEnum.MovedToElevator:
-                actionFound = elevationTravelObstacle.MovesToElevator(beliefToEnable.Idx);
+                actionFound = movableToElevationTravelObstacle.MovesToElevator(beliefToEnable.Idx);
                 break;
 
             case BeliefEnum.ElevatorCalled:
