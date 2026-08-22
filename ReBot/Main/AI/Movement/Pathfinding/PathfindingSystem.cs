@@ -1,29 +1,20 @@
 ﻿using ReBot.Navigation.Mesh;
+using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Movement.Pathfinding;
 
 internal static class PathfindingSystem
 {
-    public static void Process()
+    public static void Process(NativeList<(BotRef, Vector3)> outClosestPositions)
     {
-        PathfindingStore.ClosestPositions.Clear();
-
-        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        foreach (var (botRef, position) in PathfindingStore.DestinationPositions)
         {
-            var bot = BotStore.Bots[botIdx];
-
-            var moveToPositionRef = bot.MovementState.MoveToPositionRef;
-
-            var (hasTargetPos, targetPos) = moveToPositionRef.Value;
-            moveToPositionRef.Value = default;
-
-            if (!hasTargetPos)
-            {
-                continue;
-            }
+            var bot = botRef.Value;
+            var botIdx = botRef.Idx;
 
             var startingPos = bot.PlayerState.Position;
+            var targetPos = position;
 
             var playerRadius = .5f;
             var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, playerRadius) ?? PathfindingStore.CellWithins[botIdx];
@@ -46,7 +37,7 @@ internal static class PathfindingSystem
                 ? GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value) 
                 : targetPos;
 
-            PathfindingStore.ClosestPositions.Add((new(botIdx), closestPosition));
+            outClosestPositions.Add((new(botIdx), closestPosition));
             PathfindingStore.GoalPositions[botIdx] = targetPos;
 
             var pointsPath = PathfindingStore.PointsPath[botIdx];

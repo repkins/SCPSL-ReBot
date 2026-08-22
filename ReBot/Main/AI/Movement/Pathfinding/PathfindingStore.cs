@@ -8,8 +8,9 @@ namespace ReBot.Main.AI.Movement.Pathfinding;
 
 internal static class PathfindingStore
 {
+    public static readonly List<(BotRef, Vector3)> DestinationPositions = [];
     public static readonly List<(BotRef, Vector3)> ClosestPositions = [];
-    
+
     public static readonly List<Vector3> GoalPositions = [];
 
     public static readonly List<List<TransformCell>> CellsPath = [];

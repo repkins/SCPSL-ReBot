@@ -1,5 +1,6 @@
 ﻿using PlayerRoles.FirstPersonControl;
 using ReBot.Main.AI.Movement.Pathfinding;
+using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Movement;
@@ -10,9 +11,28 @@ public static class MovementSystem
 
     public static void Process()
     {
-        PathfindingSystem.Process();
+        PathfindingStore.DestinationPositions.Clear();
+        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        {
+            var bot = BotStore.Bots[botIdx];
 
-        foreach (var (botRef, position) in PathfindingStore.ClosestPositions)
+            var moveToPositionRef = bot.MovementState.MoveToPositionRef;
+
+            var (hasTargetPos, targetPos) = moveToPositionRef.Value;
+            moveToPositionRef.Value = default;
+
+            if (!hasTargetPos)
+            {
+                continue;
+            }
+
+            PathfindingStore.DestinationPositions.Add((new(botIdx), targetPos));
+        }
+
+        var closestPositions = new NativeList<(BotRef, Vector3)>(Allocator.Temp);
+        PathfindingSystem.Process(closestPositions);
+
+        foreach (var (botRef, position) in closestPositions)
         {
             SteerToPosition(botRef, position);
         }

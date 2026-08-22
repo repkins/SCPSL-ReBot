@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using PlayerRoles.PlayableScps.Scp173;
+using ReBot.Main.AI.Movement.Pathfinding;
 using System.Reflection;
+using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Blink;
@@ -11,6 +13,7 @@ internal class BlinkSystem
 
     public static void Process()
     {
+        PathfindingStore.DestinationPositions.Clear();
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
             var blinkToPositionRef = BotStore.Bots[botIdx].BlinkState.BlinkToPositionRef;
@@ -23,7 +26,16 @@ internal class BlinkSystem
                 continue;
             }
 
-            var hub = BotStore.Bots[botIdx].Hub;
+            PathfindingStore.DestinationPositions.Add((new(botIdx), position));
+        }
+
+        var closestPositions = new NativeList<(BotRef, Vector3)>(Allocator.Temp);
+        PathfindingSystem.Process(closestPositions);
+
+        foreach (var (botRef, closestPosition) in closestPositions)
+        {
+            var botIdx = botRef.Idx;
+            var hub = botRef.Value.Hub;
 
             if (hub.roleManager.CurrentRole is not Scp173Role scp173Role)
             {
@@ -37,13 +49,20 @@ internal class BlinkSystem
                 continue;
             }
 
+            var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
+            var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
+
+            var position = closestPosition;
+            if (PathfindingStore.GoalPositions[botIdx] != closestPosition)
+            {
+                var playerForward = BotStore.Bots[botIdx].PlayerState.Forward;
+                position += playerForward * 0.5f;
+            }
+
             if (!Physics.Raycast(position, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
             {
                 continue;
             }
-
-            var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
-            var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
             var tpPosition = hitInfo.point;
 
             var relTargetPos = tpPosition - playerCameraPosition;
