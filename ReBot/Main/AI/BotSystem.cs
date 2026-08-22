@@ -77,10 +77,10 @@ public static class BotSystem
 
                 DecisionMakingSystem.Process();
 
-                BlinkSystem.Process(); // SCP 173 Role
                 CardiacSystem.Process(); // SCP 049 Role
                 CaptureSystem.Process(); // SCP 106 Role
                 NeckSnapSystem.Process(); // SCP 173 Role
+                BlinkSystem.Process(); // SCP 173 Role
 
                 MovementSystem.Process();
                 InteractionSystem.Process();

@@ -52,27 +52,28 @@ internal class BlinkSystem
             var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
             var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
 
-            var position = closestPosition;
+            var targetPosition = closestPosition;
             if (PathfindingStore.GoalPositions[botIdx] != closestPosition)
             {
-                var playerForward = BotStore.Bots[botIdx].PlayerState.Forward;
-                position += playerForward * 0.5f;
+                targetPosition = closestPosition;
             }
-
-            if (!Physics.Raycast(position, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
+            else
             {
-                continue;
+                if (!Physics.Raycast(targetPosition, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
+                {
+                    continue;
+                }
+                targetPosition = hitInfo.point;
             }
-            var tpPosition = hitInfo.point;
 
-            var relTargetPos = tpPosition - playerCameraPosition;
-            if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) < .1f)
+            var relTargetPos = targetPosition - playerCameraPosition;
+            if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) < .01f)
             {
                 m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [false]);
                 m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [true]);
             }
 
-            BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, tpPosition);
+            BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, targetPosition);
         }
     }
 }

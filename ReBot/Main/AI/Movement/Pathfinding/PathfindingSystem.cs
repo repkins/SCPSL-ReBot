@@ -17,7 +17,7 @@ internal static class PathfindingSystem
             var targetPos = position;
 
             var playerRadius = .5f;
-            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, playerRadius) ?? PathfindingStore.CellWithins[botIdx];
+            var startingCellResult = NavigationMesh.GetCellWithinOrClosest(startingPos, 2f) ?? PathfindingStore.CellWithins[botIdx];
             var targetCellResult = NavigationMesh.GetCellWithinOrClosest(targetPos, playerRadius);
 
             if (!startingCellResult.HasValue || !targetCellResult.HasValue)
