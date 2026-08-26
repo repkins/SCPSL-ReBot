@@ -1,25 +1,30 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.Move;
+using ReBot.Main.AI.Mind.Abilities.Move.Location;
 using ReBot.Main.AI.Mind.Abilities.Obstacle;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
+using MovableToRoomEnterLocation = MovableTo<RoomEnterLocation>;
+using MovableToInteractableObstacleLocation = MovableTo<InteractableObstacleLocation>;
+using MovableToElevationTravelObstacleEnterLocation = MovableTo<ElevationTravelObstacleEnterLocation>;
+
 internal struct Scp106Mind(BotRef botRef) : IMind
 {
     CapturableEnemy capturableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    MovableToRoomEnterLocation movableToRoom = new(botRef);
+    MovableToRoomEnterLocation movableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacleLocation movableToInteractableObstacle = new(botRef);
+    MovableToInteractableObstacleLocation movableToInteractableObstacle = new(botRef, new(botRef));
 
     PassthroughObstacle passthroughObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacleEnterLocation movableToElevationTravelObstacle = new(botRef);
+    MovableToElevationTravelObstacleEnterLocation movableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
