@@ -27,7 +27,7 @@ internal struct CapturableEnemy(BotRef botRef)
         {
             for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
             {
-                var cost = 1f;  // cardiac attack cost, constant
+                var cost = 1f;  // capture attack cost, constant
 
                 impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
             }
