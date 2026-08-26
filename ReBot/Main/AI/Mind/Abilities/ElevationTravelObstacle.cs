@@ -1,3 +1,4 @@
+using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
@@ -54,20 +55,18 @@ public struct ElevationTravelObstacle(BotRef botRef)
         }
         else
         {
-            if (!obstaclesByTarget.TryGetValue(elevationEnterPosition, out var obstacle2Ref))
-            {
-                var cost = 0f;
+            var cost = 0f;
 
-                impactingBeliefs.Add(cost, BeliefEnum.WithinElevator, elevationIdx);
-            }
-            else
-            {
-                var cost = Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
-
-                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
-            }
+            impactingBeliefs.Add(cost, BeliefEnum.WithinElevator, elevationIdx);
         }
 
         return false;
+    }
+
+    internal struct EnterLocation(BotRef botRef) : ITarget
+    {
+        public NativeList<Vector3> Locations { get; } = ObstacleState.ElevationTravelEnterLocations;
+
+        public readonly BeliefEnum MovedToEnum => BeliefEnum.MovedToElevator;
     }
 }

@@ -9,15 +9,16 @@ internal struct Scp106Mind(BotRef botRef) : IMind
 {
     CapturableEnemy capturableEnemy = new(botRef);
     Enemy enemy = new(botRef);
-    MovableToRoom room = new(botRef);
+
+    MovableTo<Room.EnterLocation> movableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacle movableToInteractableObstacle = new(botRef);
+    MovableTo<InteractableObstacle.Location> movableToInteractableObstacle = new(botRef, new(botRef));
 
     PassthroughObstacle passthroughObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacle movableToElevationTravelObstacle = new(botRef);
+    MovableTo<ElevationTravelObstacle.EnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
@@ -43,10 +44,10 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 enemy.SearchesInRoom(impactingBeliefs),
 
             BeliefEnum.WithinRoom =>
-                room.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+                movableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToRoomEnterLocation => 
-                room.MovesTo(beliefToEnable.Idx),
+                movableToRoom.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.ObstacleToOvercome =>
                 elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)

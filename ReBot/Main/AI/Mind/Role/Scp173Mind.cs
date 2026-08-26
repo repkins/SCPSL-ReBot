@@ -2,7 +2,6 @@
 using ReBot.Main.AI.Mind.Abilities.Blink;
 using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
-using System;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
@@ -12,15 +11,15 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     SnappableEnemy snappableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    Unobserved<MovableToRoom> unobservedMovableToRoom = new(botRef, new(botRef));
+    Unobserved<MovableTo<Room.EnterLocation>> unobservedMovableToRoom = new(botRef, new(botRef, new(botRef)));
     ObservedBlinkableToRoom observedBlinkableToRoom = new(botRef);
 
     InteractableObstacle interactableObstacle = new(botRef);
-    Unobserved<MovableToInteractableObstacle> unobservedMovableToInteractableObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<InteractableObstacle.Location>> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new(botRef)));
     ObservedBlinkableToInteractableObstacle observedBlinkableToInteractableObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    Unobserved<MovableToElevationTravelObstacle> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<ElevationTravelObstacle.EnterLocation>> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new(botRef)));
     ObservedBlinkableToElevationTravelObstacle observedBlinkableToElevationTravelObstacle = new(botRef);
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);

@@ -9,13 +9,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
 {
     CardiacableEnemy cardiacableEnemy = new(botRef);
     Enemy enemy = new(botRef);
-    MovableToRoom room = new(botRef);
+
+    MovableTo<Room.EnterLocation> room = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacle movableToInteractableObstacle = new(botRef);
+    MovableTo<InteractableObstacle.Location> movableToInteractableObstacle = new(botRef, new(botRef));
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacle movableToElevationTravelObstacle = new(botRef);
+    MovableTo<ElevationTravelObstacle.EnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 

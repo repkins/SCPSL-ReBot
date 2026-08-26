@@ -1,4 +1,5 @@
 ﻿using Interactables.Interobjects.DoorUtils;
+using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
@@ -36,30 +37,37 @@ internal struct InteractableObstacle(BotRef botRef)
         {
             var obstacleInteractPosition = obstacleLocations[obstacleInteractIdx];
 
-            if (!obstaclesByTarget.TryGetValue(obstacleInteractPosition, out var obstacle2Ref))
+            if (Vector3.Distance(obstacleInteractPosition, playerPosition) < 2f)
             {
-                if (Vector3.Distance(obstacleInteractPosition, playerPosition) < 2f)
+                if (!obstaclesByTarget.TryGetValue(obstacleInteractPosition, out var obstacle2Ref))
                 {
                     interactPositionRef.Value = (true, obstacleInteractPosition);
                     lookAtPositionRef.Value = (true, obstacleInteractPosition);
-
-                    return true;
                 }
                 else
                 {
-                    var cost = 0f;
+                    var cost = Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
+                    impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
                 }
+
+                return true;
             }
             else
             {
-                var cost = Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+                var cost = 0f;
 
-                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.WithinObstacleInteractionLocation, obstacleInteractIdx);
             }
         }
 
         return false;
+    }
+
+    internal struct Location(BotRef botRef) : ITarget
+    {
+        public NativeList<Vector3> Locations { get; } = ObstacleState.ObstacleLocations;
+
+        public readonly BeliefEnum MovedToEnum => BeliefEnum.MovedToObstacleInteractionLocation;
     }
 }
