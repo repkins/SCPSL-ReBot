@@ -16,7 +16,6 @@ internal struct InteractableObstacle(BotRef botRef)
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
     public bool Overcomes(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
     {

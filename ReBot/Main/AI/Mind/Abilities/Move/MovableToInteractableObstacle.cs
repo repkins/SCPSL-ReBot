@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Move;
 
-internal struct MovableToInteractableObstacle(BotRef botRef)
+internal struct MovableToInteractableObstacle(BotRef botRef) : IMovableToTarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;

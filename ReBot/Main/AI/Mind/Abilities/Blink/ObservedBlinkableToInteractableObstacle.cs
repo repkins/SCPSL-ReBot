@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
-internal struct BlinkableToInteractableObstacle(BotRef botRef)
+internal struct ObservedBlinkableToInteractableObstacle(BotRef botRef)
 {
+    bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
@@ -14,9 +15,12 @@ internal struct BlinkableToInteractableObstacle(BotRef botRef)
 
     public bool GoesTo(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var cost = remainingSecondsToBlink;
+        if (isObserved)
+        {
+            var cost = remainingSecondsToBlink;
 
-        impactingBeliefs.Add(cost, BeliefEnum.BlinkedToObstacleInteractionLocation, obstacleInteractIdx);
+            impactingBeliefs.Add(cost, BeliefEnum.BlinkedToObstacleInteractionLocation, obstacleInteractIdx);
+        }
 
         return false;
     }

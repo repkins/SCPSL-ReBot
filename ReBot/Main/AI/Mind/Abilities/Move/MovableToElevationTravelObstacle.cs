@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Move;
 
-internal struct MovableToElevationTravelObstacle(BotRef botRef)
+internal struct MovableToElevationTravelObstacle(BotRef botRef) : IMovableToTarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
-    public bool GoesToElevator(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool GoesTo(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
         var cost = Vector3.Distance(elevationEnterPosition, playerPosition);
@@ -22,7 +22,7 @@ internal struct MovableToElevationTravelObstacle(BotRef botRef)
         return false;
     }
 
-    public bool MovesToElevator(int elevationIdx)
+    public bool MovesTo(int elevationIdx)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
         moveToPositionRef.Value = (true, elevationEnterPosition);

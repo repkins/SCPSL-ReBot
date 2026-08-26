@@ -51,7 +51,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 break;
 
             case BeliefEnum.MovedToRoomEnterLocation:
-                actionFound = room.MovesToEnterLocation(beliefToEnable.Idx);
+                actionFound = room.MovesTo(beliefToEnable.Idx);
                 break;
 
             case BeliefEnum.ObstacleToOvercome:
@@ -86,11 +86,11 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 break;
 
             case BeliefEnum.WithinElevator:
-                actionFound = movableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs);
+                actionFound = movableToElevationTravelObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs);
                 break;
 
             case BeliefEnum.MovedToElevator:
-                actionFound = movableToElevationTravelObstacle.MovesToElevator(beliefToEnable.Idx);
+                actionFound = movableToElevationTravelObstacle.MovesTo(beliefToEnable.Idx);
                 break;
 
             case BeliefEnum.ElevatorCalled:

@@ -4,24 +4,28 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
-internal struct BlinkableToElevationTravelObstacle(BotRef botRef)
+internal struct ObservedBlinkableToElevationTravelObstacle(BotRef botRef)
 {
+    bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
 
     NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
-    public bool GoesToElevator(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool GoesTo(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var cost = remainingSecondsToBlink;
+        if (isObserved)
+        {
+            var cost = remainingSecondsToBlink;
 
-        impactingBeliefs.Add(cost, BeliefEnum.BlinkedToElevator, elevationIdx);
+            impactingBeliefs.Add(cost, BeliefEnum.BlinkedToElevator, elevationIdx);
+        }
 
         return false;
     }
 
-    public bool BlinksToElevator(int elevationIdx)
+    public bool BlinksTo(int elevationIdx)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
         blinkToPositionRef.Value = (true, elevationEnterPosition);

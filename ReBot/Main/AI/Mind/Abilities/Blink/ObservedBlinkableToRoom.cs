@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
-internal struct BlinkableToRoom(BotRef botRef)
+internal struct ObservedBlinkableToRoom(BotRef botRef)
 {
+    bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
@@ -17,20 +18,23 @@ internal struct BlinkableToRoom(BotRef botRef)
 
     public bool GoesTo(int roomEnterLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
-
-        if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
+        if (isObserved)
         {
-            var cost = remainingSecondsToBlink;
+            var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
 
-            impactingBeliefs.Add(cost, BeliefEnum.BlinkedToRoomEnterLocation, roomEnterLocationIdx);
-        }
-        else
-        {
-            var cost = Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
+            if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
+            {
+                var cost = remainingSecondsToBlink;
 
-            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
-        }
+                impactingBeliefs.Add(cost, BeliefEnum.BlinkedToRoomEnterLocation, roomEnterLocationIdx);
+            }
+            else
+            {
+                var cost = Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
+
+                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
+            }
+        }        
 
         return false;
     }

@@ -46,7 +46,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 room.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToRoomEnterLocation => 
-                room.MovesToEnterLocation(beliefToEnable.Idx),
+                room.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.ObstacleToOvercome =>
                 elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)
@@ -75,10 +75,10 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.WithinElevator =>
-                movableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs),
+                movableToElevationTravelObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToElevator =>
-                movableToElevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
+                movableToElevationTravelObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.ElevatorCalled => 
                 elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),

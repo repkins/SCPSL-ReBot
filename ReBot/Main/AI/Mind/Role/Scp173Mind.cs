@@ -2,27 +2,26 @@
 using ReBot.Main.AI.Mind.Abilities.Blink;
 using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
+using System;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 internal struct Scp173Mind(BotRef botRef) : IMind
 {
-    ObservablePlayer observablePlayer = new(botRef);
-
     SnappableEnemy snappableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    MovableToRoom movableToRoom = new(botRef);
-    BlinkableToRoom blinkableToRoom = new(botRef);
+    Unobserved<MovableToRoom> unobservedMovableToRoom = new(botRef, new(botRef));
+    ObservedBlinkableToRoom observedBlinkableToRoom = new(botRef);
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacle movableToInteractableObstacle = new(botRef);
-    BlinkableToInteractableObstacle blinkableToInteractableObstacle = new(botRef);
+    Unobserved<MovableToInteractableObstacle> unobservedMovableToInteractableObstacle = new(botRef, new(botRef));
+    ObservedBlinkableToInteractableObstacle observedBlinkableToInteractableObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacle movableToElevationTravelObstacle = new(botRef);
-    BlinkableToElevationTravelObstacle blinkableToElevationTravelObstacle = new(botRef);
+    Unobserved<MovableToElevationTravelObstacle> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef));
+    ObservedBlinkableToElevationTravelObstacle observedBlinkableToElevationTravelObstacle = new(botRef);
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
@@ -51,16 +50,14 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 enemy.SearchesInRoom(impactingBeliefs),
 
             BeliefEnum.WithinRoom =>
-                (!observablePlayer.isObserved 
-                    && movableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs))
-                || (observablePlayer.isObserved 
-                    && blinkableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs)),
+                unobservedMovableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs)
+                    || observedBlinkableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToRoomEnterLocation =>
-                movableToRoom.MovesToEnterLocation(beliefToEnable.Idx),
+                unobservedMovableToRoom.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.BlinkedToRoomEnterLocation =>
-                blinkableToRoom.BlinksToEnterLocation(beliefToEnable.Idx),
+                observedBlinkableToRoom.BlinksToEnterLocation(beliefToEnable.Idx),
 
             BeliefEnum.ObstacleToOvercome =>
                 elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)
@@ -73,31 +70,27 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.WithinObstacleInteractionLocation =>
-                (!observablePlayer.isObserved
-                    && movableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs))
-                || (observablePlayer.isObserved
-                    && blinkableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs)),
+                unobservedMovableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs)
+                    || observedBlinkableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToObstacleInteractionLocation => 
-                movableToInteractableObstacle.MovesTo(beliefToEnable.Idx),
+                unobservedMovableToInteractableObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.BlinkedToObstacleInteractionLocation =>
-                blinkableToInteractableObstacle.BlinksTo(beliefToEnable.Idx),
+                observedBlinkableToInteractableObstacle.BlinksTo(beliefToEnable.Idx),
 
             BeliefEnum.TravelingOnElevator => 
                 elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.WithinElevator =>
-                (!observablePlayer.isObserved
-                    && movableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs))
-                || (observablePlayer.isObserved 
-                    && blinkableToElevationTravelObstacle.GoesToElevator(beliefToEnable.Idx, impactingBeliefs)),
+                unobservedMovableToElevationTravelObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs)
+                    || observedBlinkableToElevationTravelObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedToElevator =>
-                movableToElevationTravelObstacle.MovesToElevator(beliefToEnable.Idx),
+                unobservedMovableToElevationTravelObstacle.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.BlinkedToElevator =>
-                blinkableToElevationTravelObstacle.BlinksToElevator(beliefToEnable.Idx),
+                observedBlinkableToElevationTravelObstacle.BlinksTo(beliefToEnable.Idx),
 
             BeliefEnum.ElevatorCalled => 
                 elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),

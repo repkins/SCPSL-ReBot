@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Move;
 
-internal struct MovableToRoom(BotRef botRef)
+internal struct MovableToRoom(BotRef botRef) : IMovableToTarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -35,7 +35,7 @@ internal struct MovableToRoom(BotRef botRef)
         return false;
     }
 
-    public bool MovesToEnterLocation(int roomEnterLocationIdx)
+    public bool MovesTo(int roomEnterLocationIdx)
     {
         var targetPosition = roomEnterLocations[roomEnterLocationIdx];
         moveToPositionRef.Value = (true, targetPosition);
