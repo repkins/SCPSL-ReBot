@@ -2,7 +2,7 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Mind.Abilities;
+namespace ReBot.Main.AI.Mind.Abilities.Obstacle;
 
 internal struct PassthroughObstacle(BotRef botRef)
 {

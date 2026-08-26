@@ -2,7 +2,7 @@ using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Mind.Abilities;
+namespace ReBot.Main.AI.Mind.Abilities.Obstacle;
 
 public struct ElevationCallObstacle(BotRef botRef)
 {
