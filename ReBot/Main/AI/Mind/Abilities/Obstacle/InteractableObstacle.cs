@@ -63,11 +63,4 @@ internal struct InteractableObstacle(BotRef botRef)
 
         return false;
     }
-
-    internal struct Location(BotRef botRef) : ITarget
-    {
-        public NativeList<Vector3> Locations { get; } = ObstacleState.ObstacleLocations;
-
-        public readonly BeliefEnum MovedToEnum => BeliefEnum.MovedToObstacleInteractionLocation;
-    }
 }

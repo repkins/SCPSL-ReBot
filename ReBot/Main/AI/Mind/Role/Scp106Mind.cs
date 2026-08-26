@@ -11,15 +11,15 @@ internal struct Scp106Mind(BotRef botRef) : IMind
     CapturableEnemy capturableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    MovableTo<Room.EnterLocation> movableToRoom = new(botRef, new(botRef));
+    MovableToRoomEnterLocation movableToRoom = new(botRef);
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableTo<InteractableObstacle.Location> movableToInteractableObstacle = new(botRef, new(botRef));
+    MovableToInteractableObstacleLocation movableToInteractableObstacle = new(botRef);
 
     PassthroughObstacle passthroughObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableTo<ElevationTravelObstacle.EnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
+    MovableToElevationTravelObstacleEnterLocation movableToElevationTravelObstacle = new(botRef);
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 

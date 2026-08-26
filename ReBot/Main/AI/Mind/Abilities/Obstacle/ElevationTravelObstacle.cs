@@ -62,11 +62,4 @@ public struct ElevationTravelObstacle(BotRef botRef)
 
         return false;
     }
-
-    internal struct EnterLocation(BotRef botRef) : ITarget
-    {
-        public NativeList<Vector3> Locations { get; } = ObstacleState.ElevationTravelEnterLocations;
-
-        public readonly BeliefEnum MovedToEnum => BeliefEnum.MovedToElevator;
-    }
 }
