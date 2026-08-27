@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Move.Location;
 
-internal struct EnemyLocation(BotRef botRef) : ITarget
+internal struct MoveEnemyLocation(BotRef botRef) : ITarget
 {
     public NativeList<Vector3> Locations { get; } = botRef.Value.TerminationState.EnemiesWithinSight;
 

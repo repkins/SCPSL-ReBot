@@ -7,9 +7,9 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
-using MovableToRoomEnterLocation = MovableTo<RoomEnterLocation>;
-using MovableToInteractableObstacleLocation = MovableTo<InteractableObstacleLocation>;
-using MovableToElevationTravelObstacleEnterLocation = MovableTo<ElevationTravelObstacleEnterLocation>;
+using MovableToRoomEnterLocation = MovableTo<MoveRoomEnterLocation>;
+using MovableToInteractableObstacleLocation = MovableTo<MoveInteractableObstacleLocation>;
+using MovableToElevationTravelObstacleEnterLocation = MovableTo<MoveElevationTravelObstacleEnterLocation>;
 
 public struct Scp049Mind(BotRef botRef) : IMind
 {

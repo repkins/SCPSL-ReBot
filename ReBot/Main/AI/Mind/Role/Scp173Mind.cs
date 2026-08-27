@@ -1,39 +1,31 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.Blink;
+using ReBot.Main.AI.Mind.Abilities.Blink.Location;
 using ReBot.Main.AI.Mind.Abilities.Move;
+using ReBot.Main.AI.Mind.Abilities.Move.Location;
 using ReBot.Main.AI.Mind.Abilities.Obstacle;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
-using MovableToRoomEnterLocation = MovableTo<Abilities.Move.Location.RoomEnterLocation>;
-using MovableToInteractableObstacleLocation = MovableTo<Abilities.Move.Location.InteractableObstacleLocation>;
-using MovableToElevationTravelObstacleEnterLocation = MovableTo<Abilities.Move.Location.ElevationTravelObstacleEnterLocation>;
-using MovableToEnemyLocation = MovableTo<Abilities.Move.Location.EnemyLocation>;
-
-using ObservedBlinkableToRoomEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.RoomEnterLocation>;
-using ObservedBlinkableToInteractableObstacleLocation = ObservedBlinkableTo<Abilities.Blink.Location.InteractableObstacleLocation>;
-using ObservedBlinkableToElevationTravelObstacleEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.ElevationTravelObstacleEnterLocation>;
-using ObservedBlinkableToEnemyLocation = ObservedBlinkableTo<Abilities.Blink.Location.EnemyLocation>;
-
 internal struct Scp173Mind(BotRef botRef) : IMind
 {
     SnappableEnemy snappableEnemy = new(botRef);
-    Unobserved<MovableToEnemyLocation> unobservedMovableToEnemy = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToEnemyLocation observedBlinkableToEnemy = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveEnemyLocation>> unobservedMovableToEnemy = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableTo<BlinkEnemyLocation> observedBlinkableToEnemy = new(botRef, new(botRef));
     Enemy enemy = new(botRef);
 
-    Unobserved<MovableToRoomEnterLocation> unobservedMovableToRoom = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToRoomEnterLocation observedBlinkableToRoom = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveRoomEnterLocation>> unobservedMovableToRoom = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableTo<BlinkRoomEnterLocation> observedBlinkableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    Unobserved<MovableToInteractableObstacleLocation> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToInteractableObstacleLocation observedBlinkableToInteractableObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveInteractableObstacleLocation>> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableTo<BlinkInteractableObstacleLocation> observedBlinkableToInteractableObstacle = new(botRef, new(botRef));
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    Unobserved<MovableToElevationTravelObstacleEnterLocation> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToElevationTravelObstacleEnterLocation observedBlinkableToElevationTravelObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveElevationTravelObstacleEnterLocation>> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableTo<BlinkElevationTravelObstacleEnterLocation> observedBlinkableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
