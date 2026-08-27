@@ -15,13 +15,13 @@ public struct Scp049Mind(BotRef botRef) : IMind
     MovableTo<MoveRoomEnterLocation> room = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new(botRef));
+    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new());
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new());
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
-    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {

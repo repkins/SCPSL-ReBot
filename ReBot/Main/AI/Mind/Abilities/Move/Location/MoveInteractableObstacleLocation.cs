@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Move.Location;
 
-internal struct MoveInteractableObstacleLocation(BotRef botRef) : IMoveTarget
+internal struct MoveInteractableObstacleLocation() : IMoveTarget
 {
     public NativeList<Vector3> Locations { get; } = ObstacleState.ObstacleLocations;
 

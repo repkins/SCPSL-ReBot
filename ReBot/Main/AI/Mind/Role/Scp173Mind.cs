@@ -20,16 +20,16 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     ObservedBlinkableTo<BlinkRoomEnterLocation> observedBlinkableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    Unobserved<MovableTo<MoveInteractableObstacleLocation>> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableTo<BlinkInteractableObstacleLocation> observedBlinkableToInteractableObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveInteractableObstacleLocation>> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new()));
+    ObservedBlinkableTo<BlinkInteractableObstacleLocation> observedBlinkableToInteractableObstacle = new(botRef, new());
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    Unobserved<MovableTo<MoveElevationTravelObstacleEnterLocation>> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableTo<BlinkElevationTravelObstacleEnterLocation> observedBlinkableToElevationTravelObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveElevationTravelObstacleEnterLocation>> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new()));
+    ObservedBlinkableTo<BlinkElevationTravelObstacleEnterLocation> observedBlinkableToElevationTravelObstacle = new(botRef, new());
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
-    Unobserved<MovableTo<MoveElevationCallObstacleLocation>> unobservedMovableToElevationCallObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableTo<BlinkElevationCallObstacleLocation> observedBlinkableToElevationCallObstacle = new(botRef, new(botRef));
+    Unobserved<MovableTo<MoveElevationCallObstacleLocation>> unobservedMovableToElevationCallObstacle = new(botRef, new(botRef, new()));
+    ObservedBlinkableTo<BlinkElevationCallObstacleLocation> observedBlinkableToElevationCallObstacle = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {

@@ -15,15 +15,15 @@ internal struct Scp106Mind(BotRef botRef) : IMind
     MovableTo<MoveRoomEnterLocation> movableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new(botRef));
+    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new());
 
     PassthroughObstacle passthroughObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new());
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
-    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {

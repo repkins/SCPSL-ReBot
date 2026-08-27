@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Blink.Location;
 
-internal struct BlinkElevationTravelObstacleEnterLocation(BotRef botRef) : IBlinkTarget
+internal struct BlinkElevationTravelObstacleEnterLocation() : IBlinkTarget
 {
     public NativeList<Vector3> Locations { get; } = ObstacleState.ElevationTravelEnterLocations;
 
