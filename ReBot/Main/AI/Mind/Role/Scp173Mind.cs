@@ -28,6 +28,8 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     ObservedBlinkableTo<BlinkElevationTravelObstacleEnterLocation> observedBlinkableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
+    Unobserved<MovableTo<MoveElevationCallObstacleLocation>> unobservedMovableToElevationCallObstacle = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableTo<BlinkElevationCallObstacleLocation> observedBlinkableToElevationCallObstacle = new(botRef, new(botRef));
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -102,6 +104,16 @@ internal struct Scp173Mind(BotRef botRef) : IMind
 
             BeliefEnum.ElevatorCalled => 
                 elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.WithinElevatorCallLocation =>
+                unobservedMovableToElevationCallObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs)
+                    || observedBlinkableToElevationCallObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.MovedToElevatorCallLocation =>
+                unobservedMovableToElevationCallObstacle.MovesTo(beliefToEnable.Idx),
+
+            BeliefEnum.BlinkedToElevatorCallLocation =>
+                observedBlinkableToElevationCallObstacle.BlinksTo(beliefToEnable.Idx),
 
             _ => false
         };

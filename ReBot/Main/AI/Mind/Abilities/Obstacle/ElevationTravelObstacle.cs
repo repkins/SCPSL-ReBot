@@ -1,4 +1,3 @@
-using ReBot.Main.AI.Mind.Abilities.Move;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
@@ -18,7 +17,6 @@ public struct ElevationTravelObstacle(BotRef botRef)
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
     public bool TryGetElevationIdx(ObstacleRef obstacleRef, out int elevationIdx)
     {
@@ -47,11 +45,20 @@ public struct ElevationTravelObstacle(BotRef botRef)
 
         if (Vector3.Distance(elevationEnterPosition, playerPosition) < 1f)
         {
-            var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
-            lookAtPositionRef.Value = (true, travelInteractPosition);
-            interactPositionRef.Value = (true, travelInteractPosition);
+            if (!obstaclesByTarget.TryGetValue(elevationEnterPosition, out var obstacle2Ref))
+            {
+                var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
+                lookAtPositionRef.Value = (true, travelInteractPosition);
+                interactPositionRef.Value = (true, travelInteractPosition);
 
-            return true;
+                return true;
+            }
+            else
+            {
+                var cost = Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
+
+                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
+            }
         }
         else
         {

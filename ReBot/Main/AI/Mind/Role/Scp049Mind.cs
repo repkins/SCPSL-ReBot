@@ -7,24 +7,21 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
-using MovableToRoomEnterLocation = MovableTo<MoveRoomEnterLocation>;
-using MovableToInteractableObstacleLocation = MovableTo<MoveInteractableObstacleLocation>;
-using MovableToElevationTravelObstacleEnterLocation = MovableTo<MoveElevationTravelObstacleEnterLocation>;
-
 public struct Scp049Mind(BotRef botRef) : IMind
 {
     CardiacableEnemy cardiacableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    MovableToRoomEnterLocation room = new(botRef, new(botRef));
+    MovableTo<MoveRoomEnterLocation> room = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacleLocation movableToInteractableObstacle = new(botRef, new(botRef));
+    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new(botRef));
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacleEnterLocation movableToElevationTravelObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
+    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new(botRef));
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -102,6 +99,14 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
             case BeliefEnum.ElevatorCalled:
                 actionFound = elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs);
+                break;
+
+            case BeliefEnum.WithinElevatorCallLocation:
+                actionFound = movableToElevationCallObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs);
+                break;
+
+            case BeliefEnum.MovedToElevatorCallLocation:
+                actionFound = movableToElevationCallObstacle.MovesTo(beliefToEnable.Idx);
                 break;
         }
 

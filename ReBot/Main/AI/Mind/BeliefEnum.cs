@@ -17,6 +17,9 @@ public enum BeliefEnum : byte
     MovedToElevator,
     BlinkedToElevator,
     ElevatorCalled,
+    WithinElevatorCallLocation,
+    MovedToElevatorCallLocation,
+    BlinkedToElevatorCallLocation,
 
     WithinRoom,
     MovedToRoomEnterLocation,

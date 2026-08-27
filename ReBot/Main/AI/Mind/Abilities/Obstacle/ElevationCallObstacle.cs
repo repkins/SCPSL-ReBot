@@ -14,7 +14,6 @@ public struct ElevationCallObstacle(BotRef botRef)
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
     NativeList<bool> elevationCallInteractAbles = ObstacleState.ElevationCallInteractAbles;
 
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
@@ -32,10 +31,7 @@ public struct ElevationCallObstacle(BotRef botRef)
 
     public bool Overcomes(ObstacleRef obstacleRef, int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var obstaclePosition = obstacleLocations[obstacleRef.Idx];
-        var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
-
-        var cost = Vector3.Distance(obstaclePosition, elevationCallInteractPosition) + 5f;
+        var cost = 5f;
 
         impactingBeliefs.Add(cost, BeliefEnum.ElevatorCalled, elevationCallIdx);
 
@@ -47,9 +43,9 @@ public struct ElevationCallObstacle(BotRef botRef)
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
         var elevationCallInteractAble = elevationCallInteractAbles[elevationCallIdx];
 
-        if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
+        if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
         {
-            if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
+            if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
             {
                 if (elevationCallInteractAble)
                 {
@@ -63,19 +59,21 @@ public struct ElevationCallObstacle(BotRef botRef)
 
                     lookAtPositionRef.Value = (true, obstaclePosition);
                 }
+
+                return true;
             }
             else
             {
-                moveToPositionRef.Value = (true, elevationCallInteractPosition);
-            }
+                var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-            return true;
+                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
+            }
         }
         else
         {
-            var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+            var cost = 0f;
 
-            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacle2Ref.Idx);
+            impactingBeliefs.Add(cost, BeliefEnum.WithinElevatorCallLocation, elevationCallIdx);
         }
 
         return false;

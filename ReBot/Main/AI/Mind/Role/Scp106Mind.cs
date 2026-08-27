@@ -7,26 +7,23 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
-using MovableToRoomEnterLocation = MovableTo<MoveRoomEnterLocation>;
-using MovableToInteractableObstacleLocation = MovableTo<MoveInteractableObstacleLocation>;
-using MovableToElevationTravelObstacleEnterLocation = MovableTo<MoveElevationTravelObstacleEnterLocation>;
-
 internal struct Scp106Mind(BotRef botRef) : IMind
 {
     CapturableEnemy capturableEnemy = new(botRef);
     Enemy enemy = new(botRef);
 
-    MovableToRoomEnterLocation movableToRoom = new(botRef, new(botRef));
+    MovableTo<MoveRoomEnterLocation> movableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
-    MovableToInteractableObstacleLocation movableToInteractableObstacle = new(botRef, new(botRef));
+    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new(botRef));
 
     PassthroughObstacle passthroughObstacle = new(botRef);
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableToElevationTravelObstacleEnterLocation movableToElevationTravelObstacle = new(botRef, new(botRef));
+    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
+    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new(botRef));
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -89,6 +86,12 @@ internal struct Scp106Mind(BotRef botRef) : IMind
 
             BeliefEnum.ElevatorCalled => 
                 elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.WithinElevatorCallLocation =>
+                movableToElevationCallObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+
+            BeliefEnum.MovedToElevatorCallLocation =>
+                movableToElevationCallObstacle.MovesTo(beliefToEnable.Idx),
 
             _ => false
         };
