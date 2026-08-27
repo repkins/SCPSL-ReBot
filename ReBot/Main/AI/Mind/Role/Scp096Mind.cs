@@ -12,6 +12,8 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     Enemy enemy = new(botRef);
     Scp096MeleeableEnemy meleeableEnemy = new(botRef);
 
+    Scp096Rage rage = new(botRef);
+
     MovableTo<MoveRoomEnterLocation> movableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
@@ -45,6 +47,12 @@ internal struct Scp096Mind(BotRef botRef) : IMind
 
             BeliefEnum.SightedEnemies =>
                 enemy.SearchesInRoom(impactingBeliefs),
+
+            BeliefEnum.Enraged =>
+                rage.Enrages(),
+
+            BeliefEnum.Calmed =>
+                rage.Calms(),
 
             BeliefEnum.WithinRoom =>
                 movableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs),

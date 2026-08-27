@@ -23,6 +23,8 @@ public struct RagePerception(int botCount)
                 continue;
             }
 
+            bot.RageState.HasTargets = targetsTracker.Targets.Count > 0;
+
             foreach (var target in targetsTracker.Targets)
             {
                 bot.TerminationState.EnemiesWithinSight.Add(target.transform.position);

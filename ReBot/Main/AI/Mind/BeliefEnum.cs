@@ -31,4 +31,6 @@ public enum BeliefEnum : byte
     MovedToEnemyLocation,
     AttackedEnemy,
     BlinkedToEnemy,
+    Enraged,
+    Calmed,
 }

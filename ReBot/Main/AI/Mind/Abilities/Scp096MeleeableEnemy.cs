@@ -11,6 +11,7 @@ internal struct Scp096MeleeableEnemy(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
     bool isEnraged = botRef.Value.RageState.IsEnraged;
+    bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;
 
     NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
@@ -24,14 +25,29 @@ internal struct Scp096MeleeableEnemy(BotRef botRef)
 
     public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
     {
-        if (enemiesWithinSight.Length > 0)
+        if (isEnraged)
         {
-            for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
+            if (hasTargetsObservedBy)
             {
-                var cost = 1f;  // melee attack cost, constant
+                for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
+                {
+                    var cost = 1f;  // melee attack cost, constant
 
-                impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
+                    impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
+                }
             }
+            else
+            {
+                var cost = 5f;  // calming cost
+
+                impactingBeliefs.Add(cost, BeliefEnum.Calmed, default);
+            }
+        }
+        else if (hasTargetsObservedBy)
+        {
+            var cost = 5f;  // entering rage cost
+
+            impactingBeliefs.Add(cost, BeliefEnum.Enraged, default);
         }
         else
         {
@@ -47,30 +63,27 @@ internal struct Scp096MeleeableEnemy(BotRef botRef)
     {
         var enemyPosition = enemiesWithinSight[enemyRef.Idx];
 
-        if (isEnraged)
+        if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
         {
-            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+            if (enemiesWithinDistance.Contains(enemyRef))
             {
-                if (enemiesWithinDistance.Contains(enemyRef))
-                {
-                    lookAtPositionRef.Value = (true, enemyPosition);
-                    meleeAttackPositionRef.Value = (true, enemyPosition);
+                lookAtPositionRef.Value = (true, enemyPosition);
+                meleeAttackPositionRef.Value = (true, enemyPosition);
 
-                    return true;
-                }
-                else
-                {
-                    var cost = Vector3.Distance(enemyPosition, playerPosition);
-
-                    impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
-                }
+                return true;
             }
             else
             {
-                var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+                var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
             }
+        }
+        else
+        {
+            var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+
+            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
         }
 
         return false;
