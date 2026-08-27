@@ -1,4 +1,5 @@
 ﻿using ReBot.Main.AI.Blink;
+using ReBot.Main.AI.Rage;
 using ReBot.Main.AI.Spacial;
 using Unity.Jobs;
 using UnityEngine;
@@ -27,10 +28,7 @@ internal class PerceptionSystem
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
         var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
         var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
-
-        playerPerception.Process();
-        roomPerception.Process();
-        blinkPerception.Process();
+        var ragePerception = new RagePerception(BotStore.Bots.Count);
 
         enemySightPerception.PrepareEnemiesWithinRadius();
 
@@ -41,6 +39,11 @@ internal class PerceptionSystem
 
         enemySightPerception.ProcessEnemySightResults();
         obstaclePerception.ProcessSensedObstacleResults();
+
+        playerPerception.Process();
+        roomPerception.Process();
+        blinkPerception.Process();
+        ragePerception.Process();
 
         obstaclePerception.ProcessSharedElevationState();
         enemySightPerception.ProcessEnemiesWithinDistance();

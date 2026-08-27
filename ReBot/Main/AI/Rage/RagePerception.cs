@@ -1,0 +1,32 @@
+﻿using PlayerRoles.PlayableScps.Scp096;
+
+namespace ReBot.Main.AI.Rage;
+
+public struct RagePerception(int botCount)
+{
+    public void Process()
+    {
+        for (var botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var bot = BotStore.Bots[botIdx];
+            var hub = bot.Hub;
+
+            if (hub.roleManager.CurrentRole is not Scp096Role scp096Role)
+            {
+                continue;
+            }
+
+            bot.RageState.IsEnraged = scp096Role.IsRageState(Scp096RageState.Enraged);
+
+            if (!scp096Role.SubroutineModule.TryGetSubroutine<Scp096TargetsTracker>(out var targetsTracker))
+            {
+                continue;
+            }
+
+            foreach (var target in targetsTracker.Targets)
+            {
+                bot.TerminationState.EnemiesWithinSight.Add(target.transform.position);
+            }
+        }
+    }
+}

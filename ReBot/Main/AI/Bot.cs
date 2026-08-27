@@ -3,8 +3,10 @@ using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
+using ReBot.Main.AI.Melee;
 using ReBot.Main.AI.Movement;
 using ReBot.Main.AI.NeckSnap;
+using ReBot.Main.AI.Rage;
 using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
@@ -32,6 +34,8 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
     public CaptureState CaptureState = new();
     public NeckSnapState NeckSnapState = new();
     public BlinkState BlinkState = new();
+    public MeleeState Scp096MeleeState = new();
+    public RageState RageState = new();
 
     public void Dispose()
     {
@@ -47,5 +51,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
         CaptureState.Dispose();
         NeckSnapState.Dispose();
         BlinkState.Dispose();
+        Scp096MeleeState.Dispose();
+        RageState.Dispose();
     }
 }
