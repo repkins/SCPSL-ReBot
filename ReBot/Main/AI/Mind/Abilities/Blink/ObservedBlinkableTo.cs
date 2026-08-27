@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
 internal struct ObservedBlinkableTo<TTarget>(BotRef botRef, TTarget target)
-    where TTarget : ITarget
+    where TTarget : IBlinkTarget
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
@@ -47,7 +47,7 @@ internal struct ObservedBlinkableTo<TTarget>(BotRef botRef, TTarget target)
     }
 }
 
-internal interface ITarget
+internal interface IBlinkTarget
 {
     NativeList<Vector3> Locations { get; }
     BeliefEnum BlinkedToEnum { get; }

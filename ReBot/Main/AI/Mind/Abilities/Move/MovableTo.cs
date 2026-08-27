@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ReBot.Main.AI.Mind.Abilities.Move;
 
 internal struct MovableTo<TTarget>(BotRef botRef, TTarget target) : IMovableToTarget
-    where TTarget : ITarget
+    where TTarget : IMoveTarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -43,7 +43,7 @@ internal struct MovableTo<TTarget>(BotRef botRef, TTarget target) : IMovableToTa
     }
 }
 
-internal interface ITarget
+internal interface IMoveTarget
 {
     NativeList<Vector3> Locations { get; }
     BeliefEnum MovedToEnum { get; }
