@@ -9,7 +9,6 @@ namespace ReBot.Main.AI.Mind.Abilities;
 
 internal struct SnappableEnemy(BotRef botRef)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
@@ -19,11 +18,8 @@ internal struct SnappableEnemy(BotRef botRef)
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
-
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-    NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
     public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -50,56 +46,39 @@ internal struct SnappableEnemy(BotRef botRef)
     {
         var enemyPosition = enemiesWithinSight[enemyRef.Idx];
 
-        if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+        if (enemiesWithinDistance.Contains(enemyRef))
         {
-            if (!isObserved)
+            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
             {
-                if (enemiesWithinDistance.Contains(enemyRef))
+                if (!isObserved)
                 {
                     lookAtPositionRef.Value = (true, enemyPosition);
                     snapPositionRef.Value = (true, enemyPosition);
 
                     return true;
                 }
-                else
-                {
-                    var cost = Vector3.Distance(enemyPosition, playerPosition);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.MovedToEnemyLocation, enemyRef.Idx);
+                if (isObserved)
+                {
+                    var cost = remainingSecondsToBlink;
+
+                    impactingBeliefs.Add(cost, BeliefEnum.BlinkedToEnemy, enemyRef.Idx);
                 }
             }
-
-            if (isObserved)
+            else
             {
-                var cost = remainingSecondsToBlink;
+                var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
 
-                impactingBeliefs.Add(cost, BeliefEnum.BlinkedToEnemy, enemyRef.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
             }
         }
         else
         {
-            var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+            var cost = 0f;
 
-            impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
+            impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
         }
 
         return false;
-    }
-
-    public bool MovesTo(EnemyRef enemyRef)
-    {
-        var targetPosition = enemiesWithinSight[enemyRef.Idx];
-        moveToPositionRef.Value = (true, targetPosition);
-
-        return true;
-    }
-
-    public bool BlinksTo(EnemyRef enemyRef)
-    {
-        var targetPosition = enemiesWithinSight[enemyRef.Idx];
-
-        blinkToPositionRef.Value = (true, targetPosition);
-
-        return true;
     }
 }

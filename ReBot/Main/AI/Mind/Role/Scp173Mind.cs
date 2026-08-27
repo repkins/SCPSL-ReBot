@@ -10,14 +10,18 @@ namespace ReBot.Main.AI.Mind.Role;
 using MovableToRoomEnterLocation = MovableTo<Abilities.Move.Location.RoomEnterLocation>;
 using MovableToInteractableObstacleLocation = MovableTo<Abilities.Move.Location.InteractableObstacleLocation>;
 using MovableToElevationTravelObstacleEnterLocation = MovableTo<Abilities.Move.Location.ElevationTravelObstacleEnterLocation>;
+using MovableToEnemyLocation = MovableTo<Abilities.Move.Location.EnemyLocation>;
 
 using ObservedBlinkableToRoomEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.RoomEnterLocation>;
 using ObservedBlinkableToInteractableObstacleLocation = ObservedBlinkableTo<Abilities.Blink.Location.InteractableObstacleLocation>;
 using ObservedBlinkableToElevationTravelObstacleEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.ElevationTravelObstacleEnterLocation>;
+using ObservedBlinkableToEnemyLocation = ObservedBlinkableTo<Abilities.Blink.Location.EnemyLocation>;
 
 internal struct Scp173Mind(BotRef botRef) : IMind
 {
     SnappableEnemy snappableEnemy = new(botRef);
+    Unobserved<MovableToEnemyLocation> unobservedMovableToEnemy = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkableToEnemyLocation observedBlinkableToEnemy = new(botRef, new(botRef));
     Enemy enemy = new(botRef);
 
     Unobserved<MovableToRoomEnterLocation> unobservedMovableToRoom = new(botRef, new(botRef, new(botRef)));
@@ -48,11 +52,15 @@ internal struct Scp173Mind(BotRef botRef) : IMind
             BeliefEnum.AttackedEnemy =>
                 snappableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
 
+            BeliefEnum.WithinEnemyLocation =>
+                unobservedMovableToEnemy.GoesTo(beliefToEnable.Idx, impactingBeliefs)
+                    || observedBlinkableToEnemy.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+
             BeliefEnum.MovedToEnemyLocation =>
-                snappableEnemy.MovesTo(new(beliefToEnable.Idx)),
+                unobservedMovableToEnemy.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.BlinkedToEnemy =>
-                snappableEnemy.BlinksTo(new(beliefToEnable.Idx)),
+                observedBlinkableToEnemy.BlinksTo(beliefToEnable.Idx),
 
             BeliefEnum.SightedEnemies => 
                 enemy.SearchesInRoom(impactingBeliefs),
