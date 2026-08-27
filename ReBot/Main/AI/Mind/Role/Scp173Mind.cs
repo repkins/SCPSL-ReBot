@@ -1,16 +1,19 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.Blink;
 using ReBot.Main.AI.Mind.Abilities.Move;
-using ReBot.Main.AI.Mind.Abilities.Move.Location;
 using ReBot.Main.AI.Mind.Abilities.Obstacle;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
-using MovableToRoomEnterLocation = MovableTo<RoomEnterLocation>;
-using MovableToInteractableObstacleLocation = MovableTo<InteractableObstacleLocation>;
-using MovableToElevationTravelObstacleEnterLocation = MovableTo<ElevationTravelObstacleEnterLocation>;
+using MovableToRoomEnterLocation = MovableTo<Abilities.Move.Location.RoomEnterLocation>;
+using MovableToInteractableObstacleLocation = MovableTo<Abilities.Move.Location.InteractableObstacleLocation>;
+using MovableToElevationTravelObstacleEnterLocation = MovableTo<Abilities.Move.Location.ElevationTravelObstacleEnterLocation>;
+
+using ObservedBlinkableToRoomEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.RoomEnterLocation>;
+using ObservedBlinkableToInteractableObstacleLocation = ObservedBlinkableTo<Abilities.Blink.Location.InteractableObstacleLocation>;
+using ObservedBlinkableToElevationTravelObstacleEnterLocation = ObservedBlinkableTo<Abilities.Blink.Location.ElevationTravelObstacleEnterLocation>;
 
 internal struct Scp173Mind(BotRef botRef) : IMind
 {
@@ -18,15 +21,15 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     Enemy enemy = new(botRef);
 
     Unobserved<MovableToRoomEnterLocation> unobservedMovableToRoom = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToRoom observedBlinkableToRoom = new(botRef);
+    ObservedBlinkableToRoomEnterLocation observedBlinkableToRoom = new(botRef, new(botRef));
 
     InteractableObstacle interactableObstacle = new(botRef);
     Unobserved<MovableToInteractableObstacleLocation> unobservedMovableToInteractableObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToInteractableObstacle observedBlinkableToInteractableObstacle = new(botRef);
+    ObservedBlinkableToInteractableObstacleLocation observedBlinkableToInteractableObstacle = new(botRef, new(botRef));
 
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
     Unobserved<MovableToElevationTravelObstacleEnterLocation> unobservedMovableToElevationTravelObstacle = new(botRef, new(botRef, new(botRef)));
-    ObservedBlinkableToElevationTravelObstacle observedBlinkableToElevationTravelObstacle = new(botRef);
+    ObservedBlinkableToElevationTravelObstacleEnterLocation observedBlinkableToElevationTravelObstacle = new(botRef, new(botRef));
 
     ElevationCallObstacle elevationCallObstacle = new(botRef);
 
@@ -62,7 +65,7 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 unobservedMovableToRoom.MovesTo(beliefToEnable.Idx),
 
             BeliefEnum.BlinkedToRoomEnterLocation =>
-                observedBlinkableToRoom.BlinksToEnterLocation(beliefToEnable.Idx),
+                observedBlinkableToRoom.BlinksTo(beliefToEnable.Idx),
 
             BeliefEnum.ObstacleToOvercome =>
                 elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)

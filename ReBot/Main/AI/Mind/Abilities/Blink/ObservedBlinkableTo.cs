@@ -4,46 +4,51 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Blink;
 
-internal struct ObservedBlinkableToRoom(BotRef botRef)
+internal struct ObservedBlinkableTo<TTarget>(BotRef botRef, TTarget target)
+    where TTarget : ITarget
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
-
-    NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
-    public bool GoesTo(int roomEnterLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool GoesTo(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
         if (isObserved)
         {
-            var roomEnterLocationPosition = roomEnterLocations[roomEnterLocationIdx];
+            var targetPosition = target.Locations[targetLocationIdx];
 
-            if (!obstaclesByTarget.TryGetValue(roomEnterLocationPosition, out var obstacleRef))
+            if (!obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef))
             {
                 var cost = remainingSecondsToBlink;
 
-                impactingBeliefs.Add(cost, BeliefEnum.BlinkedToRoomEnterLocation, roomEnterLocationIdx);
+                impactingBeliefs.Add(cost, target.BlinkedToEnum, targetLocationIdx);
             }
             else
             {
-                var cost = Vector3.Distance(roomEnterLocationPosition, obstacleLocations[obstacleRef.Idx]);
+                var cost = remainingSecondsToBlink;
 
                 impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
             }
-        }        
+        }
 
         return false;
     }
 
-    public bool BlinksToEnterLocation(int roomEnterLocationIdx)
+    public bool BlinksTo(int targetLocationIdx)
     {
-        var targetPosition = roomEnterLocations[roomEnterLocationIdx];
+        var targetPosition = target.Locations[targetLocationIdx];
         blinkToPositionRef.Value = (true, targetPosition);
 
         return true;
     }
+}
+
+internal interface ITarget
+{
+    NativeList<Vector3> Locations { get; }
+    BeliefEnum BlinkedToEnum { get; }
 }
