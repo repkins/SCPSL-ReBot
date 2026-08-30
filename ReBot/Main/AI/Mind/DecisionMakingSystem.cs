@@ -62,6 +62,17 @@ internal class DecisionMakingSystem
                         findActionHandles[botIdx] = findActionJob.ScheduleByRef();
                     }
                     break;
+
+                case RoleTypeId.Scp939:
+                    {
+                        var findActionJob = new FindActionJob<Scp939Mind, Scp939Mind.Factory>
+                        {
+                            botRef = new(botIdx),
+                        };
+
+                        findActionHandles[botIdx] = findActionJob.ScheduleByRef();
+                    }
+                    break;
             }
         }
 
