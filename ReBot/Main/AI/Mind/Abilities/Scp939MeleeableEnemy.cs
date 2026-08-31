@@ -24,7 +24,7 @@ internal struct Scp939MeleeableEnemy(BotRef botRef)
     public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
     {
         if (enemiesWithinSight.Length > 0)
-            {
+        {
             for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
             {
                 var cost = 1f;  // melee attack cost, constant
