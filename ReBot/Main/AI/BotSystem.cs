@@ -4,8 +4,7 @@ using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
-using ReBot.Main.AI.Melee.Scp096;
-using ReBot.Main.AI.Melee.Scp939;
+using ReBot.Main.AI.Melee;
 using ReBot.Main.AI.Mind;
 using ReBot.Main.AI.Movement;
 using ReBot.Main.AI.NeckSnap;
@@ -62,9 +61,9 @@ public static class BotSystem
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
             var hub = BotStore.Bots[botIdx].Hub;
-            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp939)
+            if (hub.roleManager.CurrentRole.RoleTypeId != RoleTypeId.Scp096)
             {
-                hub.roleManager.ServerSetRole(RoleTypeId.Scp939, RoleChangeReason.None);
+                hub.roleManager.ServerSetRole(RoleTypeId.Scp096, RoleChangeReason.None);
             }
         }
     }
@@ -84,9 +83,8 @@ public static class BotSystem
                 CaptureSystem.Process(); // SCP 106 Role
                 NeckSnapSystem.Process(); // SCP 173 Role
                 BlinkSystem.Process(); // SCP 173 Role
-                Scp096MeleeAttackSystem.Process(); // SCP 096 Role
-                RageSystem.Process(); // SCP 096 Role
-                Scp939ClawAttackSystem.Process(); // SCP 939 Role
+                RageActionSystem.Process(); // SCP 096 Role
+                MeleeAttackSystem.Process(); // SCP 096 & SCP 939 Role
 
                 MovementSystem.Process();
                 InteractionSystem.Process();

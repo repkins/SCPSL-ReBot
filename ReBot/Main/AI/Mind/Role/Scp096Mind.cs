@@ -19,8 +19,6 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     InteractableObstacle interactableObstacle = new(botRef);
     MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new());
 
-    PassthroughObstacle passthroughObstacle = new(botRef);
-
     ElevationTravelObstacle elevationTravelObstacle = new(botRef);
     MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new());
 
@@ -65,14 +63,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
                     ? elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs)
                     : elevationCallObstacle.TryGetElevationCallIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationCallIdx)
                         ? elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs)
-                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs)
-                            || passthroughObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
-
-            BeliefEnum.PassingThroughObstacle =>
-                passthroughObstacle.PassesThrough(beliefToEnable.Idx, impactingBeliefs),
-
-            BeliefEnum.MovedToObstacleLocation =>
-                passthroughObstacle.MovesLooksTo(beliefToEnable.Idx),
+                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
 
             BeliefEnum.InteractingWithObstacle =>
                 interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),

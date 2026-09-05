@@ -53,7 +53,7 @@ internal struct Scp096MeleeableEnemy(BotRef botRef)
         {
             var cost = 10f; // max sight distance, enraged
 
-            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
         }
 
         return false;
