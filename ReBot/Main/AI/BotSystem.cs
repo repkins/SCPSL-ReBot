@@ -5,6 +5,7 @@ using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
 using ReBot.Main.AI.Interaction;
 using ReBot.Main.AI.Melee.Scp096;
+using ReBot.Main.AI.Melee.Scp939;
 using ReBot.Main.AI.Mind;
 using ReBot.Main.AI.Movement;
 using ReBot.Main.AI.NeckSnap;
@@ -84,7 +85,8 @@ public static class BotSystem
                 NeckSnapSystem.Process(); // SCP 173 Role
                 BlinkSystem.Process(); // SCP 173 Role
                 Scp096MeleeAttackSystem.Process(); // SCP 096 Role
-                RageSystem.Process();
+                RageSystem.Process(); // SCP 096 Role
+                Scp939ClawAttackSystem.Process(); // SCP 939 Role
 
                 MovementSystem.Process();
                 InteractionSystem.Process();

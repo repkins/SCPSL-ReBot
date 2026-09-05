@@ -19,7 +19,7 @@ internal struct Scp939MeleeableEnemy(BotRef botRef)
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-    NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.Scp096MeleeState.MeleeAttackPositionRef;
+    NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.Scp939MeleeState.MeleeAttackPositionRef;
 
     public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -34,9 +34,9 @@ internal struct Scp939MeleeableEnemy(BotRef botRef)
         }
         else
         {
-            var cost = 10f; // max sight distance, enraged
+            var cost = 30f; // max sight distance
 
-            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
         }
 
         return false;
