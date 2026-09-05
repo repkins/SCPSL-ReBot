@@ -1,4 +1,5 @@
 ﻿using ReBot.LocalNetworking;
+using ReBot.Main.AI.Action;
 using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
@@ -22,6 +23,8 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
     public Transform PlayerTransform;
     public Transform CameraTransform;
 
+    public ActionState ActionState = new();
+
     public PlayerState PlayerState = new();
     public RoomState RoomState = new();
     public ObstacleState ObstacleState = new();
@@ -40,6 +43,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
 
     public void Dispose()
     {
+        ActionState.Dispose();
         PlayerState.Dispose();
         RoomState.Dispose();
         ObstacleState.Dispose();
