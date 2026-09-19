@@ -13,9 +13,9 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
         {
             for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
             {
-                var cost = 1f;  // melee attack cost, constant
+                var cost = 1f;  // attack cost, constant
 
-                impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
+                impactingBeliefs.Add(cost, BeliefEnum.Attacked | BeliefEnum.Enemy, enemyIdx);
             }
         }
         else

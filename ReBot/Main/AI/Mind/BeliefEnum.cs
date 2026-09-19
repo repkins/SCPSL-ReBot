@@ -22,8 +22,7 @@ public enum BeliefEnum : byte
 
     Room = 0x10,
     Obstacle = 0x20,
-    ObstacleInteractionLocation = 0x30,
-    Elevator = 0x40,
-    ElevatorCall = 0x50,
-    Enemy = 0x60,
+    Elevator = 0x30,
+    ElevatorCall = 0x40,
+    Enemy = 0x50,
 }

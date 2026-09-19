@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Mind.Abilities.Target;
+﻿using ReBot.Main.AI.Mind.Abilities.MoveTo;
+using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
@@ -19,7 +20,7 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.MeleeState.MeleeAttackPositionRef;
 
-    GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new(botRef));
+    MoveTo<Enemy>.Impacting moveToEnemyImpacting = new(botRef, new(botRef));
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -43,7 +44,7 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
         }
         else
         {
-            goToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
+            moveToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
         }
 
         return false;
