@@ -39,7 +39,7 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
     public BlinkState BlinkState = new();
     public MeleeState Scp096MeleeState = new();
     public RageState RageState = new();
-    public MeleeState Scp939MeleeState = new();
+    public MeleeState MeleeState = new();
 
     public void Dispose()
     {
@@ -58,6 +58,6 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
         BlinkState.Dispose();
         Scp096MeleeState.Dispose();
         RageState.Dispose();
-        Scp939MeleeState.Dispose();
+        MeleeState.Dispose();
     }
 }

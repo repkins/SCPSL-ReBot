@@ -12,7 +12,7 @@ namespace ReBot.Main.AI.Mind.Role;
 internal struct Scp939Mind(BotRef botRef) : IMind
 {
     TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
-    Scp939AttackEnemyEnabling attackEnemyEnabling = new(botRef);
+    MeleeEnemyEnabling meleeEnemyEnabling = new(botRef);
     MoveToEnabling<Enemy> moveToEnemyEnabling = new(botRef, new(botRef));
     SearchesEnemyEnabling searchesEnemyEnabling = new(botRef);
 
@@ -42,7 +42,7 @@ internal struct Scp939Mind(BotRef botRef) : IMind
                 terminateEnemyEnabling.Process(impactingBeliefs),
 
             BeliefEnum.Attacked | BeliefEnum.Enemy =>
-                attackEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
+                meleeEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Enemy  =>
                 moveToEnemyEnabling.Process(beliefToEnable.Idx),

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct Scp939AttackEnemyEnabling(BotRef botRef)
+internal struct MeleeEnemyEnabling(BotRef botRef)
 {
     NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
@@ -17,7 +17,7 @@ internal struct Scp939AttackEnemyEnabling(BotRef botRef)
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-    NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.Scp939MeleeState.MeleeAttackPositionRef;
+    NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.MeleeState.MeleeAttackPositionRef;
 
     GoToImpacting<Enemy> goToEnemyImpacting = new(botRef, new(botRef));
 

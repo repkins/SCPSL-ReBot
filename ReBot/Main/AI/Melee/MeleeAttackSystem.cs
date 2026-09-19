@@ -6,15 +6,11 @@ internal class MeleeAttackSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var clawAttackPositionRef = BotStore.Bots[botIdx].Scp939MeleeState.MeleeAttackPositionRef;
-            var (wantsClaw, _) = clawAttackPositionRef.Value;
-            clawAttackPositionRef.Value = default;
+            var meleeAttackPositionRef = BotStore.Bots[botIdx].MeleeState.MeleeAttackPositionRef;
+            var (wantsAttack, _) = meleeAttackPositionRef.Value;
+            meleeAttackPositionRef.Value = default;
 
-            var slapAttackPositionRef = BotStore.Bots[botIdx].Scp096MeleeState.MeleeAttackPositionRef;
-            var (wantsSlap, _) = slapAttackPositionRef.Value;
-            slapAttackPositionRef.Value = default;
-
-            if (!wantsClaw && !wantsSlap)
+            if (!wantsAttack)
             {
                 BotStore.Bots[botIdx].ActionState.IsHeld[ActionName.Shoot] = false;
                 continue;
