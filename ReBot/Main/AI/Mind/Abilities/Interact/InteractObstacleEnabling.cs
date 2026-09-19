@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractEnablingObstacle(BotRef botRef)
+internal struct InteractObstacleEnabling(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -18,7 +18,7 @@ internal struct InteractEnablingObstacle(BotRef botRef)
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    GoToImpacting<Obstacle> goToObstacleImpacting = new(botRef, new());
+    GoTo<Obstacle>.Impacting goToObstacleImpacting = new(botRef, new());
 
     public bool Process(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {

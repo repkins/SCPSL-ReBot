@@ -1,9 +1,9 @@
 ﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
-namespace ReBot.Main.AI.Mind.Abilities.CallsElevator;
+namespace ReBot.Main.AI.Mind.Abilities.CallElevator;
 
-internal struct CallImpactingElevator()
+internal struct CallElevatorImpacting()
 {
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
 

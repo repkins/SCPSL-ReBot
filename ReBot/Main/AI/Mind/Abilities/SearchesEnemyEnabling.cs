@@ -8,7 +8,7 @@ internal struct SearchesEnemyEnabling(BotRef botRef)
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
-    GoToImpacting<Room> goToImpactingRoom = new(botRef, new(botRef));
+    GoTo<Room>.Impacting goToImpactingRoom = new(botRef, new(botRef));
 
     public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
     {

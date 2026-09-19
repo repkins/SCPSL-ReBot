@@ -1,10 +1,10 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
-using ReBot.Main.AI.Mind.Abilities.CallsElevator;
+using ReBot.Main.AI.Mind.Abilities.CallElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
 using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
 using ReBot.Main.AI.Mind.Abilities.Target;
-using ReBot.Main.AI.Mind.Abilities.TravelOn;
+using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
@@ -13,21 +13,21 @@ internal struct Scp939Mind(BotRef botRef) : IMind
 {
     TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
     MeleeEnemyEnabling meleeEnemyEnabling = new(botRef);
-    MoveToEnabling<Enemy> moveToEnemyEnabling = new(botRef, new(botRef));
+    MoveTo<Enemy>.Enabling moveToEnemyEnabling = new(botRef, new(botRef));
     SearchesEnemyEnabling searchesEnemyEnabling = new(botRef);
 
-    MoveToEnabling<Room> moveToRoomEnabling = new(botRef, new(botRef));
+    MoveTo<Room>.Enabling moveToRoomEnabling = new(botRef, new(botRef));
 
-    OvercomeEnablingObstacle overcomeObstacleEnabling = new();
+    OvercomeObstacleEnabling overcomeObstacleEnabling = new();
 
-    InteractEnablingObstacle interactObstacleEnabling = new(botRef);
-    MoveToEnabling<Obstacle> moveToObstacleEnabling = new(botRef, new());
+    InteractObstacleEnabling interactObstacleEnabling = new(botRef);
+    MoveTo<Obstacle>.Enabling moveToObstacleEnabling = new(botRef, new());
 
-    TravelOnEnablingElevator travelOnElevatorEnabling = new(botRef);
-    MoveToEnabling<Elevator> moveToElevatorEnabling = new(botRef, new());
+    TravelOnElevatorEnabling travelOnElevatorEnabling = new(botRef);
+    MoveTo<Elevator>.Enabling moveToElevatorEnabling = new(botRef, new());
 
-    CallEnablingElevator callElevatorEnabling = new(botRef);
-    MoveToEnabling<ElevatorCall> moveToElevatorCallEnabling = new(botRef, new());
+    CallElevatorEnabling callElevatorEnabling = new(botRef);
+    MoveTo<ElevatorCall>.Enabling moveToElevatorCallEnabling = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {

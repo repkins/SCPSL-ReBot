@@ -1,9 +1,9 @@
 ﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
-namespace ReBot.Main.AI.Mind.Abilities.TravelOn;
+namespace ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 
-internal struct TravelOnImpactingElevator()
+internal struct TravelOnElevatorImpacting()
 {
     NativeList<ObstacleRef> elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
 

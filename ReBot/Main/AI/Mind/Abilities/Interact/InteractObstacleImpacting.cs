@@ -1,12 +1,10 @@
-﻿using Interactables.Interobjects.DoorUtils;
-using ReBot.Main.AI.Spacial;
-using System.Runtime.Remoting;
+﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractImpactingObstacle()
+internal struct InteractObstacleImpacting()
 {
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 

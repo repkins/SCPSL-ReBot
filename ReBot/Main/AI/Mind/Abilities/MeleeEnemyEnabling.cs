@@ -19,7 +19,7 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.MeleeState.MeleeAttackPositionRef;
 
-    GoToImpacting<Enemy> goToEnemyImpacting = new(botRef, new(botRef));
+    GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new(botRef));
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
