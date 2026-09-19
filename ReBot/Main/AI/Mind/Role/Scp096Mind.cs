@@ -1,7 +1,7 @@
-﻿using ReBot.Main.AI.Mind.Abilities;
-using ReBot.Main.AI.Mind.Abilities.Move;
-using ReBot.Main.AI.Mind.Abilities.Move.Location;
-using ReBot.Main.AI.Mind.Abilities.Obstacle;
+﻿using ReBot.Main.AI.Mind.AbilitiesBySubject;
+using ReBot.Main.AI.Mind.AbilitiesBySubject.Move;
+using ReBot.Main.AI.Mind.AbilitiesBySubject.Move.Location;
+using ReBot.Main.AI.Mind.AbilitiesBySubject.Obstacle;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 

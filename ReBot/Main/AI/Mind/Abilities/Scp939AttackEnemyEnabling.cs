@@ -1,0 +1,51 @@
+﻿using ReBot.Main.AI.Mind.Abilities.Target;
+using ReBot.Main.AI.Spacial;
+using ReBot.Main.AI.Termination;
+using System;
+using System.Linq;
+using Unity.Collections;
+using UnityEngine;
+
+namespace ReBot.Main.AI.Mind.Abilities;
+
+internal struct Scp939AttackEnemyEnabling(BotRef botRef)
+{
+    NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
+    NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
+
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
+
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.Scp939MeleeState.MeleeAttackPositionRef;
+
+    GoToImpacting<Enemy> goToEnemyImpacting = new(botRef, new(botRef));
+
+    public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
+    {
+        var enemyPosition = enemiesWithinSight[enemyRef.Idx];
+
+        if (enemiesWithinDistance.Contains(enemyRef))
+        {
+            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+            {
+                lookAtPositionRef.Value = (true, enemyPosition);
+                meleeAttackPositionRef.Value = (true, enemyPosition);
+
+                return true;
+            }
+            else
+            {
+                var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+
+                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
+            }
+        }
+        else
+        {
+            goToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
+        }
+
+        return false;
+    }
+}

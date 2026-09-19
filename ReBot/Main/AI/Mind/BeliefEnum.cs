@@ -2,35 +2,28 @@
 
 public enum BeliefEnum : byte
 {
-    Default,
+    Default = 0x00,
 
-    ObstacleToOvercome,
-    WithinObstacleInteractionLocation,
-    MovedToObstacleInteractionLocation,
-    BlinkedToObstacleInteractionLocation,
-    MovedToObstacleLocation,
+    MovedTo,
+    BlinkedTo,
 
-    InteractingWithObstacle,
-    PassingThroughObstacle,
-    TravelingOnElevator,
-    WithinElevator,
-    MovedToElevator,
-    BlinkedToElevator,
-    ElevatorCalled,
-    WithinElevatorCallLocation,
-    MovedToElevatorCallLocation,
-    BlinkedToElevatorCallLocation,
+    Overcame,
 
-    WithinRoom,
-    MovedToRoomEnterLocation,
-    BlinkedToRoomEnterLocation,
+    InteractingWith,
+    PassingThrough,
+    TravellingOn,
+    Called,
 
-    EnemiesTerminated,
-    SightedEnemies,
-    WithinEnemyLocation,
-    MovedToEnemyLocation,
-    AttackedEnemy,
-    BlinkedToEnemy,
+    Terminated,
+    Attacked,
+    Sighted,
     Enraged,
     Calmed,
+
+    Room = 0x10,
+    Obstacle = 0x20,
+    ObstacleInteractionLocation = 0x30,
+    Elevator = 0x40,
+    ElevatorCall = 0x50,
+    Enemy = 0x60,
 }
