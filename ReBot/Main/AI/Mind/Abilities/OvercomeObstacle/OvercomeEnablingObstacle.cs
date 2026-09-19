@@ -1,14 +1,16 @@
 ﻿using ReBot.Main.AI.Mind.Abilities.CallsElevator;
+using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.TravelOn;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
-namespace ReBot.Main.AI.Mind.Abilities.Overcome;
+namespace ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
 
-internal struct OvercomeEnablingObstacle(BotRef botRef)
+internal struct OvercomeEnablingObstacle()
 {
     TravelOnImpactingElevator travelOnElevatorImpacting = new();
     CallImpactingElevator callElevatorImpacting = new();
+    InteractImpactingObstacle interactObstacleImpacting = new();
 
     public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -16,6 +18,6 @@ internal struct OvercomeEnablingObstacle(BotRef botRef)
             ? travelOnElevatorImpacting.Process(elevationIdx, impactingBeliefs)
             : callElevatorImpacting.TryGetElevationCallIdx(new ObstacleRef(targetLocationIdx), out var elevationCallIdx)
                 ? callElevatorImpacting.Process(elevationCallIdx, impactingBeliefs)
-                : interactableObstacle.Overcomes(new(targetLocationIdx), impactingBeliefs);
+                : interactObstacleImpacting.Process(new(targetLocationIdx), impactingBeliefs);
     }
 }

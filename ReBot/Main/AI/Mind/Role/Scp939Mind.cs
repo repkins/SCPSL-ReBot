@@ -2,7 +2,7 @@
 using ReBot.Main.AI.Mind.Abilities.CallsElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
-using ReBot.Main.AI.Mind.Abilities.Overcome;
+using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Mind.Abilities.TravelOn;
 using Unity.Collections;
@@ -18,7 +18,7 @@ internal struct Scp939Mind(BotRef botRef) : IMind
 
     MoveToEnabling<Room> moveToRoomEnabling = new(botRef, new(botRef));
 
-    OvercomeEnablingObstacle overcomeObstacleEnabling = new(botRef);
+    OvercomeEnablingObstacle overcomeObstacleEnabling = new();
 
     InteractEnablingObstacle interactObstacleEnabling = new(botRef);
     MoveToEnabling<Obstacle> moveToObstacleEnabling = new(botRef, new());
