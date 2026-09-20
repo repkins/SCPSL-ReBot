@@ -4,6 +4,7 @@ using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
 using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
 using ReBot.Main.AI.Mind.Abilities.Target;
+using ReBot.Main.AI.Mind.Abilities.Terminate;
 using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 using Unity.Collections;
 

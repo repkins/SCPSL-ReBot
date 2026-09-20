@@ -17,7 +17,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     CalmEnabling calmEnabling = new(botRef);
 
 
-    Abilities.Terminate.Scp096.TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
+    TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
     MeleeEnemyEnabling meleeEnemyEnabling = new(botRef);
     MoveTo<Enemy>.Enabling moveToEnemyEnabling = new(botRef, new(botRef));
     SearchesEnemyEnabling searchesEnemyEnabling = new(botRef);

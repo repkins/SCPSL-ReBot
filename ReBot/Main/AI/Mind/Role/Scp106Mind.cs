@@ -5,6 +5,7 @@ using ReBot.Main.AI.Mind.Abilities.MoveTo;
 using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle.Scp106;
 using ReBot.Main.AI.Mind.Abilities.Passthrough;
 using ReBot.Main.AI.Mind.Abilities.Target;
+using ReBot.Main.AI.Mind.Abilities.Terminate;
 using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 using Unity.Collections;
 
