@@ -2,7 +2,7 @@
 using ReBot.Main.AI.Mind.Abilities.Target;
 using Unity.Collections;
 
-namespace ReBot.Main.AI.Mind.Abilities;
+namespace ReBot.Main.AI.Mind.Abilities.GoTo;
 
 internal struct GoTo<TTarget>
     where TTarget : ITarget

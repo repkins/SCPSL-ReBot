@@ -1,4 +1,5 @@
 ﻿using Interactables.Interobjects.DoorUtils;
+using ReBot.Main.AI.Mind.Abilities.GoTo;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
