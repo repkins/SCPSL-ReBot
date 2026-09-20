@@ -1,13 +1,13 @@
 ﻿using Interactables.Interobjects.DoorUtils;
 using ReBot.Main.AI.Mind.Abilities.GoTo;
-using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractObstacleEnabling(BotRef botRef)
+internal struct InteractObstacleEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacting goToObstacleImpacting)
+    where TGoToImpacting : IGoToImpacting
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -18,8 +18,6 @@ internal struct InteractObstacleEnabling(BotRef botRef)
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-
-    GoTo<Obstacle>.Impacting goToObstacleImpacting = new(botRef, new());
 
     public bool Process(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {

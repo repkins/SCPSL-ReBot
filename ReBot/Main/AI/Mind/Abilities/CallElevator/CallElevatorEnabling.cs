@@ -1,12 +1,12 @@
 ﻿using ReBot.Main.AI.Mind.Abilities.GoTo;
-using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.CallElevator;
 
-internal struct CallElevatorEnabling(BotRef botRef)
+internal struct CallElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacting goToElevatorCallImpacting)
+    where TGoToImpacting : IGoToImpacting
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -18,8 +18,6 @@ internal struct CallElevatorEnabling(BotRef botRef)
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
-
-    GoTo<ElevatorCall>.Impacting goToElevatorCallImpacting = new(botRef, new());
 
     public bool Process(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
     {

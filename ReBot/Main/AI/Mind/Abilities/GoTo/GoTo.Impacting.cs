@@ -7,7 +7,7 @@ namespace ReBot.Main.AI.Mind.Abilities.GoTo;
 internal struct GoTo<TTarget>
     where TTarget : ITarget
 {
-    internal struct Impacting(BotRef botRef, TTarget target)
+    internal struct Impacting(BotRef botRef, TTarget target) : IGoToImpacting
     {
         MoveTo<TTarget>.Impacting moveToTargetImpacting = new(botRef, target);
 

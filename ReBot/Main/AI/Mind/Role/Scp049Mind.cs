@@ -1,5 +1,6 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
+using ReBot.Main.AI.Mind.Abilities.GoTo;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
 using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
@@ -15,19 +16,19 @@ public struct Scp049Mind(BotRef botRef) : IMind
     TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
     CardiacEnemyEnabling cardiacEnemyEnabling = new(botRef);
     MoveTo<Enemy>.Enabling moveToEnemyEnabling = new(botRef, new(botRef));
-    SearchesEnemyEnabling searchesEnemyEnabling = new(botRef);
+    SearchesEnemyEnabling<GoTo<Enemy>.Impacting> searchesEnemyEnabling = new(botRef, new(botRef, new(botRef)));
 
     MoveTo<Room>.Enabling moveToRoomEnabling = new(botRef, new(botRef));
 
     OvercomeObstacleEnabling overcomeObstacleEnabling = new();
 
-    InteractObstacleEnabling interactObstacleEnabling = new(botRef);
+    InteractObstacleEnabling<GoTo<Obstacle>.Impacting> interactObstacleEnabling = new(botRef, new(botRef, new()));
     MoveTo<Obstacle>.Enabling moveToObstacleEnabling = new(botRef, new());
 
-    TravelOnElevatorEnabling travelOnElevatorEnabling = new(botRef);
+    TravelOnElevatorEnabling<GoTo<Elevator>.Impacting> travelOnElevatorEnabling = new(botRef, new(botRef, new()));
     MoveTo<Elevator>.Enabling moveToElevatorEnabling = new(botRef, new());
 
-    CallElevatorEnabling callElevatorEnabling = new(botRef);
+    CallElevatorEnabling<GoTo<ElevatorCall>.Impacting> callElevatorEnabling = new(botRef, new(botRef, new()));
     MoveTo<ElevatorCall>.Enabling moveToElevatorCallEnabling = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)

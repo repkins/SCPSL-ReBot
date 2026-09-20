@@ -8,7 +8,7 @@ namespace ReBot.Main.AI.Mind.Abilities.MoveTo;
 internal partial struct MoveTo<TTarget>
     where TTarget : ITarget
 {
-    internal struct Impacting(BotRef botRef, TTarget target)
+    internal struct Impacting(BotRef botRef, TTarget target) : IMoveToImpacting
     {
         Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
