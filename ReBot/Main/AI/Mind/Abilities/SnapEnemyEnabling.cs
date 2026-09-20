@@ -1,13 +1,15 @@
-﻿using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Mind.Abilities.GoTo.Scp173;
+using ReBot.Main.AI.Mind.Abilities.Target;
+using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
 using System.Linq;
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Mind.AbilitiesBySubject;
+namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct SnappableEnemy(BotRef botRef)
+internal struct SnapEnemyEnabling(BotRef botRef)
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
@@ -21,28 +23,9 @@ internal struct SnappableEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Terminates(NativeList<ImpactingBelief> impactingBeliefs)
-    {
-        if (enemiesWithinSight.Length > 0)
-        {
-            for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
-            {
-                var cost = 0f;  // snap attack cost, instant
+    GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new());
 
-                impactingBeliefs.Add(cost, BeliefEnum.AttackedEnemy, enemyIdx);
-            }
-        }
-        else
-        {
-            var cost = 30; // max sight distance
-
-            impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
-        }
-
-        return false;
-    }
-
-    public bool Attacks(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
         var enemyPosition = enemiesWithinSight[enemyRef.Idx];
 
@@ -62,21 +45,19 @@ internal struct SnappableEnemy(BotRef botRef)
                 {
                     var cost = remainingSecondsToBlink;
 
-                    impactingBeliefs.Add(cost, BeliefEnum.BlinkedToEnemy, enemyRef.Idx);
+                    impactingBeliefs.Add(cost, BeliefEnum.BlinkedTo | BeliefEnum.Enemy, enemyRef.Idx);
                 }
             }
             else
             {
                 var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
 
-                impactingBeliefs.Add(cost, BeliefEnum.ObstacleToOvercome, obstacleRef.Idx);
+                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
             }
         }
         else
         {
-            var cost = 0f;
-
-            impactingBeliefs.Add(cost, BeliefEnum.WithinEnemyLocation, enemyRef.Idx);
+            goToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
         }
 
         return false;
