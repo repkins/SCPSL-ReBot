@@ -1,96 +1,90 @@
-﻿using ReBot.Main.AI.Mind.AbilitiesBySubject;
-using ReBot.Main.AI.Mind.AbilitiesBySubject.Move;
-using ReBot.Main.AI.Mind.AbilitiesBySubject.Move.Location;
-using ReBot.Main.AI.Mind.AbilitiesBySubject.Obstacle;
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Mind.Abilities.CallElevator;
+using ReBot.Main.AI.Mind.Abilities.Interact;
+using ReBot.Main.AI.Mind.Abilities.MoveTo;
+using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
+using ReBot.Main.AI.Mind.Abilities.Rage;
+using ReBot.Main.AI.Mind.Abilities.Target;
+using ReBot.Main.AI.Mind.Abilities.Terminate.Scp096;
+using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 internal struct Scp096Mind(BotRef botRef) : IMind
 {
-    Enemy enemy = new(botRef);
-    Scp096MeleeableEnemy meleeableEnemy = new(botRef);
+    EnrageEnabling enrageEnabling = new(botRef);
+    CalmEnabling calmEnabling = new(botRef);
 
-    Scp096Rage rage = new(botRef);
 
-    MovableTo<MoveRoomEnterLocation> movableToRoom = new(botRef, new(botRef));
+    Abilities.Terminate.Scp096.TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
+    MeleeEnemyEnabling meleeEnemyEnabling = new(botRef);
+    MoveTo<Enemy>.Enabling moveToEnemyEnabling = new(botRef, new(botRef));
+    SearchesEnemyEnabling searchesEnemyEnabling = new(botRef);
 
-    InteractableObstacle interactableObstacle = new(botRef);
-    MovableTo<MoveInteractableObstacleLocation> movableToInteractableObstacle = new(botRef, new());
+    MoveTo<Room>.Enabling moveToRoomEnabling = new(botRef, new(botRef));
 
-    ElevationTravelObstacle elevationTravelObstacle = new(botRef);
-    MovableTo<MoveElevationTravelObstacleEnterLocation> movableToElevationTravelObstacle = new(botRef, new());
+    OvercomeObstacleEnabling overcomeObstacleEnabling = new();
 
-    ElevationCallObstacle elevationCallObstacle = new(botRef);
-    MovableTo<MoveElevationCallObstacleLocation> movableToElevationCallObstacle = new(botRef, new());
+    InteractObstacleEnabling interactObstacleEnabling = new(botRef);
+    MoveTo<Obstacle>.Enabling moveToObstacleEnabling = new(botRef, new());
+
+    TravelOnElevatorEnabling travelOnElevatorEnabling = new(botRef);
+    MoveTo<Elevator>.Enabling moveToElevatorEnabling = new(botRef, new());
+
+    CallElevatorEnabling callElevatorEnabling = new(botRef);
+    MoveTo<ElevatorCall>.Enabling moveToElevatorCallEnabling = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
     {
-        impactingBeliefs.Add(0, BeliefEnum.EnemiesTerminated, default);
+        impactingBeliefs.Add(0, BeliefEnum.Terminated | BeliefEnum.Enemy, default);
     }
 
     public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
     {
         return beliefToEnable.Type switch
         {
-            BeliefEnum.EnemiesTerminated =>
-                meleeableEnemy.Terminates(impactingBeliefs),
+            BeliefEnum.Terminated | BeliefEnum.Enemy =>
+                terminateEnemyEnabling.Process(impactingBeliefs),
 
-            BeliefEnum.AttackedEnemy =>
-                meleeableEnemy.Attacks(new(beliefToEnable.Idx), impactingBeliefs),
+            BeliefEnum.Attacked | BeliefEnum.Enemy =>
+                meleeEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
 
-            BeliefEnum.MovedToEnemyLocation =>
-                meleeableEnemy.MovesTo(new(beliefToEnable.Idx)),
-
-            BeliefEnum.SightedEnemies =>
-                enemy.SearchesInRoom(impactingBeliefs),
+            BeliefEnum.MovedTo | BeliefEnum.Enemy =>
+                moveToEnemyEnabling.Process(beliefToEnable.Idx),
 
             BeliefEnum.Enraged =>
-                rage.Enrages(),
+                enrageEnabling.Process(),
 
             BeliefEnum.Calmed =>
-                rage.Calms(),
+                calmEnabling.Process(),
 
-            BeliefEnum.WithinRoom =>
-                movableToRoom.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+            BeliefEnum.Sighted | BeliefEnum.Enemy =>
+                searchesEnemyEnabling.Process(impactingBeliefs),
 
-            BeliefEnum.MovedToRoomEnterLocation =>
-                movableToRoom.MovesTo(beliefToEnable.Idx),
+            BeliefEnum.MovedTo | BeliefEnum.Room =>
+                moveToRoomEnabling.Process(beliefToEnable.Idx),
 
-            BeliefEnum.ObstacleToOvercome =>
-                elevationTravelObstacle.TryGetElevationIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationIdx)
-                    ? elevationTravelObstacle.Overcomes(elevationIdx, impactingBeliefs)
-                    : elevationCallObstacle.TryGetElevationCallIdx(new ObstacleRef(beliefToEnable.Idx), out var elevationCallIdx)
-                        ? elevationCallObstacle.Overcomes(new(beliefToEnable.Idx), elevationCallIdx, impactingBeliefs)
-                        : interactableObstacle.Overcomes(new(beliefToEnable.Idx), impactingBeliefs),
+            BeliefEnum.Overcame | BeliefEnum.Obstacle =>
+                overcomeObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.InteractingWithObstacle =>
-                interactableObstacle.Interacts(beliefToEnable.Idx, impactingBeliefs),
+            BeliefEnum.InteractingWith | BeliefEnum.Obstacle =>
+                interactObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.WithinObstacleInteractionLocation =>
-                movableToInteractableObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+            BeliefEnum.MovedTo | BeliefEnum.Obstacle =>
+                moveToObstacleEnabling.Process(beliefToEnable.Idx),
 
-            BeliefEnum.MovedToObstacleInteractionLocation =>
-                movableToInteractableObstacle.MovesTo(beliefToEnable.Idx),
+            BeliefEnum.TravellingOn | BeliefEnum.Elevator =>
+                travelOnElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.TravelingOnElevator =>
-                elevationTravelObstacle.Travels(beliefToEnable.Idx, impactingBeliefs),
+            BeliefEnum.MovedTo | BeliefEnum.Elevator =>
+                moveToElevatorEnabling.Process(beliefToEnable.Idx),
 
-            BeliefEnum.WithinElevator =>
-                movableToElevationTravelObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
+            BeliefEnum.Called | BeliefEnum.Elevator =>
+                callElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
-            BeliefEnum.MovedToElevator =>
-                movableToElevationTravelObstacle.MovesTo(beliefToEnable.Idx),
-
-            BeliefEnum.ElevatorCalled =>
-                elevationCallObstacle.Calls(beliefToEnable.Idx, impactingBeliefs),
-
-            BeliefEnum.WithinElevatorCallLocation =>
-                movableToElevationCallObstacle.GoesTo(beliefToEnable.Idx, impactingBeliefs),
-
-            BeliefEnum.MovedToElevatorCallLocation =>
-                movableToElevationCallObstacle.MovesTo(beliefToEnable.Idx),
+            BeliefEnum.MovedTo | BeliefEnum.ElevatorCall =>
+                moveToElevatorCallEnabling.Process(beliefToEnable.Idx),
 
             _ => false
         };
