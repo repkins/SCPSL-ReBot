@@ -50,13 +50,13 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 captureEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Enemy =>
-                moveToEnemyEnabling.Process(beliefToEnable.Idx),
+                moveToEnemyEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Sighted | BeliefEnum.Enemy =>
                 searchesEnemyEnabling.Process(impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Room =>
-                moveToRoomEnabling.Process(beliefToEnable.Idx),
+                moveToRoomEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Overcame | BeliefEnum.Obstacle =>
                 overcomeObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
@@ -65,7 +65,7 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 interactObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Obstacle =>
-                moveToObstacleEnabling.Process(beliefToEnable.Idx),
+                moveToObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.PassingThrough | BeliefEnum.Obstacle =>
                 passthroughObstacleEnabling.Process(beliefToEnable.Idx),
@@ -74,13 +74,13 @@ internal struct Scp106Mind(BotRef botRef) : IMind
                 travelOnElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Elevator =>
-                moveToElevatorEnabling.Process(beliefToEnable.Idx),
+                moveToElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Called | BeliefEnum.Elevator =>
                 callElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.ElevatorCall =>
-                moveToElevatorCallEnabling.Process(beliefToEnable.Idx),
+                moveToElevatorCallEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             _ => false
         };

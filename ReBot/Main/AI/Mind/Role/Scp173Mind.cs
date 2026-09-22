@@ -54,19 +54,19 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 snapEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Enemy =>
-                moveToEnemyEnabling.Process(beliefToEnable.Idx),
+                moveToEnemyEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.BlinkedTo | BeliefEnum.Enemy =>
-                blinkToEnemyEnabling.Process(beliefToEnable.Idx),
+                blinkToEnemyEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Sighted | BeliefEnum.Enemy =>
                 searchesEnemyEnabling.Process(impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Room =>
-                moveToRoomEnabling.Process(beliefToEnable.Idx),
+                moveToRoomEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.BlinkedTo | BeliefEnum.Room =>
-                blinkToRoomEnabling.Process(beliefToEnable.Idx),
+                blinkToRoomEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Overcame | BeliefEnum.Obstacle =>
                 overcomeObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
@@ -75,28 +75,28 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 interactObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Obstacle =>
-                moveToObstacleEnabling.Process(beliefToEnable.Idx),
+                moveToObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.BlinkedTo | BeliefEnum.Obstacle =>
-                blinkToObstacleEnabling.Process(beliefToEnable.Idx),
+                blinkToObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.TravellingOn | BeliefEnum.Elevator =>
                 travelOnElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.Elevator =>
-                moveToElevatorEnabling.Process(beliefToEnable.Idx),
+                moveToElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.BlinkedTo | BeliefEnum.Elevator =>
-                blinkToElevatorEnabling.Process(beliefToEnable.Idx),
+                blinkToElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.Called | BeliefEnum.Elevator =>
                 callElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.MovedTo | BeliefEnum.ElevatorCall =>
-                moveToElevatorCallEnabling.Process(beliefToEnable.Idx),
+                moveToElevatorCallEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             BeliefEnum.BlinkedTo | BeliefEnum.ElevatorCall =>
-                blinkToElevatorCallEnabling.Process(beliefToEnable.Idx),
+                blinkToElevatorCallEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
 
             _ => false
         };

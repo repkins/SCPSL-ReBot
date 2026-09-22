@@ -21,18 +21,11 @@ internal partial struct ObservedBlinkTo<TTarget>
             {
                 var targetPosition = target.Locations[targetLocationIdx];
 
-                if (!obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef))
-                {
-                    var cost = remainingSecondsToBlink;
+                var cost = ! obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef)
+                    ? remainingSecondsToBlink
+                    : remainingSecondsToBlink;
 
-                    impactingBeliefs.Add(cost, multiplier, BeliefEnum.BlinkedTo | target.Enum, targetLocationIdx);
-                }
-                else
-                {
-                    var cost = remainingSecondsToBlink;
-
-                    impactingBeliefs.Add(cost, multiplier, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
-                }
+                impactingBeliefs.Add(cost, multiplier, BeliefEnum.BlinkedTo | target.Enum, targetLocationIdx);
             }
 
             return false;

@@ -19,18 +19,11 @@ internal partial struct MoveTo<TTarget>
         {
             var targetPosition = target.Locations[targetLocationIdx];
 
-            if (!obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef))
-            {
-                var cost = Vector3.Distance(targetPosition, playerPosition);
+            var cost = ! obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef)
+                ? Vector3.Distance(targetPosition, playerPosition)
+                : Vector3.Distance(targetPosition, obstacleLocations[obstacleRef.Idx]);
 
-                impactingBeliefs.Add(cost, multiplier, BeliefEnum.MovedTo | target.Enum, targetLocationIdx);
-            }
-            else
-            {
-                var cost = Vector3.Distance(targetPosition, obstacleLocations[obstacleRef.Idx]);
-
-                impactingBeliefs.Add(cost, multiplier, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
-            }
+            impactingBeliefs.Add(cost, multiplier, BeliefEnum.MovedTo | target.Enum, targetLocationIdx);
 
             return false;
         }
