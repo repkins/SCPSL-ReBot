@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Mind.Abilities.GoTo.Scp173;
+﻿using ReBot.Main.AI.Mind.Abilities.BlinkTo;
+using ReBot.Main.AI.Mind.Abilities.GoTo.Scp173;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
@@ -24,6 +25,7 @@ internal struct SnapEnemyEnabling(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
     GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new());
+    ObservedBlinkTo<Enemy>.Impacting observedBlinkToEnemyImpacting = new(botRef, new(botRef));
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -31,29 +33,23 @@ internal struct SnapEnemyEnabling(BotRef botRef)
 
         if (enemiesWithinDistance.Contains(enemyRef))
         {
-            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+            if (!isObserved)
             {
-                if (!isObserved)
+                if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
                 {
                     lookAtPositionRef.Value = (true, enemyPosition);
                     snapPositionRef.Value = (true, enemyPosition);
 
                     return true;
                 }
-
-                if (isObserved)
+                else
                 {
-                    var cost = remainingSecondsToBlink;
-
-                    impactingBeliefs.Add(cost, BeliefEnum.BlinkedTo | BeliefEnum.Enemy, enemyRef.Idx);
+                    var cost = 0f;
+                    impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
                 }
             }
-            else
-            {
-                var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
 
-                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
-            }
+            observedBlinkToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
         }
         else
         {

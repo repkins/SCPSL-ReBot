@@ -15,7 +15,6 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> meleeAttackPositionRef = botRef.Value.MeleeState.MeleeAttackPositionRef;
@@ -37,7 +36,7 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
             }
             else
             {
-                var cost = Vector3.Distance(enemyPosition, obstacleLocations[obstacleRef.Idx]);
+                var cost = 0f;
 
                 impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
             }
