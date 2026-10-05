@@ -5,13 +5,13 @@ namespace ReBot.Main.AI.Mind.Abilities.Terminate.Scp173;
 
 internal struct TerminateEnemyEnabling(BotRef botRef)
 {
-    NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
+    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
     public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
     {
-        if (enemiesWithinSight.Length > 0)
+        if (enemyLocations.Length > 0)
         {
-            for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
+            for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
             {
                 var cost = 0f;  // snap attack cost, instant
 

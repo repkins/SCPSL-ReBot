@@ -115,8 +115,8 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
             var otherEnemyPlayersInstanceIds = enemySightBots[botIdx].otherEnemyPlayersInstanceIds;
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
 
-            var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
-            enemiesWithinSight.Clear();
+            var enemyLocations = bot.TerminationState.EnemyLocations;
+            enemyLocations.Clear();
 
             for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovTargets.Length; withinFovResultIdx++)
             {
@@ -136,7 +136,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
 
                 var enemyPosition = enemyPlayerPositions[enemyIdx];
 
-                enemiesWithinSight.Add(enemyPosition);
+                enemyLocations.Add(enemyPosition);
             }
         }
     }

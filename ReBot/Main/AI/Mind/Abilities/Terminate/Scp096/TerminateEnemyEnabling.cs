@@ -8,7 +8,7 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
     bool isEnraged = botRef.Value.RageState.IsEnraged;
     bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;
 
-    NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
+    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
     public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
     {
@@ -16,7 +16,7 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
         {
             if (hasTargetsObservedBy)
             {
-                for (var enemyIdx = 0; enemyIdx < enemiesWithinSight.Length; enemyIdx++)
+                for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
                 {
                     var cost = 1f;  // melee attack cost, constant
 

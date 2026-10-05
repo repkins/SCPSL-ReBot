@@ -27,7 +27,7 @@ public struct RagePerception(int botCount)
 
             foreach (var target in targetsTracker.Targets)
             {
-                bot.TerminationState.EnemiesWithinSight.Add(target.transform.position);
+                bot.TerminationState.EnemyLocations.Add(target.transform.position);
             }
         }
     }

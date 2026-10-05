@@ -11,7 +11,7 @@ namespace ReBot.Main.AI.Mind.Abilities;
 
 internal struct CaptureEnemyEnabling(BotRef botRef)
 {
-    NativeList<Vector3> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
+    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
@@ -23,7 +23,7 @@ internal struct CaptureEnemyEnabling(BotRef botRef)
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
     {
-        var enemyPosition = enemiesWithinSight[enemyRef.Idx];
+        var enemyPosition = enemyLocations[enemyRef.Idx];
 
         if (enemiesWithinDistance.Contains(enemyRef))
         {
