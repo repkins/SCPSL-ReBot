@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Passthrough;
 
-internal struct PassthroughObstacleImpacting(BotRef botRef)
+internal struct PassedThroughObstacle(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 

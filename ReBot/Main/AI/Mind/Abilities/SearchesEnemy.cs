@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct SearchesEnemyEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacting goToRoomImpacting)
-    where TGoToImpacting : IGoToImpacting
+internal struct SearchesEnemy<TGoToImpacting>(BotRef botRef, TGoToImpacting goToRoomImpacting)
+    where TGoToImpacting : IWithin
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 

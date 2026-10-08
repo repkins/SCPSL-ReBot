@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Mind.Abilities.Rage;
 
-internal struct EnrageEnabling(BotRef botRef)
+internal struct Enrage(BotRef botRef)
 {
     NativeReference<bool> enrageRef = botRef.Value.RageState.EnrageRef;
 

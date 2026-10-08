@@ -13,23 +13,23 @@ namespace ReBot.Main.AI.Mind.Role;
 
 public struct Scp049Mind(BotRef botRef) : IMind
 {
-    TerminateEnemyEnabling terminateEnemyEnabling = new(botRef);
-    CardiacEnemyEnabling cardiacEnemyEnabling = new(botRef);
-    MoveTo<Enemy>.Enabling moveToEnemyEnabling = new(botRef, new(botRef));
-    SearchesEnemyEnabling<GoTo<Enemy>.Impacting> searchesEnemyEnabling = new(botRef, new(botRef, new(botRef)));
+    TerminateEnemy terminateEnemy = new(botRef);
+    CardiacEnemy cardiacEnemy = new(botRef);
+    MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
+    SearchesEnemy<Within<Room>> searchesEnemy = new(botRef, new(botRef, new(botRef)));
 
-    MoveTo<Room>.Enabling moveToRoomEnabling = new(botRef, new(botRef));
+    MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
-    OvercomeObstacleEnabling overcomeObstacleEnabling = new();
+    OvercomeObstacle overcomeObstacle = new();
 
-    InteractObstacleEnabling<GoTo<Obstacle>.Impacting> interactObstacleEnabling = new(botRef, new(botRef, new()));
-    MoveTo<Obstacle>.Enabling moveToObstacleEnabling = new(botRef, new());
+    InteractObstacle<Within<Obstacle>> interactObstacle = new(botRef, new(botRef, new()));
+    MoveTo<Obstacle> moveToObstacle = new(botRef, new());
 
-    TravelOnElevatorEnabling<GoTo<Elevator>.Impacting> travelOnElevatorEnabling = new(botRef, new(botRef, new()));
-    MoveTo<Elevator>.Enabling moveToElevatorEnabling = new(botRef, new());
+    TravelOnElevator<Within<Elevator>> travelOnElevator = new(botRef, new(botRef, new()));
+    MoveTo<Elevator> moveToElevator = new(botRef, new());
 
-    CallElevatorEnabling<GoTo<ElevatorCall>.Impacting> callElevatorEnabling = new(botRef, new(botRef, new()));
-    MoveTo<ElevatorCall>.Enabling moveToElevatorCallEnabling = new(botRef, new());
+    CallElevator<Within<ElevatorCall>> callElevator = new(botRef, new(botRef, new()));
+    MoveTo<ElevatorCall> moveToElevatorCall = new(botRef, new());
 
     public void ProcessGoals(NativeList<ImpactingAction> impactingActions)
     {
@@ -41,40 +41,40 @@ public struct Scp049Mind(BotRef botRef) : IMind
         return actionToEnable.Enum switch
         {
             ActionEnum.Terminates | ActionEnum.Enemy =>
-                terminateEnemyEnabling.Process(impactingActions),
+                terminateEnemy.Process(impactingActions),
 
             ActionEnum.Attacks | ActionEnum.Enemy =>
-                cardiacEnemyEnabling.Process(new(actionToEnable.Idx), impactingActions),
+                cardiacEnemy.Process(new(actionToEnable.Idx), impactingActions),
 
             ActionEnum.MovesTo | ActionEnum.Enemy =>
-                moveToEnemyEnabling.Process(actionToEnable.Idx, impactingActions),
+                moveToEnemy.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.Finds | ActionEnum.Enemy =>
-                searchesEnemyEnabling.Process(impactingActions),
+                searchesEnemy.Process(impactingActions),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
-                moveToRoomEnabling.Process(actionToEnable.Idx, impactingActions),
+                moveToRoom.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.Overcomes | ActionEnum.Obstacle =>
-                overcomeObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
+                overcomeObstacle.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.InteractsWith | ActionEnum.Obstacle =>
-                interactObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
+                interactObstacle.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.MovesTo | ActionEnum.Obstacle =>
-                moveToObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
+                moveToObstacle.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.TravelsOn | ActionEnum.Elevator =>
-                travelOnElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
+                travelOnElevator.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.MovesTo | ActionEnum.Elevator =>
-                moveToElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
+                moveToElevator.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.Calls | ActionEnum.Elevator =>
-                callElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
+                callElevator.Process(actionToEnable.Idx, impactingActions),
 
             ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
-                moveToElevatorCallEnabling.Process(actionToEnable.Idx, impactingActions),
+                moveToElevatorCall.Process(actionToEnable.Idx, impactingActions),
 
             _ => false
         };

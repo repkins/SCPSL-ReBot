@@ -3,7 +3,7 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 
-internal struct TravelOnElevatorImpacting()
+internal struct TraveledOnElevator()
 {
     NativeList<ObstacleRef> elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
 

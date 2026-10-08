@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Mind.Abilities.Rage;
 
-internal struct CalmEnabling(BotRef botRef)
+internal struct Calm(BotRef botRef)
 {
     NativeReference<bool> calmRef = botRef.Value.RageState.CalmRef;
 

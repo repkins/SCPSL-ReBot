@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractObstacleEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacting goToObstacleImpacting)
-    where TGoToImpacting : IGoToImpacting
+internal struct InteractObstacle<TGoToImpacting>(BotRef botRef, TGoToImpacting goToObstacleImpacting)
+    where TGoToImpacting : IWithin
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 

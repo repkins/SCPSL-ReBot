@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Passthrough;
 
-internal struct PassthroughObstacleEnabling(BotRef botRef)
+internal struct PassthroughObstacle(BotRef botRef)
 {
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractObstacleImpacting()
+internal struct InteractedObstacle()
 {
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Terminate.Scp096;
 
-internal struct TerminateEnemyEnabling(BotRef botRef)
+internal struct TerminateEnemy(BotRef botRef)
 {
     bool isEnraged = botRef.Value.RageState.IsEnraged;
     bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;

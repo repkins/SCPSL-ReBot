@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct CardiacEnemyEnabling(BotRef botRef)
+internal struct CardiacEnemy(BotRef botRef)
 {
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
     NativeList<Vector3> enemyVelocities = botRef.Value.TerminationState.EnemyVelocities;
@@ -21,7 +21,7 @@ internal struct CardiacEnemyEnabling(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
-    MoveTo<Enemy>.Impacting moveToEnemyImpacting = new(botRef, new(botRef));
+    MovedTo<Enemy> movedToEnemy = new(botRef, new(botRef));
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
@@ -54,7 +54,7 @@ internal struct CardiacEnemyEnabling(BotRef botRef)
         }
         else
         {
-            moveToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
+            movedToEnemy.Process(enemyRef.Idx, impactingActions);
         }
 
         return false;

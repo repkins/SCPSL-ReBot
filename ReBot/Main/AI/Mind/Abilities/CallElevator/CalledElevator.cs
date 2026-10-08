@@ -3,7 +3,7 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Abilities.CallElevator;
 
-internal struct CallElevatorImpacting()
+internal struct CalledElevator()
 {
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
 

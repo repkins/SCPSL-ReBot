@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Terminate;
 
-internal struct TerminateEnemyEnabling(BotRef botRef)
+internal struct TerminateEnemy(BotRef botRef)
 {
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 

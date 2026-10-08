@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
 
-internal struct TravelOnElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacting goToElevatorImpacting)
-    where TGoToImpacting : IGoToImpacting
+internal struct TravelOnElevator<TGoToImpacting>(BotRef botRef, TGoToImpacting goToElevatorImpacting)
+    where TGoToImpacting : IWithin
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 

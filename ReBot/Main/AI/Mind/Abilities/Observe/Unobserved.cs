@@ -4,7 +4,7 @@ using Unity.Collections;
 namespace ReBot.Main.AI.Mind.Abilities.Observe;
 
 internal struct Unobserved<TMoveToImpacting>(BotRef botRef, TMoveToImpacting moveToImpacting)
-    where TMoveToImpacting : IMoveToImpacting
+    where TMoveToImpacting : IMovedTo
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
 

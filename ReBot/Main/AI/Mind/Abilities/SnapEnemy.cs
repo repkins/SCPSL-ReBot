@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct SnapEnemyEnabling(BotRef botRef)
+internal struct SnapEnemy(BotRef botRef)
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
     float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
@@ -24,8 +24,8 @@ internal struct SnapEnemyEnabling(BotRef botRef)
     NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new());
-    ObservedBlinkTo<Enemy>.Impacting observedBlinkToEnemyImpacting = new(botRef, new(botRef));
+    Within<Enemy> withinEnemy = new(botRef, new());
+    ObservedBlinkedTo<Enemy> observedBlinkedToEnemy = new(botRef, new(botRef));
 
     public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
@@ -48,12 +48,14 @@ internal struct SnapEnemyEnabling(BotRef botRef)
                     impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
                 }
             }
-
-            observedBlinkToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
+            else
+            {
+                observedBlinkedToEnemy.Process(enemyRef.Idx, impactingActions);
+            }
         }
         else
         {
-            goToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
+            withinEnemy.Process(enemyRef.Idx, impactingActions);
         }
 
         return false;
