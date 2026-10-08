@@ -16,7 +16,7 @@ internal struct Scp939Mind(BotRef botRef) : IMind
     TerminateEnemy terminateEnemy = new(botRef);
     MeleeEnemy meleeEnemy = new(botRef);
     MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
-    SearchesEnemy<Within<Enemy>> searchesEnemy = new(botRef, new(botRef, new(botRef)));
+    SearchesEnemy<Within<Room>> searchesEnemy = new(botRef, new(botRef, new(botRef)));
 
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
