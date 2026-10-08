@@ -14,10 +14,10 @@ internal struct GoTo<TTarget>
         Unobserved<MoveTo<TTarget>.Impacting> unobservedMoveToTargetImpacting = new(botRef, new(botRef, target));
         ObservedBlinkTo<TTarget>.Impacting observedBlinkToTargetImpacting = new(botRef, target);
 
-        public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs, float multiplier = 1f)
+        public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions, float multiplier = 1f)
         {
-            return unobservedMoveToTargetImpacting.Process(targetLocationIdx, impactingBeliefs, multiplier)
-                || observedBlinkToTargetImpacting.Process(targetLocationIdx, impactingBeliefs, multiplier);
+            return unobservedMoveToTargetImpacting.Process(targetLocationIdx, impactingActions, multiplier)
+                || observedBlinkToTargetImpacting.Process(targetLocationIdx, impactingActions, multiplier);
         }
     }
 }

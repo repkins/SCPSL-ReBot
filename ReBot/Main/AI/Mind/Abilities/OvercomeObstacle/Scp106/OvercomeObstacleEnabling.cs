@@ -14,13 +14,13 @@ internal struct OvercomeObstacleEnabling(BotRef botRef)
     InteractObstacleImpacting interactObstacleImpacting = new();
     PassthroughObstacleImpacting passthroughObstacleImpacting = new(botRef);
 
-    public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {
         return travelOnElevatorImpacting.TryGetElevationIdx(new ObstacleRef(targetLocationIdx), out var elevationIdx)
-            ? travelOnElevatorImpacting.Process(elevationIdx, impactingBeliefs)
+            ? travelOnElevatorImpacting.Process(elevationIdx, impactingActions)
             : callElevatorImpacting.TryGetElevationCallIdx(new ObstacleRef(targetLocationIdx), out var elevationCallIdx)
-                ? callElevatorImpacting.Process(elevationCallIdx, impactingBeliefs)
-                : interactObstacleImpacting.Process(new(targetLocationIdx), impactingBeliefs)
-                    | passthroughObstacleImpacting.Process(new(targetLocationIdx), impactingBeliefs);
+                ? callElevatorImpacting.Process(elevationCallIdx, impactingActions)
+                : interactObstacleImpacting.Process(new(targetLocationIdx), impactingActions)
+                    | passthroughObstacleImpacting.Process(new(targetLocationIdx), impactingActions);
     }
 }

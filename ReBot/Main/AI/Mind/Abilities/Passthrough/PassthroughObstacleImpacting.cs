@@ -11,7 +11,7 @@ internal struct PassthroughObstacleImpacting(BotRef botRef)
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
-    public bool Process(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
         var obstaclePosition = obstacleLocations[obstacleRef.Idx];
 
@@ -21,13 +21,13 @@ internal struct PassthroughObstacleImpacting(BotRef botRef)
         {
             cost += Vector3.Distance(obstaclePosition, playerPosition);
 
-            impactingBeliefs.Add(cost, BeliefEnum.PassingThrough | BeliefEnum.Obstacle, obstacleRef.Idx);
+            impactingActions.Add(cost, ActionEnum.PassesThrough | ActionEnum.Obstacle, obstacleRef.Idx);
         }
         else
         {
             cost += Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
 
-            impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacle2Ref.Idx);
+            impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacle2Ref.Idx);
         }
 
         return false;

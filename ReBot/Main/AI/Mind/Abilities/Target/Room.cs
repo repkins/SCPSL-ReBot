@@ -7,5 +7,5 @@ internal struct Room(BotRef botRef) : ITarget
 {
     public NativeList<Vector3> Locations { get; } = botRef.Value.RoomState.RoomEnterLocations;
 
-    public BeliefEnum Enum { get; } = BeliefEnum.Room;
+    public ActionEnum Enum { get; } = ActionEnum.Room;
 }

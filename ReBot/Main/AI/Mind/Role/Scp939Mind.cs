@@ -31,50 +31,50 @@ internal struct Scp939Mind(BotRef botRef) : IMind
     CallElevatorEnabling<GoTo<ElevatorCall>.Impacting> callElevatorEnabling = new(botRef, new(botRef, new()));
     MoveTo<ElevatorCall>.Enabling moveToElevatorCallEnabling = new(botRef, new());
 
-    public void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs)
+    public void ProcessGoals(NativeList<ImpactingAction> impactingActions)
     {
-        impactingBeliefs.Add(0, BeliefEnum.Terminated | BeliefEnum.Enemy, default);
+        impactingActions.Add(0, ActionEnum.Terminates | ActionEnum.Enemy, default);
     }
 
-    public bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool ProcessActionToEnable(ActionRef actionToEnable, NativeList<ImpactingAction> impactingActions)
     {
-        return beliefToEnable.Type switch
+        return actionToEnable.Enum switch
         {
-            BeliefEnum.Terminated | BeliefEnum.Enemy =>
-                terminateEnemyEnabling.Process(impactingBeliefs),
+            ActionEnum.Terminates | ActionEnum.Enemy =>
+                terminateEnemyEnabling.Process(impactingActions),
 
-            BeliefEnum.Attacked | BeliefEnum.Enemy =>
-                meleeEnemyEnabling.Process(new(beliefToEnable.Idx), impactingBeliefs),
+            ActionEnum.Attacks | ActionEnum.Enemy =>
+                meleeEnemyEnabling.Process(new(actionToEnable.Idx), impactingActions),
 
-            BeliefEnum.MovedTo | BeliefEnum.Enemy  =>
-                moveToEnemyEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.MovesTo | ActionEnum.Enemy  =>
+                moveToEnemyEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.Sighted | BeliefEnum.Enemy =>
-                searchesEnemyEnabling.Process(impactingBeliefs),
+            ActionEnum.Finds | ActionEnum.Enemy =>
+                searchesEnemyEnabling.Process(impactingActions),
 
-            BeliefEnum.MovedTo | BeliefEnum.Room =>
-                moveToRoomEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.MovesTo | ActionEnum.Room =>
+                moveToRoomEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.Overcame | BeliefEnum.Obstacle =>
-                overcomeObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.Overcomes | ActionEnum.Obstacle =>
+                overcomeObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.InteractingWith | BeliefEnum.Obstacle =>
-                interactObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.InteractsWith | ActionEnum.Obstacle =>
+                interactObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.MovedTo | BeliefEnum.Obstacle =>
-                moveToObstacleEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.MovesTo | ActionEnum.Obstacle =>
+                moveToObstacleEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.TravellingOn | BeliefEnum.Elevator =>
-                travelOnElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.TravelsOn | ActionEnum.Elevator =>
+                travelOnElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.MovedTo | BeliefEnum.Elevator =>
-                moveToElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.MovesTo | ActionEnum.Elevator =>
+                moveToElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.Called | BeliefEnum.Elevator =>
-                callElevatorEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.Calls | ActionEnum.Elevator =>
+                callElevatorEnabling.Process(actionToEnable.Idx, impactingActions),
 
-            BeliefEnum.MovedTo | BeliefEnum.ElevatorCall =>
-                moveToElevatorCallEnabling.Process(beliefToEnable.Idx, impactingBeliefs),
+            ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
+                moveToElevatorCallEnabling.Process(actionToEnable.Idx, impactingActions),
 
             _ => false
         };

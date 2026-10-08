@@ -4,8 +4,8 @@ namespace ReBot.Main.AI.Mind;
 
 public interface IMind
 {
-    bool ProcessBeliefToEnable(BeliefRef beliefToEnable, NativeList<ImpactingBelief> enablingBeliefs);
-    void ProcessGoals(NativeList<ImpactingBelief> impactingBeliefs);
+    bool ProcessActionToEnable(ActionRef actionToEnable, NativeList<ImpactingAction> enablingBeliefs);
+    void ProcessGoals(NativeList<ImpactingAction> impactingActions);
 
     public interface IFactory<TMind>
     {

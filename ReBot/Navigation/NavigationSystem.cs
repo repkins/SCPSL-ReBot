@@ -119,7 +119,7 @@ namespace ReBot.Navigation
                     if (!cellResult.HasValue)
                     {
                         var doorRoomNames = stringBuilder.Clear().AppendJoin(", ", door.Rooms.Select(r => r.gameObject.name));
-                        Debug.LogWarning($"Could not find nav cell for door {door} at ({doorRoomNames}) to create obstacle belief with");
+                        Debug.LogWarning($"Could not find nav cell for door {door} at ({doorRoomNames}) to create obstacle entry with");
                         continue;
                     }
 

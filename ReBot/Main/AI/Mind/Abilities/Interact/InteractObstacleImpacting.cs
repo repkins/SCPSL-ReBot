@@ -8,14 +8,14 @@ internal struct InteractObstacleImpacting()
 {
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
-    public bool Process(ObstacleRef obstacleRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
         var obstaclePosition = obstacleLocations[obstacleRef.Idx];
         var obstacleInteractPosition = obstacleLocations[obstacleRef.Idx];
 
         var cost = Vector3.Distance(obstaclePosition, obstacleInteractPosition) + 1f;
 
-        impactingBeliefs.Add(cost, BeliefEnum.InteractingWith | BeliefEnum.Obstacle, obstacleRef.Idx);
+        impactingActions.Add(cost, ActionEnum.InteractsWith | ActionEnum.Obstacle, obstacleRef.Idx);
 
         return false;
     }

@@ -4,13 +4,13 @@ namespace ReBot.Main.AI.Mind;
 
 public static class NativeContainerExtensions
 {
-    public static void Add(this NativeList<ImpactingBelief> impactingBeliefs, float cost, float multiplier, BeliefEnum beliefEnum, int beliefIdx)
+    public static void Add(this NativeList<ImpactingAction> impactingActions, float cost, float multiplier, ActionEnum actionEnum, int beliefIdx)
     {
-        impactingBeliefs.Add(new(cost, multiplier, new(beliefEnum, beliefIdx)));
+        impactingActions.Add(new(cost, multiplier, new(actionEnum, beliefIdx)));
     }
 
-    public static void Add(this NativeList<ImpactingBelief> impactingBeliefs, float cost, BeliefEnum beliefEnum, int beliefIdx)
+    public static void Add(this NativeList<ImpactingAction> impactingActions, float cost, ActionEnum actionEnum, int beliefIdx)
     {
-        impactingBeliefs.Add(new(cost, 1f, new(beliefEnum, beliefIdx)));
+        impactingActions.Add(new(cost, 1f, new(actionEnum, beliefIdx)));
     }
 }

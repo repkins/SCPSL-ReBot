@@ -19,11 +19,11 @@ internal struct CallElevatorImpacting()
         return false;
     }
 
-    public bool Process(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 5f;
 
-        impactingBeliefs.Add(cost, BeliefEnum.Called | BeliefEnum.Elevator, elevationCallIdx);
+        impactingActions.Add(cost, ActionEnum.Calls | ActionEnum.Elevator, elevationCallIdx);
 
         return false;
     }

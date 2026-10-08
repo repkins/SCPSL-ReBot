@@ -12,12 +12,12 @@ internal struct OvercomeObstacleEnabling()
     CallElevatorImpacting callElevatorImpacting = new();
     InteractObstacleImpacting interactObstacleImpacting = new();
 
-    public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {
         return travelOnElevatorImpacting.TryGetElevationIdx(new ObstacleRef(targetLocationIdx), out var elevationIdx)
-            ? travelOnElevatorImpacting.Process(elevationIdx, impactingBeliefs)
+            ? travelOnElevatorImpacting.Process(elevationIdx, impactingActions)
             : callElevatorImpacting.TryGetElevationCallIdx(new ObstacleRef(targetLocationIdx), out var elevationCallIdx)
-                ? callElevatorImpacting.Process(elevationCallIdx, impactingBeliefs)
-                : interactObstacleImpacting.Process(new(targetLocationIdx), impactingBeliefs);
+                ? callElevatorImpacting.Process(elevationCallIdx, impactingActions)
+                : interactObstacleImpacting.Process(new(targetLocationIdx), impactingActions);
     }
 }

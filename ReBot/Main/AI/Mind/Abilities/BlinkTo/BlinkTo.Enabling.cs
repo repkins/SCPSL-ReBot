@@ -14,7 +14,7 @@ internal partial struct BlinkTo<TTarget>
 
         NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
-        public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+        public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
         {
             var targetPosition = target.Locations[targetLocationIdx];
 
@@ -26,7 +26,7 @@ internal partial struct BlinkTo<TTarget>
             else
             {
                 var cost = 0f;
-                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
+                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
             }
 
             return false;

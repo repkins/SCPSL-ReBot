@@ -8,5 +8,5 @@ internal struct Elevator() : ITarget
 {
     public NativeList<Vector3> Locations { get; } = ObstacleState.ElevationTravelEnterLocations;
 
-    public BeliefEnum Enum { get; } = BeliefEnum.Elevator;
+    public ActionEnum Enum { get; } = ActionEnum.Elevator;
 }

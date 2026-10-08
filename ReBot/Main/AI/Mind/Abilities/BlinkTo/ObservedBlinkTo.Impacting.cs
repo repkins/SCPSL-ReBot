@@ -15,7 +15,7 @@ internal partial struct ObservedBlinkTo<TTarget>
 
         NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
-        public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs, float multiplier = 1f)
+        public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions, float multiplier = 1f)
         {
             if (isObserved)
             {
@@ -25,7 +25,7 @@ internal partial struct ObservedBlinkTo<TTarget>
                     ? remainingSecondsToBlink
                     : remainingSecondsToBlink;
 
-                impactingBeliefs.Add(cost, multiplier, BeliefEnum.BlinkedTo | target.Enum, targetLocationIdx);
+                impactingActions.Add(cost, multiplier, ActionEnum.BlinksTo | target.Enum, targetLocationIdx);
             }
 
             return false;

@@ -11,9 +11,9 @@ internal struct GoTo<TTarget>
     {
         MoveTo<TTarget>.Impacting moveToTargetImpacting = new(botRef, target);
 
-        public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs, float multiplier = 1f)
+        public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions, float multiplier = 1f)
         {
-            return moveToTargetImpacting.Process(targetLocationIdx, impactingBeliefs, multiplier);
+            return moveToTargetImpacting.Process(targetLocationIdx, impactingActions, multiplier);
         }
     }
 }

@@ -19,7 +19,7 @@ internal struct TravelOnElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImp
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Process(int elevationIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int elevationIdx, NativeList<ImpactingAction> impactingActions)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
 
@@ -37,12 +37,12 @@ internal struct TravelOnElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImp
             {
                 var cost = Vector3.Distance(elevationEnterPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacle2Ref.Idx);
+                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacle2Ref.Idx);
             }
         }
         else
         {
-            goToElevatorImpacting.Process(elevationIdx, impactingBeliefs);
+            goToElevatorImpacting.Process(elevationIdx, impactingActions);
         }
 
         return false;

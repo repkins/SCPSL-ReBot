@@ -4,15 +4,15 @@ namespace ReBot.Main.AI.Mind;
 
 internal class MindStore
 {
-    public static NativeList<BeliefRef> ActionBeliefRefs = new(Allocator.Persistent);
+    public static NativeList<ActionRef> EnabledActionRefs = new(Allocator.Persistent);
 
     public static void AddBot(BotRef botRef)
     {
-        ActionBeliefRefs.Add(default);
+        EnabledActionRefs.Add(default);
     }
 
     public static void RemoveBot(BotRef botRef)
     {
-        ActionBeliefRefs.RemoveAt(botRef.Idx);
+        EnabledActionRefs.RemoveAt(botRef.Idx);
     }
 }

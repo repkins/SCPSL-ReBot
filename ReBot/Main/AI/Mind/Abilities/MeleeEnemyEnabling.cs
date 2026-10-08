@@ -21,7 +21,7 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
 
     MoveTo<Enemy>.Impacting moveToEnemyImpacting = new(botRef, new(botRef));
 
-    public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -38,12 +38,12 @@ internal struct MeleeEnemyEnabling(BotRef botRef)
             {
                 var cost = 0f;
 
-                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
+                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
             }
         }
         else
         {
-            moveToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
+            moveToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
         }
 
         return false;

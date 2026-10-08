@@ -7,7 +7,7 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
 {
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
-    public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(NativeList<ImpactingAction> impactingActions)
     {
         if (enemyLocations.Length > 0)
         {
@@ -15,14 +15,14 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
             {
                 var cost = 0f;  // snap attack cost, instant
 
-                impactingBeliefs.Add(cost, BeliefEnum.Attacked | BeliefEnum.Enemy, enemyIdx);
+                impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyIdx);
             }
         }
         else
         {
             var cost = 30; // max sight distance
 
-            impactingBeliefs.Add(cost, BeliefEnum.Sighted | BeliefEnum.Enemy, default);
+            impactingActions.Add(cost, ActionEnum.Finds | ActionEnum.Enemy, default);
         }
 
         return false;

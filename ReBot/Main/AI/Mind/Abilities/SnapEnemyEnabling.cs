@@ -27,7 +27,7 @@ internal struct SnapEnemyEnabling(BotRef botRef)
     GoTo<Enemy>.Impacting goToEnemyImpacting = new(botRef, new());
     ObservedBlinkTo<Enemy>.Impacting observedBlinkToEnemyImpacting = new(botRef, new(botRef));
 
-    public bool Process(EnemyRef enemyRef, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -45,15 +45,15 @@ internal struct SnapEnemyEnabling(BotRef botRef)
                 else
                 {
                     var cost = 0f;
-                    impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacleRef.Idx);
+                    impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
                 }
             }
 
-            observedBlinkToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
+            observedBlinkToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
         }
         else
         {
-            goToEnemyImpacting.Process(enemyRef.Idx, impactingBeliefs);
+            goToEnemyImpacting.Process(enemyRef.Idx, impactingActions);
         }
 
         return false;

@@ -8,5 +8,5 @@ internal struct Obstacle() : ITarget
 {
     public NativeList<Vector3> Locations { get; } = ObstacleState.ObstacleLocations;
 
-    public BeliefEnum Enum { get; } = BeliefEnum.Obstacle;
+    public ActionEnum Enum { get; } = ActionEnum.Obstacle;
 }

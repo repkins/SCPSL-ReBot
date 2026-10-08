@@ -19,7 +19,7 @@ internal struct InteractObstacleEnabling<TGoToImpacting>(BotRef botRef, TGoToImp
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Process(int obstacleInteractIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int obstacleInteractIdx, NativeList<ImpactingAction> impactingActions)
     {
         var doorPermissions = doorObstaclePermissions[obstacleInteractIdx];
         if (doorPermissions == DoorPermissionFlags.None)
@@ -39,12 +39,12 @@ internal struct InteractObstacleEnabling<TGoToImpacting>(BotRef botRef, TGoToImp
                 {
                     var cost = Vector3.Distance(obstacleInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                    impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacle2Ref.Idx);
+                    impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacle2Ref.Idx);
                 }
             }
             else
             {
-                goToObstacleImpacting.Process(obstacleInteractIdx, impactingBeliefs);
+                goToObstacleImpacting.Process(obstacleInteractIdx, impactingActions);
             }
         }
 

@@ -10,7 +10,7 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
 
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
-    public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(NativeList<ImpactingAction> impactingActions)
     {
         if (isEnraged)
         {
@@ -20,27 +20,27 @@ internal struct TerminateEnemyEnabling(BotRef botRef)
                 {
                     var cost = 1f;  // melee attack cost, constant
 
-                    impactingBeliefs.Add(cost, BeliefEnum.Attacked | BeliefEnum.Enemy, enemyIdx);
+                    impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyIdx);
                 }
             }
             else
             {
                 var cost = 5f;  // calming cost
 
-                impactingBeliefs.Add(cost, BeliefEnum.Calmed, default);
+                impactingActions.Add(cost, ActionEnum.Calms, default);
             }
         }
         else if (hasTargetsObservedBy)
         {
             var cost = 5f;  // entering rage cost
 
-            impactingBeliefs.Add(cost, BeliefEnum.Enraged, default);
+            impactingActions.Add(cost, ActionEnum.Enrages, default);
         }
         else
         {
             var cost = 10f; // max sight distance, enraged
 
-            //impactingBeliefs.Add(cost, BeliefEnum.SightedEnemies, default);
+            //impactingActions.Add(cost, ActionEnum.SightedEnemies, default);
         }
 
         return false;

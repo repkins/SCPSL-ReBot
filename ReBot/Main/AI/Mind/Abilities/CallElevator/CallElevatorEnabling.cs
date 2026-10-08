@@ -19,7 +19,7 @@ internal struct CallElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacti
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Process(int elevationCallIdx, NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
     {
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
         var elevationCallInteractAble = elevationCallInteractAbles[elevationCallIdx];
@@ -47,12 +47,12 @@ internal struct CallElevatorEnabling<TGoToImpacting>(BotRef botRef, TGoToImpacti
             {
                 var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
 
-                impactingBeliefs.Add(cost, BeliefEnum.Overcame | BeliefEnum.Obstacle, obstacle2Ref.Idx);
+                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacle2Ref.Idx);
             }
         }
         else
         {
-            goToElevatorCallImpacting.Process(elevationCallIdx, impactingBeliefs);
+            goToElevatorCallImpacting.Process(elevationCallIdx, impactingActions);
         }
 
         return false;

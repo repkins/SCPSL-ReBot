@@ -9,14 +9,14 @@ internal struct SearchesEnemyEnabling<TGoToImpacting>(BotRef botRef, TGoToImpact
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
-    public bool Process(NativeList<ImpactingBelief> impactingBeliefs)
+    public bool Process(NativeList<ImpactingAction> impactingActions)
     {
         if (roomEnterLocations.Length > 0)
         {
             for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < 1; roomEnterLocationIdx++)
             {
                 var costMultiplier = 10f; // cost multiplier is odds of seeing enemies
-                goToRoomImpacting.Process(roomEnterLocationIdx, impactingBeliefs, costMultiplier);
+                goToRoomImpacting.Process(roomEnterLocationIdx, impactingActions, costMultiplier);
             }
         }
 

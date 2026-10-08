@@ -8,11 +8,11 @@ internal struct Unobserved<TMoveToImpacting>(BotRef botRef, TMoveToImpacting mov
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
 
-    public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs, float multiplier = 1f)
+    public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions, float multiplier = 1f)
     {
         if (!isObserved)
         {
-            return moveToImpacting.Process(targetLocationIdx, impactingBeliefs, multiplier);
+            return moveToImpacting.Process(targetLocationIdx, impactingActions, multiplier);
         }
 
         return false;

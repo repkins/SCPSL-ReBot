@@ -7,5 +7,5 @@ namespace ReBot.Main.AI.Mind.Abilities.Target;
 internal interface ITarget
 {
     NativeList<Vector3> Locations { get; }
-    BeliefEnum Enum { get; }
+    ActionEnum Enum { get; }
 }

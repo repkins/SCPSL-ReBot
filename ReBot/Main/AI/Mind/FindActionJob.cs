@@ -12,88 +12,88 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
     public void Execute()
     {
-        var beliefPathfinding = new BeliefPathfinding();
+        var actionPathfinding = new ActionPathfinding();
 
         var mindFactory = new TMindFactory();
         var mind = mindFactory.Create(botRef);
 
-        var goalImpactingBeliefs = new NativeList<ImpactingBelief>(1, Allocator.Temp);
-        mind.ProcessGoals(goalImpactingBeliefs);
-        foreach (var (cost, multiplier, impactingBelief) in goalImpactingBeliefs)
+        var goalImpactingActions = new NativeList<ImpactingAction>(1, Allocator.Temp);
+        mind.ProcessGoals(goalImpactingActions);
+        foreach (var (cost, multiplier, impactingAction) in goalImpactingActions)
         {
-            beliefPathfinding.EnqueueIfLess(cost, multiplier, impactingBelief);
+            actionPathfinding.EnqueueIfLess(cost, multiplier, impactingAction);
         }
 
-        var impactingBeliefs = new NativeList<ImpactingBelief>(4, Allocator.Temp);
+        var impactingActions = new NativeList<ImpactingAction>(4, Allocator.Temp);
         var actionFound = false;
-        var beliefToEnable = default(BeliefRef);
-        while (!actionFound && beliefPathfinding.TryDequeueMin(out beliefToEnable))
+        var actionToEnable = default(ActionRef);
+        while (!actionFound && actionPathfinding.TryDequeueMin(out actionToEnable))
         {
-            actionFound = mind.ProcessBeliefToEnable(beliefToEnable, impactingBeliefs);
+            actionFound = mind.ProcessActionToEnable(actionToEnable, impactingActions);
 
-            foreach (var (cost, multiplier, impactingBelief) in impactingBeliefs)
+            foreach (var (cost, multiplier, impactingAction) in impactingActions)
             {
-                beliefPathfinding.EnqueueIfLess(beliefToEnable, cost, multiplier, impactingBelief);
+                actionPathfinding.EnqueueIfLess(actionToEnable, cost, multiplier, impactingAction);
             }
 
-            impactingBeliefs.Clear();
+            impactingActions.Clear();
         }
 
-        if (MindStore.ActionBeliefRefs[botRef.Idx] != beliefToEnable)
+        if (MindStore.EnabledActionRefs[botRef.Idx] != actionToEnable)
         {
-            MindStore.ActionBeliefRefs[botRef.Idx] = beliefToEnable;
+            MindStore.EnabledActionRefs[botRef.Idx] = actionToEnable;
 
-            PrintVisitedBeliefs(beliefPathfinding, goalImpactingBeliefs);
+            PrintVisitedActions(actionPathfinding, goalImpactingActions);
         }
     }
 
-    private void PrintVisitedBeliefs(BeliefPathfinding beliefPathfinding, NativeList<ImpactingBelief> goalImpactingBeliefs)
+    private void PrintVisitedActions(ActionPathfinding actionPathfinding, NativeList<ImpactingAction> goalImpactingActions)
     {
-        var impactingBeliefStack = new NativeList<(NativeParallelMultiHashMapIterator<BeliefRef> iterator, BeliefRef beliefToEnable)>(Allocator.Temp);
-        var actionBelief = MindStore.ActionBeliefRefs[botRef.Idx];
+        var impactingActionStack = new NativeList<(NativeParallelMultiHashMapIterator<ActionRef> iterator, ActionRef actionToEnable)>(Allocator.Temp);
+        var actionAction = MindStore.EnabledActionRefs[botRef.Idx];
 
-        foreach (var (_, _, goalImpactingBelief) in goalImpactingBeliefs)
+        foreach (var (_, _, goalImpactingAction) in goalImpactingActions)
         {
-            var impactingBelief = goalImpactingBelief;
-            var beliefToEnable = default(BeliefRef);
-            var beliefToEnableGeneralCost = 0f;
+            var impactingAction = goalImpactingAction;
+            var actionToEnable = default(ActionRef);
+            var actionToEnableGeneralCost = 0f;
 
             do
             {
-                var prefix = new string(' ', 4 * impactingBeliefStack.Length);
-                var (generalCost, multiplier) = beliefPathfinding.generalCosts[impactingBelief];
-                var cost = generalCost - beliefToEnableGeneralCost;
+                var prefix = new string(' ', 4 * impactingActionStack.Length);
+                var (generalCost, multiplier) = actionPathfinding.generalCosts[impactingAction];
+                var cost = generalCost - actionToEnableGeneralCost;
 
-                Debug.Log($"{prefix}{impactingBelief.Type}({impactingBelief.Idx}), {cost} ({multiplier}x){(impactingBelief == actionBelief ? " <--" : "")}");
+                Debug.Log($"{prefix}{impactingAction.Enum}({impactingAction.Idx}), {cost} ({multiplier}x){(impactingAction == actionAction ? " <--" : "")}");
 
-                beliefToEnable = impactingBelief;
-                if (beliefPathfinding.visitedImpactingBeliefs.TryGetFirstValue(beliefToEnable, out impactingBelief, out var impactingIterator))
+                actionToEnable = impactingAction;
+                if (actionPathfinding.visitedImpactingActions.TryGetFirstValue(actionToEnable, out impactingAction, out var impactingIterator))
                 {
-                    impactingBeliefStack.Add((impactingIterator, beliefToEnable));
-                    (beliefToEnableGeneralCost, _) = beliefPathfinding.generalCosts[beliefToEnable];
+                    impactingActionStack.Add((impactingIterator, actionToEnable));
+                    (actionToEnableGeneralCost, _) = actionPathfinding.generalCosts[actionToEnable];
                 }
                 else
                 {
-                    while (impactingBeliefStack.Length > 0
-                        && impactingBeliefStack[^1] is var beliefToEnableFrame)
+                    while (impactingActionStack.Length > 0
+                        && impactingActionStack[^1] is var actionToEnableFrame)
                     {
-                        beliefToEnable = beliefToEnableFrame.beliefToEnable;
-                        (beliefToEnableGeneralCost, _) = beliefPathfinding.generalCosts[beliefToEnable];
+                        actionToEnable = actionToEnableFrame.actionToEnable;
+                        (actionToEnableGeneralCost, _) = actionPathfinding.generalCosts[actionToEnable];
 
-                        if (beliefPathfinding.visitedImpactingBeliefs.TryGetNextValue(out impactingBelief, ref beliefToEnableFrame.iterator))
+                        if (actionPathfinding.visitedImpactingActions.TryGetNextValue(out impactingAction, ref actionToEnableFrame.iterator))
                         {
-                            impactingBeliefStack[^1] = beliefToEnableFrame;
+                            impactingActionStack[^1] = actionToEnableFrame;
                             break;
                         }
                         else
                         {
-                            impactingBeliefStack.RemoveAt(impactingBeliefStack.Length - 1);
+                            impactingActionStack.RemoveAt(impactingActionStack.Length - 1);
                         }
                     }
 
                 }
             }
-            while (impactingBeliefStack.Length > 0);
+            while (impactingActionStack.Length > 0);
         }
     }
 }

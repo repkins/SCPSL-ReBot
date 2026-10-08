@@ -15,7 +15,7 @@ internal partial struct MoveTo<TTarget>
         NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
         NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
-        public bool Process(int targetLocationIdx, NativeList<ImpactingBelief> impactingBeliefs, float multiplier = 1f)
+        public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions, float multiplier = 1f)
         {
             var targetPosition = target.Locations[targetLocationIdx];
 
@@ -23,7 +23,7 @@ internal partial struct MoveTo<TTarget>
                 ? Vector3.Distance(targetPosition, playerPosition)
                 : Vector3.Distance(targetPosition, obstacleLocations[obstacleRef.Idx]);
 
-            impactingBeliefs.Add(cost, multiplier, BeliefEnum.MovedTo | target.Enum, targetLocationIdx);
+            impactingActions.Add(cost, multiplier, ActionEnum.MovesTo | target.Enum, targetLocationIdx);
 
             return false;
         }

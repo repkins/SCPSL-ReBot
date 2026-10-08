@@ -7,5 +7,5 @@ internal struct Enemy(BotRef botRef) : ITarget
 {
     public NativeList<Vector3> Locations { get; } = botRef.Value.TerminationState.EnemyLocations;
 
-    public BeliefEnum Enum { get; } = BeliefEnum.Enemy;
+    public ActionEnum Enum { get; } = ActionEnum.Enemy;
 }

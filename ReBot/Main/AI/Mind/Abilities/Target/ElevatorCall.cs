@@ -8,5 +8,5 @@ internal struct ElevatorCall() : ITarget
 {
     public NativeList<Vector3> Locations { get; } = ObstacleState.ElevationCallInteractLocations;
 
-    public BeliefEnum Enum { get; } = BeliefEnum.ElevatorCall;
+    public ActionEnum Enum { get; } = ActionEnum.ElevatorCall;
 }
