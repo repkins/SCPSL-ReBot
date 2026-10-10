@@ -14,13 +14,10 @@ public enum ActionEnum : byte
     TravelsOn = 0x06,
     Calls = 0x07,
 
-    Terminates = 0x08,
-    Attacks = 0x09,
-    Finds = 0x0A,
-    Enrages = 0x0B,
-    Calms = 0x0C,
-
-    Searches = 0x0D,
+    Attacks = 0x08,
+    Searches = 0x09,
+    Enrages = 0x0A,
+    Calms = 0x0B,
 
     Room = 0x10,
     Obstacle = 0x20,

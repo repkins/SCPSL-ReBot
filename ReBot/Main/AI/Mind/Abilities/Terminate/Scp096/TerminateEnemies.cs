@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Terminate.Scp096;
 
-internal struct TerminateEnemy(BotRef botRef)
+internal struct TerminateEnemies(BotRef botRef)
 {
     bool isEnraged = botRef.Value.RageState.IsEnraged;
     bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;
 
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
-    public bool Process(NativeList<ImpactingAction> impactingActions)
+    public bool Enabling(NativeList<BeliefRef> beliefsToEnable)
     {
         if (isEnraged)
         {
@@ -18,29 +18,21 @@ internal struct TerminateEnemy(BotRef botRef)
             {
                 for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
                 {
-                    var cost = 1f;  // melee attack cost, constant
-
-                    impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyIdx);
+                    beliefsToEnable.Add(new(BeliefEnum.TerminatedEnemy, enemyIdx));
                 }
             }
             else
             {
-                var cost = 5f;  // calming cost
-
-                impactingActions.Add(cost, ActionEnum.Calms, default);
+                beliefsToEnable.Add(new(BeliefEnum.Calmed, default));
             }
         }
         else if (hasTargetsObservedBy)
         {
-            var cost = 5f;  // entering rage cost
-
-            impactingActions.Add(cost, ActionEnum.Enrages, default);
+            beliefsToEnable.Add(new(BeliefEnum.Enraged, default));
         }
         else
         {
-            var cost = 10f; // max sight distance, enraged
-
-            //impactingActions.Add(cost, ActionEnum.SightedEnemies, default);
+            beliefsToEnable.Add(new(BeliefEnum.SightedEnemies, default));
         }
 
         return false;

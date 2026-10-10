@@ -4,12 +4,15 @@ public enum BeliefEnum : byte
 {
     TerminatedEnemy,
     WithinEnemy,
-    SightedEnemy,
+    SightedEnemies,
 
-    ObstructedObstacle,
+    UnobstructingObstacle,
 
     WithinRoom,
     WithinObstacle,
     WithinElevator,
     WithinElevatorCall,
+
+    Calmed,
+    Enraged,
 }

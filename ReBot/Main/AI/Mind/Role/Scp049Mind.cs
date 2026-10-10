@@ -12,7 +12,7 @@ namespace ReBot.Main.AI.Mind.Role;
 
 public struct Scp049Mind(BotRef botRef) : IMind
 {
-    TerminateEnemies terminateEnemy = new(botRef);
+    TerminateEnemies terminateEnemies = new(botRef);
     CardiacEnemy cardiacEnemy = new(botRef);
     MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
     SearchesEnemy searchesEnemy = new(botRef);
@@ -30,7 +30,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
 
     public void ProcessGoals(NativeList<BeliefRef> beliefsToEnable)
     {
-        terminateEnemy.Enabling(beliefsToEnable);
+        terminateEnemies.Enabling(beliefsToEnable);
     }
 
     public bool ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
@@ -81,13 +81,13 @@ public struct Scp049Mind(BotRef botRef) : IMind
             BeliefEnum.WithinEnemy => 
                 moveToEnemy.Impacting(beliefRef.Idx, impactingActions),
 
-            BeliefEnum.SightedEnemy =>
+            BeliefEnum.SightedEnemies =>
                 searchesEnemy.Impacting(impactingActions),
 
             BeliefEnum.WithinRoom => 
                 moveToRoom.Impacting(beliefRef.Idx, impactingActions),
 
-            BeliefEnum.ObstructedObstacle =>
+            BeliefEnum.UnobstructingObstacle =>
                 travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx)
                     ? travelOnElevator.Impacting(elevationIdx, impactingActions)
                     : callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx)

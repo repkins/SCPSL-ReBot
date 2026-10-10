@@ -45,7 +45,7 @@ internal struct InteractObstacle(BotRef botRef)
             }
             else
             {
-                beliefsToEnable.Add(new(BeliefEnum.ObstructedObstacle, obstacle2Ref.Idx));
+                beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacle2Ref.Idx));
             }
         }
         else

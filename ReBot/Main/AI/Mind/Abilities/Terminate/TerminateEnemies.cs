@@ -18,7 +18,7 @@ internal struct TerminateEnemies(BotRef botRef)
         }
         else
         {
-            beliefsToEnable.Add(new(BeliefEnum.SightedEnemy, default));
+            beliefsToEnable.Add(new(BeliefEnum.SightedEnemies, default));
         }
 
         return false;

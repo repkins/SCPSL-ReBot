@@ -39,7 +39,7 @@ internal struct MoveTo<TTarget>(BotRef botRef, TTarget target)
         }
         else
         {
-            beliefsToEnable.Add(new(BeliefEnum.ObstructedObstacle, obstacleRef.Idx));
+            beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
         }
 
         return false;

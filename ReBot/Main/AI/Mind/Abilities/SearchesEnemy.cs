@@ -14,9 +14,9 @@ internal struct SearchesEnemy(BotRef botRef)
             for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < 1; roomEnterLocationIdx++)
             {
                 var cost = 0f;
-                var costMultiplier = 10f; // cost multiplier is odds of seeing enemies
+                var multiplier = 10f; // cost multiplier is odds of seeing enemies
 
-                impactingActions.Add(cost, costMultiplier, ActionEnum.Searches | ActionEnum.Room, roomEnterLocationIdx);
+                impactingActions.Add(cost, multiplier, ActionEnum.Searches | ActionEnum.Room, roomEnterLocationIdx);
             }
         }
 
