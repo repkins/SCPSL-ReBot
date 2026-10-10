@@ -1,6 +1,4 @@
-﻿using ReBot.Main.AI.Mind.Abilities.MoveTo;
-using ReBot.Main.AI.Mind.Abilities.Target;
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
 using System.Linq;
@@ -19,9 +17,16 @@ internal struct CaptureEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> capturePositionRef = botRef.Value.CaptureState.CapturePositionRef;
 
-    MovedTo<Enemy> movedToEnemy = new(botRef, new(botRef));
+    public bool Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+    {
+        var cost = 1f;  // attack cost, constant
 
-    public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+        impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyRef.Idx);
+
+        return false;
+    }
+
+    public bool Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -36,13 +41,12 @@ internal struct CaptureEnemy(BotRef botRef)
             }
             else
             {
-                var cost = 0f;
-                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
+                beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
             }
         }
         else
         {
-            movedToEnemy.Process(enemyRef.Idx, impactingActions);
+            beliefsToEnable.Add(new(BeliefEnum.WithinEnemy, enemyRef.Idx));
         }
 
         return false;
