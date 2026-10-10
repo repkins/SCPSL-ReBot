@@ -20,6 +20,8 @@ public enum ActionEnum : byte
     Enrages = 0x0B,
     Calms = 0x0C,
 
+    Searches = 0x0D,
+
     Room = 0x10,
     Obstacle = 0x20,
     Elevator = 0x30,

@@ -1,24 +1,31 @@
-﻿using ReBot.Main.AI.Mind.Abilities.GoTo;
-using Unity.Collections;
+﻿using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct SearchesEnemy<TGoToImpacting>(BotRef botRef, TGoToImpacting goToRoomImpacting)
-    where TGoToImpacting : IWithin
+internal struct SearchesEnemy(BotRef botRef)
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
-    public bool Process(NativeList<ImpactingAction> impactingActions)
+    public bool Impacting(NativeList<ImpactingAction> impactingActions)
     {
         if (roomEnterLocations.Length > 0)
         {
             for (var roomEnterLocationIdx = 0; roomEnterLocationIdx < 1; roomEnterLocationIdx++)
             {
+                var cost = 0f;
                 var costMultiplier = 10f; // cost multiplier is odds of seeing enemies
-                goToRoomImpacting.Process(roomEnterLocationIdx, impactingActions, costMultiplier);
+
+                impactingActions.Add(cost, costMultiplier, ActionEnum.Searches | ActionEnum.Room, roomEnterLocationIdx);
             }
         }
+
+        return false;
+    }
+
+    public bool Enabling(int roomEnterLocationIdx, NativeList<BeliefRef> beliefsToEnable)
+    {
+        beliefsToEnable.Add(new(BeliefEnum.WithinRoom, roomEnterLocationIdx));
 
         return false;
     }

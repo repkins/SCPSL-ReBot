@@ -1,16 +1,13 @@
-﻿using ReBot.Main.AI.Mind.Abilities.GoTo;
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.CallElevator;
 
-internal struct CallElevator<TGoToImpacting>(BotRef botRef, TGoToImpacting goToElevatorCallImpacting)
-    where TGoToImpacting : IWithin
+internal struct CallElevator(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
@@ -19,40 +16,52 @@ internal struct CallElevator<TGoToImpacting>(BotRef botRef, TGoToImpacting goToE
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Process(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
+    public bool TryGetElevationCallIdx(ObstacleRef obstacleRef, out int elevationCallIdx)
+    {
+        if (elevationCallObstacles.IndexOf(obstacleRef) is var resultElevationCallIdx && resultElevationCallIdx > -1)
+        {
+            elevationCallIdx = resultElevationCallIdx;
+            return true;
+        }
+
+        elevationCallIdx = default;
+        return false;
+    }
+
+    public bool Impacting(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
+    {
+        var cost = 5f;
+
+        impactingActions.Add(cost, ActionEnum.Calls | ActionEnum.Elevator, elevationCallIdx);
+
+        return false;
+    }
+
+    public bool Enabling(int elevationCallIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
         var elevationCallInteractAble = elevationCallInteractAbles[elevationCallIdx];
 
         if (Vector3.Distance(elevationCallInteractPosition, playerPosition) < 2f)
         {
-            if (!obstaclesByTarget.TryGetValue(elevationCallInteractPosition, out var obstacle2Ref))
+            if (elevationCallInteractAble)
             {
-                if (elevationCallInteractAble)
-                {
-                    lookAtPositionRef.Value = (true, elevationCallInteractPosition);
-                    interactPositionRef.Value = (true, elevationCallInteractPosition);
-                }
-                else
-                {
-                    var obstacleRef = elevationCallObstacles[elevationCallIdx];
-                    var obstaclePosition = obstacleLocations[obstacleRef.Idx];
-
-                    lookAtPositionRef.Value = (true, obstaclePosition);
-                }
-
-                return true;
+                lookAtPositionRef.Value = (true, elevationCallInteractPosition);
+                interactPositionRef.Value = (true, elevationCallInteractPosition);
             }
             else
             {
-                var cost = Vector3.Distance(elevationCallInteractPosition, obstacleLocations[obstacle2Ref.Idx]);
+                var obstacleRef = elevationCallObstacles[elevationCallIdx];
+                var obstaclePosition = obstacleLocations[obstacleRef.Idx];
 
-                impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacle2Ref.Idx);
+                lookAtPositionRef.Value = (true, obstaclePosition);
             }
+
+            return true;
         }
         else
         {
-            goToElevatorCallImpacting.Process(elevationCallIdx, impactingActions);
+            beliefsToEnable.Add(new(BeliefEnum.WithinElevatorCall, elevationCallIdx));
         }
 
         return false;

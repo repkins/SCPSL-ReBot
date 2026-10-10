@@ -8,11 +8,27 @@ namespace ReBot.Main.AI.Mind.Abilities.MoveTo;
 internal struct MoveTo<TTarget>(BotRef botRef, TTarget target)
     where TTarget : ITarget
 {
+    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+
+    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
-    public bool Process(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
+    public bool Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
+    {
+        var targetPosition = target.Locations[targetLocationIdx];
+
+        var cost = !obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef)
+            ? Vector3.Distance(targetPosition, playerPosition)
+            : Vector3.Distance(targetPosition, obstacleLocations[obstacleRef.Idx]);
+
+        impactingActions.Add(cost, ActionEnum.MovesTo | target.Enum, targetLocationIdx);
+
+        return false;
+    }
+
+    public bool Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var targetPosition = target.Locations[targetLocationIdx];
 
@@ -23,8 +39,7 @@ internal struct MoveTo<TTarget>(BotRef botRef, TTarget target)
         }
         else
         {
-            var cost = 0f;
-            impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
+            beliefsToEnable.Add(new(BeliefEnum.ObstructedObstacle, obstacleRef.Idx));
         }
 
         return false;

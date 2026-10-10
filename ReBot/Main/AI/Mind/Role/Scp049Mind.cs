@@ -1,80 +1,107 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
-using ReBot.Main.AI.Mind.Abilities.GoTo;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
-using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Mind.Abilities.Terminate;
 using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
+using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 public struct Scp049Mind(BotRef botRef) : IMind
 {
-    TerminateEnemy terminateEnemy = new(botRef);
+    TerminateEnemies terminateEnemy = new(botRef);
     CardiacEnemy cardiacEnemy = new(botRef);
     MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
-    SearchesEnemy<Within<Room>> searchesEnemy = new(botRef, new(botRef, new(botRef)));
+    SearchesEnemy searchesEnemy = new(botRef);
 
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
-    OvercomeObstacle overcomeObstacle = new();
-
-    InteractObstacle<Within<Obstacle>> interactObstacle = new(botRef, new(botRef, new()));
+    InteractObstacle interactObstacle = new(botRef);
     MoveTo<Obstacle> moveToObstacle = new(botRef, new());
 
-    TravelOnElevator<Within<Elevator>> travelOnElevator = new(botRef, new(botRef, new()));
+    TravelOnElevator travelOnElevator = new(botRef);
     MoveTo<Elevator> moveToElevator = new(botRef, new());
 
-    CallElevator<Within<ElevatorCall>> callElevator = new(botRef, new(botRef, new()));
+    CallElevator callElevator = new(botRef);
     MoveTo<ElevatorCall> moveToElevatorCall = new(botRef, new());
 
-    public void ProcessGoals(NativeList<ImpactingAction> impactingActions)
+    public void ProcessGoals(NativeList<BeliefRef> beliefsToEnable)
     {
-        impactingActions.Add(0, ActionEnum.Terminates | ActionEnum.Enemy, default);
+        terminateEnemy.Enabling(beliefsToEnable);
     }
 
-    public bool ProcessActionToEnable(ActionRef actionToEnable, NativeList<ImpactingAction> impactingActions)
+    public bool ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
     {
-        return actionToEnable.Enum switch
+        return action.Enum switch
         {
-            ActionEnum.Terminates | ActionEnum.Enemy =>
-                terminateEnemy.Process(impactingActions),
-
             ActionEnum.Attacks | ActionEnum.Enemy =>
-                cardiacEnemy.Process(new(actionToEnable.Idx), impactingActions),
+                cardiacEnemy.Enabling(new(action.Idx), beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Enemy =>
-                moveToEnemy.Process(actionToEnable.Idx, impactingActions),
+                moveToEnemy.Enabling(action.Idx, beliefsToEnable),
 
-            ActionEnum.Finds | ActionEnum.Enemy =>
-                searchesEnemy.Process(impactingActions),
+            ActionEnum.Searches | ActionEnum.Enemy =>
+                searchesEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
-                moveToRoom.Process(actionToEnable.Idx, impactingActions),
-
-            ActionEnum.Overcomes | ActionEnum.Obstacle =>
-                overcomeObstacle.Process(actionToEnable.Idx, impactingActions),
+                moveToRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.InteractsWith | ActionEnum.Obstacle =>
-                interactObstacle.Process(actionToEnable.Idx, impactingActions),
+                interactObstacle.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Obstacle =>
-                moveToObstacle.Process(actionToEnable.Idx, impactingActions),
+                moveToObstacle.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.TravelsOn | ActionEnum.Elevator =>
-                travelOnElevator.Process(actionToEnable.Idx, impactingActions),
+                travelOnElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Elevator =>
-                moveToElevator.Process(actionToEnable.Idx, impactingActions),
+                moveToElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.Calls | ActionEnum.Elevator =>
-                callElevator.Process(actionToEnable.Idx, impactingActions),
+                callElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
-                moveToElevatorCall.Process(actionToEnable.Idx, impactingActions),
+                moveToElevatorCall.Enabling(action.Idx, beliefsToEnable),
+
+            _ => false
+        };
+    }
+
+    public bool ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
+    {
+        return beliefRef.Enum switch
+        {
+            BeliefEnum.TerminatedEnemy =>
+                cardiacEnemy.Impacting(new(beliefRef.Idx), impactingActions),
+
+            BeliefEnum.WithinEnemy => 
+                moveToEnemy.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.SightedEnemy =>
+                searchesEnemy.Impacting(impactingActions),
+
+            BeliefEnum.WithinRoom => 
+                moveToRoom.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.ObstructedObstacle =>
+                travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx)
+                    ? travelOnElevator.Impacting(elevationIdx, impactingActions)
+                    : callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx)
+                        ? callElevator.Impacting(elevationCallIdx, impactingActions)
+                        : interactObstacle.Impacting(new(beliefRef.Idx), impactingActions),
+
+            BeliefEnum.WithinObstacle => 
+                moveToObstacle.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.WithinElevator => 
+                moveToElevator.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.WithinElevatorCall => 
+                moveToElevatorCall.Impacting(beliefRef.Idx, impactingActions),
 
             _ => false
         };
