@@ -16,7 +16,7 @@ internal struct Scp173Mind(BotRef botRef) : IMind
 {
     TerminateEnemies terminateEnemies = new(botRef);
     SnapEnemy snapEnemy = new(botRef);
-    SearchesRoom searchesRoom = new(botRef);
+    SearchRoom searchRoom = new(botRef);
 
     Unobserved<MoveTo<Enemy>> unobservedMoveToEnemy = new(botRef, new(botRef, new(botRef)));
     ObservedBlinkTo<Enemy> observedBlinkToEnemy = new(botRef, new(botRef));
@@ -55,7 +55,7 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 observedBlinkToEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.Searches | ActionEnum.Room =>
-                searchesRoom.Enabling(action.Idx, beliefsToEnable),
+                searchRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
                 unobservedMoveToRoom.Enabling(action.Idx, beliefsToEnable),
@@ -106,7 +106,7 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                     | observedBlinkToEnemy.Impacting(beliefRef.Idx, impactingActions),
 
             BeliefEnum.SightedEnemies =>
-                searchesRoom.Impacting(impactingActions),
+                searchRoom.Impacting(impactingActions),
 
             BeliefEnum.WithinRoom =>
                 unobservedMoveToRoom.Impacting(beliefRef.Idx, impactingActions)

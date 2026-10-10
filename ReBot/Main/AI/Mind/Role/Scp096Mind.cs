@@ -19,7 +19,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     TerminateEnemies terminateEnemies = new(botRef);
     MeleeEnemy meleeEnemy = new(botRef);
     MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
-    SearchesRoom searchesEnemy = new(botRef);
+    SearchRoom searchRoom = new(botRef);
 
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
@@ -54,7 +54,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
                 calm.Enabling(),
 
             ActionEnum.Searches | ActionEnum.Room =>
-                searchesEnemy.Enabling(action.Idx, beliefsToEnable),
+                searchRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
                 moveToRoom.Enabling(action.Idx, beliefsToEnable),
@@ -98,7 +98,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
                 moveToEnemy.Impacting(beliefRef.Idx, impactingActions),
 
             BeliefEnum.SightedEnemies =>
-                searchesEnemy.Impacting(impactingActions),
+                searchRoom.Impacting(impactingActions),
 
             BeliefEnum.WithinRoom =>
                 moveToRoom.Impacting(beliefRef.Idx, impactingActions),

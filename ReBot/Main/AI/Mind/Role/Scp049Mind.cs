@@ -15,7 +15,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
     TerminateEnemies terminateEnemies = new(botRef);
     CardiacEnemy cardiacEnemy = new(botRef);
     MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
-    SearchesRoom searchesEnemy = new(botRef);
+    SearchRoom searchRoom = new(botRef);
 
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
@@ -44,7 +44,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 moveToEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.Searches | ActionEnum.Room =>
-                searchesEnemy.Enabling(action.Idx, beliefsToEnable),
+                searchRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
                 moveToRoom.Enabling(action.Idx, beliefsToEnable),
@@ -82,7 +82,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
                 moveToEnemy.Impacting(beliefRef.Idx, impactingActions),
 
             BeliefEnum.SightedEnemies =>
-                searchesEnemy.Impacting(impactingActions),
+                searchRoom.Impacting(impactingActions),
 
             BeliefEnum.WithinRoom => 
                 moveToRoom.Impacting(beliefRef.Idx, impactingActions),
