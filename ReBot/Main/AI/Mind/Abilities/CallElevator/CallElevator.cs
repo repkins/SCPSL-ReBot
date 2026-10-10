@@ -28,16 +28,14 @@ internal struct CallElevator(BotRef botRef)
         return false;
     }
 
-    public bool Impacting(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(int elevationCallIdx, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 5f;
 
         impactingActions.Add(cost, ActionEnum.Calls | ActionEnum.Elevator, elevationCallIdx);
-
-        return false;
     }
 
-    public bool Enabling(int elevationCallIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int elevationCallIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var elevationCallInteractPosition = elevationCallInteractLocations[elevationCallIdx];
         var elevationCallInteractAble = elevationCallInteractAbles[elevationCallIdx];
@@ -56,14 +54,10 @@ internal struct CallElevator(BotRef botRef)
 
                 lookAtPositionRef.Value = (true, obstaclePosition);
             }
-
-            return true;
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.WithinElevatorCall, elevationCallIdx));
         }
-
-        return false;
     }
 }

@@ -14,7 +14,7 @@ internal struct PassthroughObstacle(BotRef botRef)
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
         var obstaclePosition = obstacleLocations[obstacleRef.Idx];
 
@@ -24,11 +24,9 @@ internal struct PassthroughObstacle(BotRef botRef)
             : Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
 
         impactingActions.Add(cost, ActionEnum.PassesThrough | ActionEnum.Obstacle, obstacleRef.Idx);
-
-        return false;
     }
 
-    public bool Enabling(int obstacleIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int obstacleIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var obstaclePosition = obstacleLocations[obstacleIdx];
 
@@ -36,14 +34,10 @@ internal struct PassthroughObstacle(BotRef botRef)
         {
             moveToPositionRef.Value = (true, obstaclePosition);
             lookAtPositionRef.Value = (true, obstaclePosition);
-
-            return true;
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacle2Ref.Idx));
         }
-
-        return false;
     }
 }

@@ -7,7 +7,7 @@ internal struct SearchRoom(BotRef botRef)
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 
-    public bool Impacting(NativeList<ImpactingAction> impactingActions)
+    public void Impacting(NativeList<ImpactingAction> impactingActions)
     {
         if (roomEnterLocations.Length > 0)
         {
@@ -19,14 +19,10 @@ internal struct SearchRoom(BotRef botRef)
                 impactingActions.Add(cost, multiplier, ActionEnum.Searches | ActionEnum.Room, roomEnterLocationIdx);
             }
         }
-
-        return false;
     }
 
-    public bool Enabling(int roomEnterLocationIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int roomEnterLocationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         beliefsToEnable.Add(new(BeliefEnum.WithinRoom, roomEnterLocationIdx));
-
-        return false;
     }
 }

@@ -27,16 +27,14 @@ internal struct TravelOnElevator(BotRef botRef)
         return false;
     }
 
-    public bool Impacting(int elevationIdx, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(int elevationIdx, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 5f;
 
         impactingActions.Add(cost, ActionEnum.TravelsOn | ActionEnum.Elevator, elevationIdx);
-
-        return false;
     }
 
-    public bool Enabling(int elevationIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int elevationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
 
@@ -45,14 +43,10 @@ internal struct TravelOnElevator(BotRef botRef)
             var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
             lookAtPositionRef.Value = (true, travelInteractPosition);
             interactPositionRef.Value = (true, travelInteractPosition);
-
-            return true;
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.WithinElevator, elevationIdx));
         }
-
-        return false;
     }
 }

@@ -41,97 +41,125 @@ internal struct Scp173Mind(BotRef botRef) : IMind
         terminateEnemies.Enabling(beliefsToEnable);
     }
 
-    public bool ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
+    public void ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
     {
-        return action.Enum switch
+        switch (action.Enum)
         {
-            ActionEnum.Attacks | ActionEnum.Enemy =>
-                snapEnemy.Enabling(new(action.Idx), beliefsToEnable),
+            case ActionEnum.Attacks | ActionEnum.Enemy:
+                snapEnemy.Enabling(new(action.Idx), beliefsToEnable);
 
-            ActionEnum.MovesTo | ActionEnum.Enemy =>
-                unobservedMoveToEnemy.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Enemy:
+                unobservedMoveToEnemy.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.BlinksTo | ActionEnum.Enemy =>
-                observedBlinkToEnemy.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.Enemy:
+                observedBlinkToEnemy.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.Searches | ActionEnum.Room =>
-                searchRoom.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.Searches | ActionEnum.Room:
+                searchRoom.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.MovesTo | ActionEnum.Room =>
-                unobservedMoveToRoom.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Room:
+                unobservedMoveToRoom.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.BlinksTo | ActionEnum.Room =>
-                observedBlinkToRoom.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.Room:
+                observedBlinkToRoom.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.InteractsWith | ActionEnum.Obstacle =>
-                interactObstacle.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.InteractsWith | ActionEnum.Obstacle:
+                interactObstacle.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.MovesTo | ActionEnum.Obstacle =>
-                unobservedMoveToObstacle.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Obstacle:
+                unobservedMoveToObstacle.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.BlinksTo | ActionEnum.Obstacle =>
-                observedBlinkToObstacle.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.Obstacle:
+                observedBlinkToObstacle.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.TravelsOn | ActionEnum.Elevator =>
-                travelOnElevator.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.TravelsOn | ActionEnum.Elevator:
+                travelOnElevator.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.MovesTo | ActionEnum.Elevator =>
-                unobservedMoveToElevator.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Elevator:
+                unobservedMoveToElevator.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.BlinksTo | ActionEnum.Elevator =>
-                observedBlinkToElevator.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.Elevator:
+                observedBlinkToElevator.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.Calls | ActionEnum.Elevator =>
-                callElevator.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.Calls | ActionEnum.Elevator:
+                callElevator.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
-                unobservedMoveToElevatorCall.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.MovesTo | ActionEnum.ElevatorCall:
+                unobservedMoveToElevatorCall.Enabling(action.Idx, beliefsToEnable);
 
-            ActionEnum.BlinksTo | ActionEnum.ElevatorCall =>
-                observedBlinkToElevatorCall.Enabling(action.Idx, beliefsToEnable),
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.ElevatorCall:
+                observedBlinkToElevatorCall.Enabling(action.Idx, beliefsToEnable);
 
-            _ => false
+                break;
         };
     }
 
-    public bool ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
+    public void ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
     {
-        return beliefRef.Enum switch
+        switch (beliefRef.Enum)
         {
-            BeliefEnum.TerminatedEnemy =>
-                snapEnemy.Impacting(new(beliefRef.Idx), impactingActions),
+            case BeliefEnum.TerminatedEnemy:
+                snapEnemy.Impacting(new(beliefRef.Idx), impactingActions);
 
-            BeliefEnum.WithinEnemy =>
-                unobservedMoveToEnemy.Impacting(beliefRef.Idx, impactingActions)
-                    | observedBlinkToEnemy.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinEnemy:
+                unobservedMoveToEnemy.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToEnemy.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.SightedEnemies =>
-                searchRoom.Impacting(impactingActions),
+                break;
+            case BeliefEnum.SightedEnemies:
+                searchRoom.Impacting(impactingActions);
 
-            BeliefEnum.WithinRoom =>
-                unobservedMoveToRoom.Impacting(beliefRef.Idx, impactingActions)
-                    | observedBlinkToRoom.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinRoom:
+                unobservedMoveToRoom.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToRoom.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.UnobstructingObstacle =>
-                travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx)
-                    ? travelOnElevator.Impacting(elevationIdx, impactingActions)
-                    : callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx)
-                        ? callElevator.Impacting(elevationCallIdx, impactingActions)
-                        : interactObstacle.Impacting(new(beliefRef.Idx), impactingActions),
+                break;
+            case BeliefEnum.UnobstructingObstacle:
+                if (travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx))
+                {
+                    travelOnElevator.Impacting(elevationIdx, impactingActions);
+                }
+                else if (callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx))
+                {
+                    callElevator.Impacting(elevationCallIdx, impactingActions);
+                }
+                else
+                {
+                    interactObstacle.Impacting(new(beliefRef.Idx), impactingActions);
+                }
 
-            BeliefEnum.WithinObstacle =>
-                unobservedMoveToObstacle.Impacting(beliefRef.Idx, impactingActions)
-                    | observedBlinkToObstacle.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinObstacle:
+                unobservedMoveToObstacle.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToObstacle.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.WithinElevator =>
-                unobservedMoveToElevator.Impacting(beliefRef.Idx, impactingActions)
-                    | observedBlinkToElevator.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinElevator:
+                unobservedMoveToElevator.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToElevator.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.WithinElevatorCall =>
-                unobservedMoveToElevatorCall.Impacting(beliefRef.Idx, impactingActions)
-                    | observedBlinkToElevatorCall.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinElevatorCall:
+                unobservedMoveToElevatorCall.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToElevatorCall.Impacting(beliefRef.Idx, impactingActions);
 
-            _ => false
+                break;
         };
     }
 

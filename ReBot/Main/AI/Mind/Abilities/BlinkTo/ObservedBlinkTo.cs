@@ -15,7 +15,7 @@ internal struct ObservedBlinkTo<TTarget>(BotRef botRef, TTarget target)
 
     NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
 
-    public bool Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {
         if (isObserved)
         {
@@ -27,24 +27,19 @@ internal struct ObservedBlinkTo<TTarget>(BotRef botRef, TTarget target)
 
             impactingActions.Add(cost, ActionEnum.BlinksTo | target.Enum, targetLocationIdx);
         }
-
-        return false;
     }
 
-    public bool Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var targetPosition = target.Locations[targetLocationIdx];
 
         if (!obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef))
         {
             blinkToPositionRef.Value = (true, targetPosition);
-            return true;
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
         }
-
-        return false;
     }
 }

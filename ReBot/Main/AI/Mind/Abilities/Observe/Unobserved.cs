@@ -4,21 +4,19 @@ using Unity.Collections;
 namespace ReBot.Main.AI.Mind.Abilities.Observe;
 
 internal struct Unobserved<TMoveTo>(BotRef botRef, TMoveTo moveTo)
-    where TMoveTo : IMovedTo
+    where TMoveTo : IMoveTo
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
 
-    public bool Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {
         if (!isObserved)
         {
-            return moveTo.Impacting(targetLocationIdx, impactingActions);
+            moveTo.Impacting(targetLocationIdx, impactingActions);
         }
-
-        return false;
     }
-    public bool Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
-        return moveTo.Enabling(targetLocationIdx, beliefsToEnable);
+        moveTo.Enabling(targetLocationIdx, beliefsToEnable);
     }
 }

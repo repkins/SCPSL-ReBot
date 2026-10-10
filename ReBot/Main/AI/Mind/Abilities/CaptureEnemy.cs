@@ -17,16 +17,14 @@ internal struct CaptureEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> capturePositionRef = botRef.Value.CaptureState.CapturePositionRef;
 
-    public bool Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 1f;  // attack cost, constant
 
         impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyRef.Idx);
-
-        return false;
     }
 
-    public bool Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -36,8 +34,6 @@ internal struct CaptureEnemy(BotRef botRef)
             {
                 lookAtPositionRef.Value = (true, enemyPosition);
                 capturePositionRef.Value = (true, enemyPosition);
-
-                return true;
             }
             else
             {
@@ -48,7 +44,5 @@ internal struct CaptureEnemy(BotRef botRef)
         {
             beliefsToEnable.Add(new(BeliefEnum.WithinEnemy, enemyRef.Idx));
         }
-
-        return false;
     }
 }

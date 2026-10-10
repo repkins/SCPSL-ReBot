@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.MoveTo;
 
-internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMovedTo
+internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMoveTo
     where TTarget : ITarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
@@ -15,7 +15,7 @@ internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMovedTo
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
 
-    public bool Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {
         var targetPosition = target.Locations[targetLocationIdx];
 
@@ -24,24 +24,19 @@ internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMovedTo
             : Vector3.Distance(targetPosition, obstacleLocations[obstacleRef.Idx]);
 
         impactingActions.Add(cost, ActionEnum.MovesTo | target.Enum, targetLocationIdx);
-
-        return false;
     }
 
-    public bool Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(int targetLocationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var targetPosition = target.Locations[targetLocationIdx];
 
         if (!obstaclesByTarget.TryGetValue(targetPosition, out var obstacleRef))
         {
             moveToPositionRef.Value = (true, targetPosition);
-            return true;
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
         }
-
-        return false;
     }
 }

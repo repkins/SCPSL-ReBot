@@ -19,16 +19,14 @@ internal struct CardiacEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
     NativeReference<(bool, Vector3)> cardiacPositionRef = botRef.Value.CardiacState.CardiacPositionRef;
 
-    public bool Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 1f;  // attack cost, constant
 
         impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyRef.Idx);
-
-        return false;
     }
 
-    public bool Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -40,8 +38,6 @@ internal struct CardiacEnemy(BotRef botRef)
                 {
                     lookAtPositionRef.Value = (true, enemyPosition);
                     cardiacPositionRef.Value = (true, enemyPosition);
-
-                    return true;
                 }
                 else
                 {
@@ -52,15 +48,11 @@ internal struct CardiacEnemy(BotRef botRef)
             {
                 var estimatedEnemyPosition = enemyPosition + enemyVelocities[enemyRef.Idx];
                 lookAtPositionRef.Value = (true, estimatedEnemyPosition);
-
-                return true;
             }
         }
         else
         {
             beliefsToEnable.Add(new(BeliefEnum.WithinEnemy, enemyRef.Idx));
         }
-
-        return false;
     }
 }

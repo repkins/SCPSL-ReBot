@@ -37,89 +37,116 @@ internal struct Scp096Mind(BotRef botRef) : IMind
         terminateEnemies.Enabling(beliefsToEnable);
     }
 
-    public bool ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
+    public void ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
     {
-        return action.Enum switch
+        switch (action.Enum)
         {
-            ActionEnum.Attacks | ActionEnum.Enemy =>
-                meleeEnemy.Enabling(new(action.Idx), beliefsToEnable),
-
-            ActionEnum.MovesTo | ActionEnum.Enemy =>
-                moveToEnemy.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.Enrages =>
-                enrage.Enabling(),
-
-            ActionEnum.Calms =>
-                calm.Enabling(),
-
-            ActionEnum.Searches | ActionEnum.Room =>
-                searchRoom.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.MovesTo | ActionEnum.Room =>
-                moveToRoom.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.InteractsWith | ActionEnum.Obstacle =>
-                interactObstacle.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.MovesTo | ActionEnum.Obstacle =>
-                moveToObstacle.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.TravelsOn | ActionEnum.Elevator =>
-                travelOnElevator.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.MovesTo | ActionEnum.Elevator =>
-                moveToElevator.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.Calls | ActionEnum.Elevator =>
-                callElevator.Enabling(action.Idx, beliefsToEnable),
-
-            ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
-                moveToElevatorCall.Enabling(action.Idx, beliefsToEnable),
-
-            _ => false
+            case ActionEnum.Attacks | ActionEnum.Enemy:
+                meleeEnemy.Enabling(new(action.Idx), beliefsToEnable);
+                
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Enemy:
+                moveToEnemy.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.Enrages:
+                enrage.Enabling();
+                
+                break;
+            case ActionEnum.Calms:
+                calm.Enabling();
+                
+                break;
+            case ActionEnum.Searches | ActionEnum.Room:
+                searchRoom.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Room:
+                moveToRoom.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.InteractsWith | ActionEnum.Obstacle:
+                interactObstacle.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Obstacle:
+                moveToObstacle.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.TravelsOn | ActionEnum.Elevator:
+                travelOnElevator.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.MovesTo | ActionEnum.Elevator:
+                moveToElevator.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.Calls | ActionEnum.Elevator:
+                callElevator.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
+            case ActionEnum.MovesTo | ActionEnum.ElevatorCall:
+                moveToElevatorCall.Enabling(action.Idx, beliefsToEnable);
+                
+                break;
         };
     }
 
-    public bool ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
+    public void ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
     {
-        return beliefRef.Enum switch
+        switch (beliefRef.Enum)
         {
-            BeliefEnum.Enraged =>
-                enrage.Impacting(impactingActions),
+            case BeliefEnum.Enraged:
+                enrage.Impacting(impactingActions);
 
-            BeliefEnum.Calmed => 
-                enrage.Impacting(impactingActions),
+                break;
+            case BeliefEnum.Calmed:
+                enrage.Impacting(impactingActions);
 
-            BeliefEnum.TerminatedEnemy =>
-                meleeEnemy.Impacting(new(beliefRef.Idx), impactingActions),
+                break;
+            case BeliefEnum.TerminatedEnemy:
+                meleeEnemy.Impacting(new(beliefRef.Idx), impactingActions);
 
-            BeliefEnum.WithinEnemy =>
-                moveToEnemy.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinEnemy:
+                moveToEnemy.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.SightedEnemies =>
-                searchRoom.Impacting(impactingActions),
+                break;
+            case BeliefEnum.SightedEnemies:
+                searchRoom.Impacting(impactingActions);
 
-            BeliefEnum.WithinRoom =>
-                moveToRoom.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinRoom:
+                moveToRoom.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.UnobstructingObstacle =>
-                travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx)
-                    ? travelOnElevator.Impacting(elevationIdx, impactingActions)
-                    : callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx)
-                        ? callElevator.Impacting(elevationCallIdx, impactingActions)
-                        : interactObstacle.Impacting(new(beliefRef.Idx), impactingActions),
+                break;
+            case BeliefEnum.UnobstructingObstacle:
+                if (travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx))
+                {
+                    travelOnElevator.Impacting(elevationIdx, impactingActions);
+                }
+                else if (callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx))
+                {
+                    callElevator.Impacting(elevationCallIdx, impactingActions);
+                }
+                else
+                {
+                    interactObstacle.Impacting(new(beliefRef.Idx), impactingActions);
+                }
 
-            BeliefEnum.WithinObstacle =>
-                moveToObstacle.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinObstacle:
+                moveToObstacle.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.WithinElevator =>
-                moveToElevator.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinElevator:
+                moveToElevator.Impacting(beliefRef.Idx, impactingActions);
 
-            BeliefEnum.WithinElevatorCall =>
-                moveToElevatorCall.Impacting(beliefRef.Idx, impactingActions),
+                break;
+            case BeliefEnum.WithinElevatorCall:
+                moveToElevatorCall.Impacting(beliefRef.Idx, impactingActions);
 
-            _ => false
+                break;
         };
     }
 

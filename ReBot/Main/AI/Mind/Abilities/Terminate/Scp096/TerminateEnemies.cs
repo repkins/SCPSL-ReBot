@@ -10,7 +10,7 @@ internal struct TerminateEnemies(BotRef botRef)
 
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
 
-    public bool Enabling(NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(NativeList<BeliefRef> beliefsToEnable)
     {
         if (isEnraged)
         {
@@ -34,7 +34,5 @@ internal struct TerminateEnemies(BotRef botRef)
         {
             beliefsToEnable.Add(new(BeliefEnum.SightedEnemies, default));
         }
-
-        return false;
     }
 }

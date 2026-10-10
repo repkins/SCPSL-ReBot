@@ -19,16 +19,14 @@ internal struct SnapEnemy(BotRef botRef)
     NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    public bool Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+    public void Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {
         var cost = 0f;  // snap attack cost, instant
 
         impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyRef.Idx);
-
-        return false;
     }
 
-    public bool Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
+    public void Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
@@ -38,8 +36,6 @@ internal struct SnapEnemy(BotRef botRef)
             {
                 lookAtPositionRef.Value = (true, enemyPosition);
                 snapPositionRef.Value = (true, enemyPosition);
-
-                return true;
             }
             else
             {
@@ -50,7 +46,5 @@ internal struct SnapEnemy(BotRef botRef)
         {
             beliefsToEnable.Add(new(BeliefEnum.WithinEnemy, enemyRef.Idx));
         }
-
-        return false;
     }
 }
