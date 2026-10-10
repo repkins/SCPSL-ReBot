@@ -43,7 +43,7 @@ public struct Scp049Mind(BotRef botRef) : IMind
             ActionEnum.MovesTo | ActionEnum.Enemy =>
                 moveToEnemy.Enabling(action.Idx, beliefsToEnable),
 
-            ActionEnum.Searches | ActionEnum.Enemy =>
+            ActionEnum.Searches | ActionEnum.Room =>
                 searchesEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>

@@ -53,7 +53,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
             ActionEnum.Calms =>
                 calm.Enabling(),
 
-            ActionEnum.Searches | ActionEnum.Enemy =>
+            ActionEnum.Searches | ActionEnum.Room =>
                 searchesEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
