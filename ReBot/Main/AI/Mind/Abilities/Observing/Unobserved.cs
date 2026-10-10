@@ -1,7 +1,7 @@
 ﻿using ReBot.Main.AI.Mind.Abilities.MoveTo;
 using Unity.Collections;
 
-namespace ReBot.Main.AI.Mind.Abilities.Observe;
+namespace ReBot.Main.AI.Mind.Abilities.Observing;
 
 internal struct Unobserved<TMoveTo>(BotRef botRef, TMoveTo moveTo)
     where TMoveTo : IMoveTo

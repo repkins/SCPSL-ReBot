@@ -3,7 +3,7 @@ using ReBot.Main.AI.Mind.Abilities.BlinkTo;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
-using ReBot.Main.AI.Mind.Abilities.Observe;
+using ReBot.Main.AI.Mind.Abilities.Observing;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Mind.Abilities.Terminate.Scp173;
 using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
