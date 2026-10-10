@@ -1,5 +1,4 @@
-﻿using ReBot.Main.AI.Mind.Abilities.GoTo;
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 using UnityEngine;
 

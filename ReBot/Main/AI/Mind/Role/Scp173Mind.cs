@@ -1,102 +1,135 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.BlinkTo;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
-using ReBot.Main.AI.Mind.Abilities.GoTo.Scp173;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
-using ReBot.Main.AI.Mind.Abilities.OvercomeObstacle;
+using ReBot.Main.AI.Mind.Abilities.Observe;
 using ReBot.Main.AI.Mind.Abilities.Target;
 using ReBot.Main.AI.Mind.Abilities.Terminate.Scp173;
 using ReBot.Main.AI.Mind.Abilities.TravelOnElevator;
+using ReBot.Main.AI.Spacial;
 using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Role;
 
 internal struct Scp173Mind(BotRef botRef) : IMind
 {
-    TerminateEnemy terminateEnemy = new(botRef);
+    TerminateEnemies terminateEnemies = new(botRef);
     SnapEnemy snapEnemy = new(botRef);
-    SearchesEnemy<Within<Room>> searchesEnemy = new(botRef, new(botRef, new(botRef)));
+    SearchesRoom searchesRoom = new(botRef);
 
-    MoveTo<Enemy> moveToEnemy = new(botRef, new(botRef));
-    BlinkTo<Enemy> blinkToEnemy = new(botRef, new(botRef));
+    Unobserved<MoveTo<Enemy>> unobservedMoveToEnemy = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkTo<Enemy> observedBlinkToEnemy = new(botRef, new(botRef));
 
-    MoveTo<Room> moveToRoom = new(botRef, new(botRef));
-    BlinkTo<Room> blinkToRoom = new(botRef, new(botRef));
+    Unobserved<MoveTo<Room>> unobservedMoveToRoom = new(botRef, new(botRef, new(botRef)));
+    ObservedBlinkTo<Room> observedBlinkToRoom = new(botRef, new(botRef));
 
-    OvercomeObstacle overcomeObstacle = new();
+    InteractObstacle interactObstacle = new(botRef);
+    Unobserved<MoveTo<Obstacle>> unobservedMoveToObstacle = new(botRef, new(botRef, new()));
+    ObservedBlinkTo<Obstacle> observedBlinkToObstacle = new(botRef, new());
 
-    InteractObstacle<Within<Obstacle>> interactObstacle = new(botRef, new(botRef, new()));
-    MoveTo<Obstacle> moveToObstacle = new(botRef, new());
-    BlinkTo<Obstacle> blinkToObstacle = new(botRef, new());
+    TravelOnElevator travelOnElevator = new(botRef);
+    Unobserved<MoveTo<Elevator>> unobservedMoveToElevator = new(botRef, new(botRef, new()));
+    ObservedBlinkTo<Elevator> observedBlinkToElevator = new(botRef, new());
 
-    TravelOnElevator<Within<Elevator>> travelOnElevator = new(botRef, new(botRef, new()));
-    MoveTo<Elevator> moveToElevator = new(botRef, new());
-    BlinkTo<Elevator> blinkToElevator = new(botRef, new());
+    CallElevator callElevator = new(botRef);
+    Unobserved<MoveTo<ElevatorCall>> unobservedMoveToElevatorCall = new(botRef, new(botRef, new()));
+    ObservedBlinkTo<ElevatorCall> observedBlinkToElevatorCall = new(botRef, new());
 
-    CallElevator<Within<ElevatorCall>> callElevator = new(botRef, new(botRef, new()));
-    MoveTo<ElevatorCall> moveToElevatorCall = new(botRef, new());
-    BlinkTo<ElevatorCall> blinkToElevatorCall = new(botRef, new());
-
-    public void ProcessGoals(NativeList<ImpactingAction> impactingActions)
+    public void ProcessGoals(NativeList<BeliefRef> beliefsToEnable)
     {
-        impactingActions.Add(0, ActionEnum.Terminates | ActionEnum.Enemy, default);
+        terminateEnemies.Enabling(beliefsToEnable);
     }
 
-    public bool ProcessActionToEnable(ActionRef actionToEnable, NativeList<ImpactingAction> impactingActions)
+    public bool ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable)
     {
-        return actionToEnable.Enum switch
+        return action.Enum switch
         {
-            ActionEnum.Terminates | ActionEnum.Enemy =>
-                terminateEnemy.Process(impactingActions),
-
             ActionEnum.Attacks | ActionEnum.Enemy =>
-                snapEnemy.Process(new(actionToEnable.Idx), impactingActions),
+                snapEnemy.Enabling(new(action.Idx), beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Enemy =>
-                moveToEnemy.Process(actionToEnable.Idx, impactingActions),
+                unobservedMoveToEnemy.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.BlinksTo | ActionEnum.Enemy =>
-                blinkToEnemy.Process(actionToEnable.Idx, impactingActions),
+                observedBlinkToEnemy.Enabling(action.Idx, beliefsToEnable),
 
-            ActionEnum.Finds | ActionEnum.Enemy =>
-                searchesEnemy.Process(impactingActions),
+            ActionEnum.Searches | ActionEnum.Room =>
+                searchesRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Room =>
-                moveToRoom.Process(actionToEnable.Idx, impactingActions),
+                unobservedMoveToRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.BlinksTo | ActionEnum.Room =>
-                blinkToRoom.Process(actionToEnable.Idx, impactingActions),
-
-            ActionEnum.Overcomes | ActionEnum.Obstacle =>
-                overcomeObstacle.Process(actionToEnable.Idx, impactingActions),
+                observedBlinkToRoom.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.InteractsWith | ActionEnum.Obstacle =>
-                interactObstacle.Process(actionToEnable.Idx, impactingActions),
+                interactObstacle.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Obstacle =>
-                moveToObstacle.Process(actionToEnable.Idx, impactingActions),
+                unobservedMoveToObstacle.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.BlinksTo | ActionEnum.Obstacle =>
-                blinkToObstacle.Process(actionToEnable.Idx, impactingActions),
+                observedBlinkToObstacle.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.TravelsOn | ActionEnum.Elevator =>
-                travelOnElevator.Process(actionToEnable.Idx, impactingActions),
+                travelOnElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.Elevator =>
-                moveToElevator.Process(actionToEnable.Idx, impactingActions),
+                unobservedMoveToElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.BlinksTo | ActionEnum.Elevator =>
-                blinkToElevator.Process(actionToEnable.Idx, impactingActions),
+                observedBlinkToElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.Calls | ActionEnum.Elevator =>
-                callElevator.Process(actionToEnable.Idx, impactingActions),
+                callElevator.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.MovesTo | ActionEnum.ElevatorCall =>
-                moveToElevatorCall.Process(actionToEnable.Idx, impactingActions),
+                unobservedMoveToElevatorCall.Enabling(action.Idx, beliefsToEnable),
 
             ActionEnum.BlinksTo | ActionEnum.ElevatorCall =>
-                blinkToElevatorCall.Process(actionToEnable.Idx, impactingActions),
+                observedBlinkToElevatorCall.Enabling(action.Idx, beliefsToEnable),
+
+            _ => false
+        };
+    }
+
+    public bool ProcessEnablingBelief(BeliefRef beliefRef, NativeList<ImpactingAction> impactingActions)
+    {
+        return beliefRef.Enum switch
+        {
+            BeliefEnum.TerminatedEnemy =>
+                snapEnemy.Impacting(new(beliefRef.Idx), impactingActions),
+
+            BeliefEnum.WithinEnemy =>
+                unobservedMoveToEnemy.Impacting(beliefRef.Idx, impactingActions)
+                    | observedBlinkToEnemy.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.SightedEnemies =>
+                searchesRoom.Impacting(impactingActions),
+
+            BeliefEnum.WithinRoom =>
+                unobservedMoveToRoom.Impacting(beliefRef.Idx, impactingActions)
+                    | observedBlinkToRoom.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.UnobstructingObstacle =>
+                travelOnElevator.TryGetElevationIdx(new ObstacleRef(beliefRef.Idx), out var elevationIdx)
+                    ? travelOnElevator.Impacting(elevationIdx, impactingActions)
+                    : callElevator.TryGetElevationCallIdx(new ObstacleRef(beliefRef.Idx), out var elevationCallIdx)
+                        ? callElevator.Impacting(elevationCallIdx, impactingActions)
+                        : interactObstacle.Impacting(new(beliefRef.Idx), impactingActions),
+
+            BeliefEnum.WithinObstacle =>
+                unobservedMoveToObstacle.Impacting(beliefRef.Idx, impactingActions)
+                    | observedBlinkToObstacle.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.WithinElevator =>
+                unobservedMoveToElevator.Impacting(beliefRef.Idx, impactingActions)
+                    | observedBlinkToElevator.Impacting(beliefRef.Idx, impactingActions),
+
+            BeliefEnum.WithinElevatorCall =>
+                unobservedMoveToElevatorCall.Impacting(beliefRef.Idx, impactingActions)
+                    | observedBlinkToElevatorCall.Impacting(beliefRef.Idx, impactingActions),
 
             _ => false
         };

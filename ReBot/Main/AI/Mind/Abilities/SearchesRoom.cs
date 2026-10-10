@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities;
 
-internal struct SearchesEnemy(BotRef botRef)
+internal struct SearchesRoom(BotRef botRef)
 {
     NativeList<Vector3> roomEnterLocations = botRef.Value.RoomState.RoomEnterLocations;
 

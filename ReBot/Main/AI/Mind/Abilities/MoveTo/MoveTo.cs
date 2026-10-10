@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.MoveTo;
 
-internal struct MoveTo<TTarget>(BotRef botRef, TTarget target)
+internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMovedTo
     where TTarget : ITarget
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;

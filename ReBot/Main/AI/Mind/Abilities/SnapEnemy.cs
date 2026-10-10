@@ -1,7 +1,4 @@
-﻿using ReBot.Main.AI.Mind.Abilities.BlinkTo;
-using ReBot.Main.AI.Mind.Abilities.GoTo.Scp173;
-using ReBot.Main.AI.Mind.Abilities.Target;
-using ReBot.Main.AI.Spacial;
+﻿using ReBot.Main.AI.Spacial;
 using ReBot.Main.AI.Termination;
 using System;
 using System.Linq;
@@ -13,49 +10,45 @@ namespace ReBot.Main.AI.Mind.Abilities;
 internal struct SnapEnemy(BotRef botRef)
 {
     bool isObserved = botRef.Value.BlinkState.IsObserved;
-    float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
 
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
 
-    Within<Enemy> withinEnemy = new(botRef, new());
-    ObservedBlinkedTo<Enemy> observedBlinkedToEnemy = new(botRef, new(botRef));
+    public bool Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+    {
+        var cost = 0f;  // snap attack cost, instant
 
-    public bool Process(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
+        impactingActions.Add(cost, ActionEnum.Attacks | ActionEnum.Enemy, enemyRef.Idx);
+
+        return false;
+    }
+
+    public bool Enabling(EnemyRef enemyRef, NativeList<BeliefRef> beliefsToEnable)
     {
         var enemyPosition = enemyLocations[enemyRef.Idx];
 
-        if (enemiesWithinDistance.Contains(enemyRef))
+        if (enemiesWithinDistance.Contains(enemyRef) && !isObserved)
         {
-            if (!isObserved)
+            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
             {
-                if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
-                {
-                    lookAtPositionRef.Value = (true, enemyPosition);
-                    snapPositionRef.Value = (true, enemyPosition);
+                lookAtPositionRef.Value = (true, enemyPosition);
+                snapPositionRef.Value = (true, enemyPosition);
 
-                    return true;
-                }
-                else
-                {
-                    var cost = 0f;
-                    impactingActions.Add(cost, ActionEnum.Overcomes | ActionEnum.Obstacle, obstacleRef.Idx);
-                }
+                return true;
             }
             else
             {
-                observedBlinkedToEnemy.Process(enemyRef.Idx, impactingActions);
+                beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
             }
         }
         else
         {
-            withinEnemy.Process(enemyRef.Idx, impactingActions);
+            beliefsToEnable.Add(new(BeliefEnum.WithinEnemy, enemyRef.Idx));
         }
 
         return false;
