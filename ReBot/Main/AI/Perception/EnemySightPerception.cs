@@ -1,6 +1,7 @@
 ﻿using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
 using ReBot.Collections;
+using ReBot.Main.AI.Termination;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
@@ -116,13 +117,16 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
 
             var enemyLocations = bot.TerminationState.EnemyLocations;
-            enemyLocations.Clear();
+            var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
+
+            var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
+            enemiesWithinSight.Clear();
 
             for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovTargets.Length; withinFovResultIdx++)
             {
-                var enemyIdx = withinFovTargets[withinFovResultIdx];
+                var enemySightIdx = withinFovTargets[withinFovResultIdx];
 
-                var raycastHit = raycastResults[enemyIdx];
+                var raycastHit = raycastResults[enemySightIdx];
                 if (raycastHit.collider is null)
                 {
                     continue;
@@ -134,9 +138,53 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                     continue;
                 }
 
-                var enemyPosition = enemyPlayerPositions[enemyIdx];
+                var enemyPosition = enemyPlayerPositions[enemySightIdx];
+                if (enemyInstanceIds.IndexOf(fpcRole.GetInstanceID()) is var enemyIdx && enemyIdx > -1)
+                {
+                    enemyLocations[enemyIdx] = enemyPosition;
+                }
+                else
+                {
+                    enemyIdx = enemyInstanceIds.Length;
+                    enemyInstanceIds.Add(fpcRole.GetInstanceID());
+                    enemyLocations.Add(enemyPosition);
+                }
 
-                enemyLocations.Add(enemyPosition);
+                enemiesWithinSight.Add(new(enemyIdx));
+            }
+        }
+    }
+
+    public void ProcessEnemiesLostSight()
+    {
+        for (int botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var bot = BotStore.Bots[botIdx];
+
+            var cameraPosition = bot.PlayerState.CameraPosition;
+            var cameraForward = bot.PlayerState.CameraForward;
+
+            var enemyLocations = bot.TerminationState.EnemyLocations;
+            var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
+
+            var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
+
+            for (int enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
+            {
+                var enemyRef = new EnemyRef(enemyIdx);
+                if (enemiesWithinSight.Contains(enemyRef))
+                {
+                    continue;
+                }
+
+                var enemyPosition = enemyLocations[enemyIdx];
+                if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f
+                    && Vector3.Dot(cameraForward, Vector3.Normalize(enemyPosition - cameraPosition)) > 0.9f)
+                {
+                    enemyInstanceIds.RemoveAtSwapBack(enemyIdx);
+                    enemyLocations.RemoveAtSwapBack(enemyIdx);
+                    enemyIdx--;
+                }
             }
         }
     }
@@ -147,16 +195,16 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
         {
             var bot = BotStore.Bots[botIdx];
 
-            var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
+            var enemyLocations = bot.TerminationState.EnemyLocations;
 
             var cameraPosition = bot.PlayerState.CameraPosition;
 
             var enemiesWithinDistance = bot.TerminationState.EnemiesWithinDistance;
             enemiesWithinDistance.Clear();
 
-            for (var enemyIdx = 0; enemyIdx < enemyPlayerPositions.Length; enemyIdx++)
+            for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
             {
-                var enemyPosition = enemyPlayerPositions[enemyIdx];
+                var enemyPosition = enemyLocations[enemyIdx];
 
                 if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f)
                 {

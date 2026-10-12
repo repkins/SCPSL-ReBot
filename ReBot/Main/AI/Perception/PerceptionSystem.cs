@@ -46,6 +46,8 @@ internal class PerceptionSystem
         ragePerception.Process();
 
         obstaclePerception.ProcessSharedElevationState();
+
+        enemySightPerception.ProcessEnemiesLostSight();
         enemySightPerception.ProcessEnemiesWithinDistance();
     }
 }

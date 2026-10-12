@@ -10,7 +10,6 @@ namespace ReBot.Main.AI.Mind.Abilities;
 internal struct CardiacEnemy(BotRef botRef)
 {
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
-    NativeList<Vector3> enemyVelocities = botRef.Value.TerminationState.EnemyVelocities;
     NativeList<EnemyRef> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
@@ -46,8 +45,7 @@ internal struct CardiacEnemy(BotRef botRef)
             }
             else
             {
-                var estimatedEnemyPosition = enemyPosition + enemyVelocities[enemyRef.Idx];
-                lookAtPositionRef.Value = (true, estimatedEnemyPosition);
+                lookAtPositionRef.Value = (true, enemyPosition);
             }
         }
         else
