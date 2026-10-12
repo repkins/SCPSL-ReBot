@@ -1,5 +1,5 @@
-﻿using Unity.Collections;
-using UnityEngine;
+﻿using ReBot.Main.AI.Termination;
+using Unity.Collections;
 
 namespace ReBot.Main.AI.Mind.Abilities.Terminate.Scp096;
 
@@ -8,7 +8,7 @@ internal struct TerminateEnemies(BotRef botRef)
     bool isEnraged = botRef.Value.RageState.IsEnraged;
     bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;
 
-    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
+    NativeList<EnemyRef> targets = botRef.Value.RageState.Targets;
 
     public void Enabling(NativeList<BeliefRef> beliefsToEnable)
     {
@@ -16,9 +16,10 @@ internal struct TerminateEnemies(BotRef botRef)
         {
             if (hasTargetsObservedBy)
             {
-                for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
+                for (var targetIdx = 0; targetIdx < targets.Length; targetIdx++)
                 {
-                    beliefsToEnable.Add(new(BeliefEnum.TerminatedEnemy, enemyIdx));
+                    var enemyRef = targets[targetIdx];
+                    beliefsToEnable.Add(new(BeliefEnum.TerminatedEnemy, enemyRef.Idx));
                 }
             }
             else

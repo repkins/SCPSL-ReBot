@@ -1,4 +1,6 @@
-﻿using PlayerRoles.PlayableScps.Scp096;
+﻿using PlayerRoles.FirstPersonControl;
+using PlayerRoles.PlayableScps.Scp096;
+using Unity.Collections;
 
 namespace ReBot.Main.AI.Rage;
 
@@ -25,9 +27,23 @@ public struct RagePerception(int botCount)
 
             bot.RageState.HasTargets = targetsTracker.Targets.Count > 0;
 
+            bot.RageState.Targets.Clear();
+
             foreach (var target in targetsTracker.Targets)
             {
-                bot.TerminationState.EnemyLocations.Add(target.transform.position);
+                var targetInstanceId = target.roleManager.CurrentRole.GetInstanceID();
+                if (bot.TerminationState.EnemyInstanceIds.IndexOf(targetInstanceId) is var enemyIdx && enemyIdx > -1)
+                {
+                    bot.TerminationState.EnemyLocations[enemyIdx] = target.transform.position;
+                }
+                else
+                {
+                    enemyIdx = bot.TerminationState.EnemyInstanceIds.Length;
+                    bot.TerminationState.EnemyInstanceIds.Add(targetInstanceId);
+                    bot.TerminationState.EnemyLocations.Add(target.transform.position);
+                }
+
+                bot.RageState.Targets.Add(new(enemyIdx));
             }
         }
     }
