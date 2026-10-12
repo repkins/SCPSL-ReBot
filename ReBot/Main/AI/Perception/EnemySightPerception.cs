@@ -145,9 +145,12 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                 }
                 else
                 {
-                    enemyIdx = enemyInstanceIds.Length;
-                    enemyInstanceIds.Add(fpcRole.GetInstanceID());
-                    enemyLocations.Add(enemyPosition);
+                    if (enemyInstanceIds.Length < enemyInstanceIds.Capacity)
+                    {
+                        enemyIdx = enemyInstanceIds.Length;
+                        enemyInstanceIds.Add(fpcRole.GetInstanceID());
+                        enemyLocations.Add(enemyPosition);
+                    }
                 }
 
                 enemiesWithinSight.Add(new(enemyIdx));

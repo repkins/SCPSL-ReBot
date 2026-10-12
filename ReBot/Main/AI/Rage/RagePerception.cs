@@ -38,9 +38,12 @@ public struct RagePerception(int botCount)
                 }
                 else
                 {
-                    enemyIdx = bot.TerminationState.EnemyInstanceIds.Length;
-                    bot.TerminationState.EnemyInstanceIds.Add(targetInstanceId);
-                    bot.TerminationState.EnemyLocations.Add(target.transform.position);
+                    if (bot.TerminationState.EnemyInstanceIds.Length < bot.TerminationState.EnemyInstanceIds.Capacity)
+                    {
+                        enemyIdx = bot.TerminationState.EnemyInstanceIds.Length;
+                        bot.TerminationState.EnemyInstanceIds.Add(targetInstanceId);
+                        bot.TerminationState.EnemyLocations.Add(target.transform.position);
+                    }
                 }
 
                 bot.RageState.Targets.Add(new(enemyIdx));
