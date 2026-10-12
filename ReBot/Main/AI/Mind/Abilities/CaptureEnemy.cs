@@ -10,6 +10,7 @@ namespace ReBot.Main.AI.Mind.Abilities;
 internal struct CaptureEnemy(BotRef botRef)
 {
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
+    NativeList<EnemyRef> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
@@ -30,14 +31,21 @@ internal struct CaptureEnemy(BotRef botRef)
 
         if (enemiesWithinDistance.Contains(enemyRef))
         {
-            if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+            if (enemiesWithinSight.Contains(enemyRef))
             {
-                lookAtPositionRef.Value = (true, enemyPosition);
-                capturePositionRef.Value = (true, enemyPosition);
+                if (!obstaclesByTarget.TryGetValue(enemyPosition, out var obstacleRef))
+                {
+                    lookAtPositionRef.Value = (true, enemyPosition);
+                    capturePositionRef.Value = (true, enemyPosition);
+                }
+                else
+                {
+                    beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
+                }
             }
             else
             {
-                beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacleRef.Idx));
+                lookAtPositionRef.Value = (true, enemyPosition);
             }
         }
         else
