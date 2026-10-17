@@ -9,7 +9,7 @@ public struct WithinFovJob : IJobFor
     [ReadOnly]
     public required LayerMask raycastMask;
     [ReadOnly]
-    public required float maxSightRadius;
+    public required float sightDistance;
 
     [ReadOnly]
     public required Vector3 fromPosition;

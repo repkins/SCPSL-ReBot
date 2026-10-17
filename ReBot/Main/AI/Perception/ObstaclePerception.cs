@@ -253,7 +253,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 outWithinFovTargets = withinFovSightObstacles,
 
                 outRaycastCommands = sightObstacleRaycastCommands,
-                maxSightRadius = maxSightRadius,
+                sightDistance = maxSightRadius,
                 raycastMask = sightLayerMask
             };
             var withinFovJobHandle = withinFovJob.Schedule(sightObstaclePositions.Length, default);

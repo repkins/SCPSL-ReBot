@@ -10,6 +10,7 @@ public struct TerminationState() : IDisposable
     public NativeList<Vector3> EnemyLocations = new(5, Allocator.Persistent);
     public NativeList<EnemyRef> EnemiesWithinSight = new(Allocator.Persistent);
     public NativeList<EnemyRef> EnemiesWithinDistance = new(Allocator.Persistent);
+    public float EnemyMaxSightDistance = 30f;
 
     public void Dispose()
     {

@@ -1,5 +1,6 @@
 ﻿using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
+using PlayerRoles.PlayableScps.Scp939;
 using ReBot.Collections;
 using ReBot.Main.AI.Termination;
 using Unity.Collections;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Perception;
 
-public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
+public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMask sightLayerMask)
 {
     struct EnemySightBot()
     {
@@ -24,6 +25,21 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
 
     private NativeArray<EnemySightBot> enemySightBots = NativeArray<EnemySightBot>.CreateConstructed(botCount, Allocator.Temp);
 
+    public void ProcessSightDistance()
+    {
+        for (int botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var bot = BotStore.Bots[botIdx];
+            var hub = bot.Hub;
+
+            bot.TerminationState.EnemyMaxSightDistance = hub.roleManager.CurrentRole switch
+            {
+                Scp939Role scp939Role => ((Scp939VisibilityController)scp939Role.VisibilityController).CurrentDetectionRange,
+                _ => maxSightDistance,
+            };
+        }
+    }
+
     public void PrepareEnemiesWithinRadius()
     {
         var overlapSphereCommands = new NativeArray<OverlapSphereCommand>(botCount, Allocator.Temp);
@@ -32,7 +48,8 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
             var playerPosition = BotStore.Bots[botIdx].PlayerState.Position;
-            overlapSphereCommands[botIdx] = new OverlapSphereCommand(playerPosition, maxSightRadius, new(playerLayerMask));
+            var sightRadius = BotStore.Bots[botIdx].TerminationState.EnemyMaxSightDistance;
+            overlapSphereCommands[botIdx] = new OverlapSphereCommand(playerPosition, sightRadius, new(playerLayerMask));
         }
 
         var overlapSphereHandle = OverlapSphereCommand.ScheduleBatch(overlapSphereCommands, overlapSphereResults, 1, maxHits);
@@ -76,6 +93,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
 
             var cameraPosition = bot.PlayerState.CameraPosition;
             var cameraForward = bot.PlayerState.CameraForward;
+            var sightDistance = bot.TerminationState.EnemyMaxSightDistance;
 
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
             var withinFovTargets = enemySightBots[botIdx].enemyWithinFovTargets;
@@ -90,7 +108,7 @@ public struct EnemySightPerception(int botCount, float maxSightRadius, LayerMask
                 outWithinFovTargets = withinFovTargets,
 
                 outRaycastCommands = raycastCommands,
-                maxSightRadius = maxSightRadius,
+                sightDistance = sightDistance,
                 raycastMask = sightLayerMask
             };
             var withinFovJobHandle = withinFovJob.Schedule(enemyPlayerPositions.Length, default);

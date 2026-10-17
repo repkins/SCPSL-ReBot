@@ -8,7 +8,7 @@ namespace ReBot.Main.AI.Perception;
 
 internal class PerceptionSystem
 {
-    private const float maxSightRadius = 30f;
+    private const float maxSightDistance = 30f;
     private static readonly LayerMask sightLayerMask = LayerMask.GetMask("Default", "Door", "Ignore Raycast");
 
     public static void Initialize()
@@ -25,11 +25,12 @@ internal class PerceptionSystem
     {
         var playerPerception = new PlayerPerception(BotStore.Bots.Count);
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
-        var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
-        var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightRadius, sightLayerMask);
+        var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
+        var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
         var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
         var ragePerception = new RagePerception(BotStore.Bots.Count);
 
+        enemySightPerception.ProcessSightDistance();
         enemySightPerception.PrepareEnemiesWithinRadius();
 
         var enemiesSightingHandle = enemySightPerception.ProcessEnemySighting();
