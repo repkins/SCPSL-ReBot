@@ -6,6 +6,8 @@ namespace ReBot.Main.AI.Melee;
 
 public struct MeleeState() : IDisposable
 {
+    public bool IsHeld;
+
     public NativeReference<(bool, Vector3)> MeleeAttackPositionRef = new(Allocator.Persistent);
 
     public void Dispose()

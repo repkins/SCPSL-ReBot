@@ -8,17 +8,33 @@ internal class NeckSnapSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var snapPositionRef = BotStore.Bots[botIdx].NeckSnapState.SnapPositionRef;
+            ref var snapState = ref BotStore.Bots[botIdx].NeckSnapState;
 
+            var snapPositionRef = snapState.SnapPositionRef;
             var (hasPosition, _) = snapPositionRef.Value;
             snapPositionRef.Value = default;
 
-            if (!hasPosition)
+            var isHeld = snapState.IsHeld;
+            var prevIsHeld = isHeld;
+
+            if (hasPosition && !isHeld)
             {
-                continue;
+                isHeld = true;
+            }
+            else
+            {
+                isHeld = false;
             }
 
-            BotStore.Bots[botIdx].ActionState.WantSet.Add(SnapDummyActionName);
+            snapState.IsHeld = isHeld;
+
+            if (prevIsHeld != isHeld)
+            {
+                if (isHeld)
+                {
+                    BotStore.Bots[botIdx].ActionState.WantSet.Add(SnapDummyActionName);
+                }
+            }
         }
     }
 }

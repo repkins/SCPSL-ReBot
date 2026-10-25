@@ -8,17 +8,33 @@ internal class CaptureSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var capturePositionRef = BotStore.Bots[botIdx].CaptureState.CapturePositionRef;
+            ref var captureState = ref BotStore.Bots[botIdx].CaptureState;
 
+            var capturePositionRef = captureState.CapturePositionRef;
             var (hasPosition, _) = capturePositionRef.Value;
             capturePositionRef.Value = default;
 
-            if (!hasPosition)
+            var isHeld = captureState.IsHeld;
+            var prevIsHeld = isHeld;
+
+            if (hasPosition && !isHeld)
             {
-                continue;
+                isHeld = true;
+            }
+            else
+            {
+                isHeld = false;
             }
 
-            BotStore.Bots[botIdx].ActionState.WantSet.Add(CaptureDummyActionName);
+            captureState.IsHeld = isHeld;
+
+            if (prevIsHeld != isHeld)
+            {
+                if (isHeld)
+                {
+                    BotStore.Bots[botIdx].ActionState.WantSet.Add(CaptureDummyActionName);
+                }
+            }
         }
     }
 }

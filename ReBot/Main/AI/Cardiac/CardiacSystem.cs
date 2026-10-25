@@ -8,17 +8,33 @@ internal class CardiacSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var cardiacPositionRef = BotStore.Bots[botIdx].CardiacState.CardiacPositionRef;
+            ref var cardiacState = ref BotStore.Bots[botIdx].CardiacState;
 
+            var cardiacPositionRef = cardiacState.CardiacPositionRef;
             var (hasPosition, _) = cardiacPositionRef.Value;
             cardiacPositionRef.Value = default;
 
-            if (!hasPosition)
+            var isHeld = cardiacState.IsHeld;
+            var prevIsHeld = isHeld;
+
+            if (hasPosition && !isHeld)
             {
-                continue;
+                isHeld = true;
+            }
+            else
+            {
+                isHeld = false;
             }
 
-            BotStore.Bots[botIdx].ActionState.WantSet.Add(CardiacDummyActionName);
+            cardiacState.IsHeld = isHeld;
+
+            if (prevIsHeld != isHeld)
+            {
+                if (isHeld)
+                {
+                    BotStore.Bots[botIdx].ActionState.WantSet.Add(CardiacDummyActionName);
+                }
+            }
         }
     }
 }
