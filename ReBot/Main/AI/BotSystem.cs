@@ -1,5 +1,6 @@
 ﻿using MEC;
 using PlayerRoles;
+using ReBot.Main.AI.Action;
 using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
@@ -88,6 +89,8 @@ public static class BotSystem
 
                 MovementSystem.Process();
                 InteractionSystem.Process();
+
+                DummyActionSystem.Procees();
             }
             catch (Exception e)
             {

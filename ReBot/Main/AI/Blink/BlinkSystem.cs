@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using PlayerRoles.PlayableScps.Scp173;
-using ReBot.Main.AI.Movement.Pathfinding;
-using System.Reflection;
+﻿using ReBot.Main.AI.Movement.Pathfinding;
 using Unity.Collections;
 using UnityEngine;
 
@@ -9,7 +6,7 @@ namespace ReBot.Main.AI.Blink;
 
 internal class BlinkSystem
 {
-    static readonly MethodInfo m_Scp173TeleportAbility_UpdateAiming = AccessTools.Method(typeof(Scp173TeleportAbility), "UpdateAiming", [typeof(bool)]);
+    static readonly string BlinkDummyActionName = $"{ActionName.Zoom}->Click";
 
     public static void Process()
     {
@@ -35,19 +32,6 @@ internal class BlinkSystem
         foreach (var (botRef, closestPosition) in closestPositions)
         {
             var botIdx = botRef.Idx;
-            var hub = botRef.Value.Hub;
-
-            if (hub.roleManager.CurrentRole is not Scp173Role scp173Role)
-            {
-                DebugLog.LogWarning($"Role is not SCP 173 but has set blink to position for player {hub}");
-                continue;
-            }
-
-            if (!scp173Role.SubroutineModule.TryGetSubroutine<Scp173TeleportAbility>(out var teleportAbility))
-            {
-                DebugLog.LogWarning($"Role is SCP 173 but has none it's own teleport ablility for player {hub}");
-                continue;
-            }
 
             var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
             var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
@@ -69,8 +53,7 @@ internal class BlinkSystem
             var relTargetPos = targetPosition - playerCameraPosition;
             if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) < .01f)
             {
-                m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [false]);
-                m_Scp173TeleportAbility_UpdateAiming.Invoke(teleportAbility, [true]);
+                BotStore.Bots[botIdx].ActionState.WantSet.Add(BlinkDummyActionName);
             }
 
             BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, targetPosition);

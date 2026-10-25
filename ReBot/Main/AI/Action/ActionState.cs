@@ -6,9 +6,7 @@ namespace ReBot.Main.AI.Action;
 
 public readonly struct ActionState() : IDisposable
 {
-    public readonly Dictionary<ActionName, bool> IsHeld = Enum.GetValues(typeof(ActionName))
-        .Cast<ActionName>()
-        .ToDictionary(a => a, _ => default(bool));
+    public readonly HashSet<string> WantSet = [];
 
     public void Dispose()
     {

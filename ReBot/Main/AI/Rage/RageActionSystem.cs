@@ -1,11 +1,10 @@
-﻿using HarmonyLib;
-using PlayerRoles.PlayableScps.Scp096;
-using System.Reflection;
-
-namespace ReBot.Main.AI.Rage;
+﻿namespace ReBot.Main.AI.Rage;
 
 internal class RageActionSystem
 {
+    static readonly string ReleaseReloadDummyActionName = $"{ActionName.Reload}->Release";
+    static readonly string HoldReleaseDummyActionName = $"{ActionName.Reload}->Hold";
+
     public static void Process()
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
@@ -20,11 +19,11 @@ internal class RageActionSystem
 
             if (!wantsEnrage && !wantsCalm)
             {
-                BotStore.Bots[botIdx].ActionState.IsHeld[ActionName.Reload] = false;
+                BotStore.Bots[botIdx].ActionState.WantSet.Add(ReleaseReloadDummyActionName);
                 continue;
             }
 
-            BotStore.Bots[botIdx].ActionState.IsHeld[ActionName.Reload] = true;
+            BotStore.Bots[botIdx].ActionState.WantSet.Add(HoldReleaseDummyActionName);
         }
     }
 }

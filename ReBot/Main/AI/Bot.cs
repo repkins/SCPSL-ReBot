@@ -1,5 +1,4 @@
-﻿using ReBot.LocalNetworking;
-using ReBot.Main.AI.Action;
+﻿using ReBot.Main.AI.Action;
 using ReBot.Main.AI.Blink;
 using ReBot.Main.AI.Capture;
 using ReBot.Main.AI.Cardiac;
@@ -15,10 +14,9 @@ using UnityEngine;
 
 namespace ReBot.Main.AI;
 
-public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) : IDisposable
+public class Bot(ReferenceHub hub) : IDisposable
 {
     public readonly ReferenceHub Hub = hub;
-    public readonly LocalConnectionToServer ConnectionToServer = connectionToServer;
 
     public Transform PlayerTransform;
     public Transform CameraTransform;
@@ -37,7 +35,6 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
     public CaptureState CaptureState = new();
     public NeckSnapState NeckSnapState = new();
     public BlinkState BlinkState = new();
-    public MeleeState Scp096MeleeState = new();
     public RageState RageState = new();
     public MeleeState MeleeState = new();
 
@@ -56,7 +53,6 @@ public class Bot(ReferenceHub hub, LocalConnectionToServer connectionToServer) :
         CaptureState.Dispose();
         NeckSnapState.Dispose();
         BlinkState.Dispose();
-        Scp096MeleeState.Dispose();
         RageState.Dispose();
         MeleeState.Dispose();
     }
