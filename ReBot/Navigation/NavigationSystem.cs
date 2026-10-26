@@ -22,6 +22,7 @@ namespace ReBot.Navigation
         public string MeshFileName { get; } = "navmesh.slnmf";
         public bool Initialized { get; private set; } = false;
         public event Action OnMeshesConnected;
+        public event Action OnMeshesReset;
 
         public void Init()
         {
@@ -43,7 +44,7 @@ namespace ReBot.Navigation
 
             Initialized = false;
 
-            NavigationMesh.ResetMeshes();
+            ResetMeshes();
         }
 
         private void OnMapGenerated(MapGeneratedEventArgs args)
@@ -53,7 +54,7 @@ namespace ReBot.Navigation
 
         private void OnRoundRestarted()
         {
-            NavigationMesh.ResetMeshes();
+            ResetMeshes();
         }
 
         private IEnumerator<float> LoadConnectMeshesAsync()
@@ -212,6 +213,13 @@ namespace ReBot.Navigation
             Debug.Log($"Connecting cells and adding cells with obstacles cells finished.");
 
             OnMeshesConnected?.Invoke();
+        }
+
+        public void ResetMeshes()
+        {
+            NavigationMesh.ResetMeshes();
+
+            OnMeshesReset?.Invoke();
         }
 
         public void LoadMeshes(string fileName)

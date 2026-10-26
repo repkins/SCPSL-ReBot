@@ -448,9 +448,7 @@ namespace ReBot.Navigation.Mesh
                 foreach (var ((cellFrom, cellTo), visual) in ConnectionVisuals.Select(p => (p.Key, p.Value)).ToArray())
                 {
                     var isCellFromRemoved = !NavigationMesh.LocalMeshesByRoom.Values.Any(m => m.Cells.Contains(cellFrom.Local));
-                    var containsForeignCell = NavigationMesh.ForeignConnectedCells[cellFrom].Contains(cellTo);
-
-                    if (isCellFromRemoved || !containsForeignCell)
+                    if (isCellFromRemoved || !NavigationMesh.ForeignConnectedCells[cellFrom].Contains(cellTo))
                     {
                         NetworkServer.Destroy(visual.gameObject);
                         ConnectionVisuals.Remove((cellFrom, cellTo));

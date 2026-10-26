@@ -22,8 +22,7 @@ namespace ReBot.Navigation.Commands
                 return false;
             }
 
-            NavigationMesh.ResetMeshes();
-
+            NavigationSystem.Instance.ResetMeshes();
             NavigationSystem.Instance.LoadConnectMeshes();
 
             response = $"Navigation mesh re-loaded.";

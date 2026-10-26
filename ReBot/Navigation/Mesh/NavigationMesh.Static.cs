@@ -43,12 +43,12 @@ namespace ReBot.Navigation.Mesh
 
         public static void Copy(NavigationMesh toMesh, NavigationMesh fromMesh)
         {
-            foreach (var toMeshCell in toMesh.Cells)
+            foreach (var toMeshCell in toMesh.Cells.ToArray())
             {
                 toMesh.RemoveCell(toMeshCell);
             }
 
-            foreach (var toMeshVertex in toMesh.Vertices)
+            foreach (var toMeshVertex in toMesh.Vertices.ToArray())
             {
                 toMesh.DeleteVertex(toMeshVertex);
             }

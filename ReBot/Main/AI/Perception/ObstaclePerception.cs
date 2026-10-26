@@ -78,10 +78,12 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
     public static void Initialize()
     {
         NavigationSystem.Instance.OnMeshesConnected += UpdateStaticState;
+        NavigationSystem.Instance.OnMeshesReset += ResetStaticState;
     }
 
     public static void Teardown()
     {
+        NavigationSystem.Instance.OnMeshesReset -= ResetStaticState;
         NavigationSystem.Instance.OnMeshesConnected -= UpdateStaticState;
     }
 
@@ -140,6 +142,26 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         }
 
         Debug.Log("Updating bot static state finished");
+    }
+
+    private static void ResetStaticState()
+    {
+        ObstacleState.ObstacleLocations.Clear();
+        ObstacleState.DoorObstaclePermissions.Clear();
+        ObstacleState.ObstaclesByCell.Clear();
+        ObstacleState.CellsByObstacle.Clear();
+
+        ObstacleState.ElevationObstacles.Clear();
+
+        ObstacleState.ElevationTravelObstacles.Clear();
+        ObstacleState.ElevationTravelEnterLocations.Clear();
+        ObstacleState.ElevationTravelInteractPanels.Clear();
+        ObstacleState.ElevationTravelInteractLocations.Clear();
+
+        ObstacleState.ElevationCallObstacles.Clear();
+        ObstacleState.ElevationCallInteractLocations.Clear();
+        ObstacleState.ElevationCallInteractPanels.Clear();
+        ObstacleState.ElevationCallInteractAbles.Clear();
     }
 
     public void ProcessSharedElevationState()
