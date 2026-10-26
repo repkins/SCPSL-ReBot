@@ -499,6 +499,33 @@ namespace ReBot.Navigation.Mesh
             return true;
         }
 
+        public bool DuplicateMesh(Vector3 position, string fromRoomForm)
+        {
+            if (!NavigationMesh.MeshesByRoomForm.TryGetValue(fromRoomForm, out var fromMesh))
+            {
+                Debug.LogWarning($"No source navigation mesh exists for {fromRoomForm}.");
+                return false;
+            }
+
+            if (!RoomUtils.TryGetRoom(position, out var room))
+            {
+                Debug.LogWarning($"Could not determine room for specified position.");
+                return false;
+            }
+
+            var toRoomForm = NavigationMesh.GetForm(room.gameObject);
+
+            if (!NavigationMesh.MeshesByRoomForm.TryGetValue(toRoomForm, out var toMesh))
+            {
+                Debug.LogWarning($"No target navigation mesh exists for {toRoomForm}.");
+                return false;
+            }
+
+            NavigationMesh.Copy(toMesh, fromMesh);
+
+            return true;
+        }
+
         private Vector3 GetProjectedPosition(Vector3 localPosition)
         {
             var lineSegment = (from: SelectedVertices.First().Local, to: SelectedVertices.Last().Local);

@@ -41,6 +41,31 @@ namespace ReBot.Navigation.Mesh
             return mesh;
         }
 
+        public static void Copy(NavigationMesh toMesh, NavigationMesh fromMesh)
+        {
+            foreach (var toMeshCell in toMesh.Cells)
+            {
+                toMesh.RemoveCell(toMeshCell);
+            }
+
+            foreach (var toMeshVertex in toMesh.Vertices)
+            {
+                toMesh.DeleteVertex(toMeshVertex);
+            }
+
+
+            foreach (var fromMeshVertex in fromMesh.Vertices)
+            {
+                toMesh.AddVertex(fromMeshVertex.Position);
+            }
+
+            foreach (var fromMeshCell in fromMesh.Cells)
+            {
+                var fromCellVertexIndices = fromMeshCell.Vertices.Select(fromCellVertex => fromMesh.Vertices.IndexOf(fromCellVertex));
+                toMesh.MakeCell(fromCellVertexIndices.Select(idx => toMesh.Vertices[idx]));
+            }
+        }
+
         private static void AddForeignConnectedCellsList(Cell cell, string form)
         {
             foreach (var room in RoomsByForm[form])
