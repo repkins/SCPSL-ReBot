@@ -419,32 +419,42 @@ namespace ReBot.Navigation.Mesh
 
         #endregion
 
-        private static bool IsLocalPointWithinCell(Cell cell, Vector3 pointLocalPosition, out float sqrDist)
+        private static bool IsLocalPointWithinCell(Cell cell, Vector3 pointLocalPosition, out float closestSqrDist)
         {
             var cellLocalEdges = cell.Edges;
 
-            sqrDist = 0f;
-            var isAnyVertexWithinVerticalRange = false;
+            closestSqrDist = float.MaxValue;
+            var isAnyVertexWithin = true;
             foreach (var e in cellLocalEdges)
             {
+                var isWithin = true;
+                var sqrDist = 0f;
+
                 if (GetPointDistToEdgePlane(e, pointLocalPosition, out var closestPoint) <= 0f)
                 {
                     var closestPointWithinEdge = ClampWithinEdgePoints(e, closestPoint);
                     sqrDist = Vector3.SqrMagnitude(closestPointWithinEdge - pointLocalPosition);
-                    return false;
+                    isWithin = false;
                 }
 
-                if (!isAnyVertexWithinVerticalRange)
+                if (!(e.From.Position.y > pointLocalPosition.y - 2f
+                    && e.From.Position.y < pointLocalPosition.y + 2f))
                 {
-                    isAnyVertexWithinVerticalRange =
-                        e.From.Position.y > pointLocalPosition.y - 2f
-                        && e.From.Position.y < pointLocalPosition.y + 2f;
-
+                    isWithin = false;
                     sqrDist = Vector3.SqrMagnitude(e.From.Position - pointLocalPosition);
+                }
+
+                if (!isWithin)
+                {
+                    if (sqrDist < closestSqrDist)
+                    {
+                        closestSqrDist = sqrDist;
+                    }
+                    isAnyVertexWithin = false;
                 }
             }
 
-            return isAnyVertexWithinVerticalRange;
+            return isAnyVertexWithin;
         }
 
         private static float GetPointDistToEdgePlane(Edge edge, Vector3 point) => GetPointDistToEdgePlane(edge, point, out _);
