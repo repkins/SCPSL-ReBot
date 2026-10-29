@@ -10,6 +10,7 @@ internal class PerceptionSystem
 {
     private const float maxSightDistance = 30f;
     private static readonly LayerMask sightLayerMask = LayerMask.GetMask("Default", "Door", "Ignore Raycast");
+    private static readonly LayerMask obstacleSightLayerMask = LayerMask.GetMask("Default", "Door", "Ignore Raycast", "Fence");
 
     public static void Initialize()
     {
@@ -26,7 +27,7 @@ internal class PerceptionSystem
         var playerPerception = new PlayerPerception(BotStore.Bots.Count);
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
         var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
-        var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
+        var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightDistance, obstacleSightLayerMask);
         var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
         var ragePerception = new RagePerception(BotStore.Bots.Count);
 

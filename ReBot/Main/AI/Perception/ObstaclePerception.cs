@@ -1,4 +1,5 @@
-﻿using Interactables.Interobjects;
+﻿using DrawableLine;
+using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
 using ReBot.Collections;
 using ReBot.Main.AI.Movement.Pathfinding;
@@ -310,6 +311,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 var sightObstacleIdx = withinFovSightObstacles[withinFovResultIdx];
                 var targetObstacleIdx = sightObstacleTargetObstacles[sightObstacleIdx];
                 var hit = sightObstacleRaycastResults[sightObstacleIdx];
+                var obstacleRef = targetObstacleRefs[targetObstacleIdx];
 
                 if (elevationCallObstacleSightObstacles.Contains(sightObstacleIdx))
                 {
@@ -320,11 +322,19 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                     }
                     else if (hit.collider.GetComponentInParent<ElevatorDoor>() is ElevatorDoor elevatorDoor)
                     {
-                        targetObstacleObstructing[targetObstacleIdx] = elevatorDoor.IsConsideredOpen() ? TargetObstacleStatus.Unobstructing : TargetObstacleStatus.Obstructing;
+                        targetObstacleObstructing[targetObstacleIdx] = elevatorDoor.IsConsideredOpen() 
+                            ? TargetObstacleStatus.Unobstructing 
+                            : TargetObstacleStatus.Obstructing;
                     }
                     else if (hit.collider.GetComponentInParent<ElevatorChamber>() is not null)
                     {
-                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
+                        var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
+
+                        //DrawableLines.GenerateLine(hit.point, obstaclePosition);
+
+                        targetObstacleObstructing[targetObstacleIdx] = Vector3.Distance(hit.point, obstaclePosition) < 0.5f 
+                            ? TargetObstacleStatus.Unobstructing 
+                            : TargetObstacleStatus.Obstructing;
                     }
                     else
                     {
@@ -340,7 +350,6 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                         continue;
                     }
 
-                    var obstacleRef = targetObstacleRefs[targetObstacleIdx];
                     var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
                     var obstacleTransform = NavigationMesh.CellsWithSolidObstacles[cellInPath];
                     if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
@@ -361,6 +370,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 var obstacleRef = targetObstacleRefs[targetObstacleIdx];
                 var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
 
+                // Is arrived at destination level
                 if (Mathf.Abs(playerPosition.y - obstaclePosition.y) < 1f)
                 {
                     targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
