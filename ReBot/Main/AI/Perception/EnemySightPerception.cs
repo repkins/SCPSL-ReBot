@@ -1,4 +1,5 @@
-﻿using PlayerRoles;
+﻿using DrawableLine;
+using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
 using PlayerRoles.PlayableScps.Scp939;
 using ReBot.Collections;
@@ -135,6 +136,7 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
 
             var enemyLocations = bot.TerminationState.EnemyLocations;
+            var enemyVelocities = bot.TerminationState.EnemyVelocities;
             var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
 
             var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
@@ -159,6 +161,7 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                 var enemyPosition = enemyPlayerPositions[enemySightIdx];
                 if (enemyInstanceIds.IndexOf(fpcRole.GetInstanceID()) is var enemyIdx && enemyIdx > -1)
                 {
+                    enemyVelocities[enemyIdx] = Vector3.Normalize(enemyPosition - enemyLocations[enemyIdx]) * 2f;
                     enemyLocations[enemyIdx] = enemyPosition;
                 }
                 else
@@ -167,6 +170,7 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                     {
                         enemyIdx = enemyInstanceIds.Length;
                         enemyInstanceIds.Add(fpcRole.GetInstanceID());
+                        enemyVelocities.Add(Vector3.zero);
                         enemyLocations.Add(enemyPosition);
                     }
                 }
@@ -186,12 +190,15 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
             var cameraForward = bot.PlayerState.CameraForward;
 
             var enemyLocations = bot.TerminationState.EnemyLocations;
+            var enemyVelocities = bot.TerminationState.EnemyVelocities;
             var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
 
             var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
 
             for (int enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
             {
+                //DrawableLines.GenerateSphere(enemyLocations[enemyIdx] + enemyVelocities[enemyIdx], .1f);
+
                 var enemyRef = new EnemyRef(enemyIdx);
                 if (enemiesWithinSight.Contains(enemyRef))
                 {
@@ -199,10 +206,12 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                 }
 
                 var enemyPosition = enemyLocations[enemyIdx];
+                var enemyVelocity = enemyVelocities[enemyIdx];
                 if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f
-                    && Vector3.Dot(cameraForward, Vector3.Normalize(enemyPosition - cameraPosition)) > 0.9f)
+                    && Vector3.Dot(cameraForward, Vector3.Normalize((enemyPosition + enemyVelocity) - cameraPosition)) > 0.9f)
                 {
                     enemyInstanceIds.RemoveAtSwapBack(enemyIdx);
+                    enemyVelocities.RemoveAtSwapBack(enemyIdx);
                     enemyLocations.RemoveAtSwapBack(enemyIdx);
                     enemyIdx--;
                 }
