@@ -424,37 +424,42 @@ namespace ReBot.Navigation.Mesh
             var cellLocalEdges = cell.Edges;
 
             closestSqrDist = float.MaxValue;
-            var isAnyVertexWithin = true;
+            var isAnyVertexPositive = true;
+            var isAnyVerticalWithin = false;
             foreach (var e in cellLocalEdges)
             {
-                var isWithin = true;
+                var isPositive = true;
                 var sqrDist = 0f;
 
                 if (GetPointDistToEdgePlane(e, pointLocalPosition, out var closestPoint) <= 0f)
                 {
                     var closestPointWithinEdge = ClampWithinEdgePoints(e, closestPoint);
                     sqrDist = Vector3.SqrMagnitude(closestPointWithinEdge - pointLocalPosition);
-                    isWithin = false;
+                    isPositive = false;
+                    isAnyVertexPositive = false;
                 }
 
-                if (!(e.From.Position.y > pointLocalPosition.y - 2f
-                    && e.From.Position.y < pointLocalPosition.y + 2f))
+                if (e.From.Position.y > pointLocalPosition.y - 2f
+                    && e.From.Position.y < pointLocalPosition.y + 2f)
                 {
-                    isWithin = false;
+                    isAnyVerticalWithin = true;
+                }
+                else
+                {
+                    isPositive = false;
                     sqrDist = Vector3.SqrMagnitude(e.From.Position - pointLocalPosition);
                 }
 
-                if (!isWithin)
+                if (!isPositive)
                 {
                     if (sqrDist < closestSqrDist)
                     {
                         closestSqrDist = sqrDist;
                     }
-                    isAnyVertexWithin = false;
                 }
             }
 
-            return isAnyVertexWithin;
+            return isAnyVertexPositive && isAnyVerticalWithin;
         }
 
         private static float GetPointDistToEdgePlane(Edge edge, Vector3 point) => GetPointDistToEdgePlane(edge, point, out _);
