@@ -81,7 +81,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
                 var actionPart = (ActionEnum)((byte)impactingAction.Enum & 0x0F);
                 var subjectPart = (ActionEnum)((byte)impactingAction.Enum & 0xF0);
 
-                Debug.Log($"{prefix}{actionPart}|{subjectPart}({impactingAction.Idx}), {cost} ({multiplier}x){(impactingAction == actionAction ? " <--" : "")}");
+                Debug.Log($"{prefix}{impactingAction.Enum}({impactingAction.Idx}), {cost} ({multiplier}x){(impactingAction == actionAction ? " <--" : "")}");
 
                 actionToEnable = impactingAction;
                 if (actionPathfinding.visitedImpactingActions.TryGetFirstValue(actionToEnable, out impactingAction, out var impactingIterator))

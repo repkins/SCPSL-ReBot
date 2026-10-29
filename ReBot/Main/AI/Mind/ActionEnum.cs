@@ -1,5 +1,8 @@
-﻿namespace ReBot.Main.AI.Mind;
+﻿using System;
 
+namespace ReBot.Main.AI.Mind;
+
+[Flags]
 public enum ActionEnum : byte
 {
     Default = 0x00,
