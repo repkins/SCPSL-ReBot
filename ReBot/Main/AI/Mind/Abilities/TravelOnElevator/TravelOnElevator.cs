@@ -38,7 +38,7 @@ internal struct TravelOnElevator(BotRef botRef)
     {
         var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
 
-        if (Vector3.Distance(elevationEnterPosition, playerPosition) < 1f)
+        if (Vector3.Distance(elevationEnterPosition, playerPosition) < 0.5f)
         {
             var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
             lookAtPositionRef.Value = (true, travelInteractPosition);
