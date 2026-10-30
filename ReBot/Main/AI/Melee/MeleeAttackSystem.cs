@@ -2,8 +2,8 @@
 
 internal class MeleeAttackSystem
 {
-    static readonly string ReleaseShootDummyActionName = $"{ActionName.Shoot}->Release";
     static readonly string HoldShootDummyActionName = $"{ActionName.Shoot}->Hold";
+    static readonly string ReleaseShootDummyActionName = $"{ActionName.Shoot}->Release";
 
     public static void Process()
     {

@@ -41,7 +41,7 @@ internal struct Scp939Mind(BotRef botRef) : IMind
                 meleeEnemy.Enabling(new(action.Idx), beliefsToEnable);
 
                 break;
-            case ActionEnum.MovesTo | ActionEnum.Enemy :
+            case ActionEnum.MovesTo | ActionEnum.Enemy:
                 moveToEnemy.Enabling(action.Idx, beliefsToEnable);
 
                 break;
