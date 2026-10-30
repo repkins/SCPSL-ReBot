@@ -12,6 +12,7 @@ internal struct SnapEnemy(BotRef botRef)
     bool isObserved = botRef.Value.BlinkState.IsObserved;
 
     NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
+    NativeList<Vector3> enemyVelocities = botRef.Value.TerminationState.EnemyVelocities;
     NativeList<EnemyRef> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
     NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
 
@@ -47,7 +48,8 @@ internal struct SnapEnemy(BotRef botRef)
             }
             else
             {
-                lookAtPositionRef.Value = (true, enemyPosition);
+                var enemyVelocity = enemyVelocities[enemyRef.Idx];
+                lookAtPositionRef.Value = (true, enemyPosition + enemyVelocity);
             }
         }
         else
