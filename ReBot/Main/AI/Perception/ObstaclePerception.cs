@@ -255,7 +255,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                             continue;
                         }
 
-                        obstacleBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
+                        obstacleBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition + Vector3.up);
                     }
                 }
             }
@@ -345,7 +345,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 else
                 {
                     // solid obstacle
-                    if (hit.collider is null || hit.distance < .4f)
+                    if (hit.collider is null || hit.distance < .3f)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                         continue;
