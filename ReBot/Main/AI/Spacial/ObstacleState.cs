@@ -29,9 +29,11 @@ public struct ObstacleState() : IDisposable
     public static NativeList<bool> ElevationCallInteractAbles = new(Allocator.Persistent);
 
     public NativeHashMap<Vector3, ObstacleRef> ObstaclesByTarget = new(1, Allocator.Persistent);
+    public NativeList<(Vector3, Vector3)> ChangedTargetPositions = new(1, Allocator.Persistent);
 
     public void Dispose()
     {
         ObstaclesByTarget.Dispose();
+        ChangedTargetPositions.Dispose();
     }
 }

@@ -35,8 +35,11 @@ public struct RagePerception(int botCount)
                 var targetInstanceId = target.roleManager.CurrentRole.GetInstanceID();
                 if (bot.TerminationState.EnemyInstanceIds.IndexOf(targetInstanceId) is var enemyIdx && enemyIdx > -1)
                 {
-                    bot.TerminationState.EnemyVelocities[enemyIdx] = Vector3.Normalize(target.transform.position - bot.TerminationState.EnemyLocations[enemyIdx]) * 2f;
+                    var prevPosition = bot.TerminationState.EnemyLocations[enemyIdx];
                     bot.TerminationState.EnemyLocations[enemyIdx] = target.transform.position;
+                    bot.TerminationState.EnemyVelocities[enemyIdx] = Vector3.Normalize(target.transform.position - prevPosition) * 2f;
+
+                    bot.ObstacleState.ChangedTargetPositions.Add((prevPosition, target.transform.position));
                 }
                 else
                 {

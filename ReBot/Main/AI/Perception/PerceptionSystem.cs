@@ -40,12 +40,12 @@ internal class PerceptionSystem
         JobHandle.CompleteAll(ref enemiesSightingHandle, ref obstaclesSensingHandle);
 
         enemySightPerception.ProcessEnemySightResults();
+        ragePerception.Process();
         obstaclePerception.ProcessSensedObstacleResults();
 
         playerPerception.Process();
         roomPerception.Process();
         blinkPerception.Process();
-        ragePerception.Process();
 
         obstaclePerception.ProcessSharedElevationState();
 

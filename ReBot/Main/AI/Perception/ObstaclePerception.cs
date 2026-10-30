@@ -409,6 +409,18 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                         break;
                 }
             }
+
+            foreach (var (oldPosition, newPosition) in bot.ObstacleState.ChangedTargetPositions)
+            {
+                if (!obstacles.TryGetValue(oldPosition, out var obstacleRef))
+                {
+                    continue;
+                }
+
+                obstacles.Remove(oldPosition);
+                obstacles[newPosition] = obstacleRef;
+            }
+            bot.ObstacleState.ChangedTargetPositions.Clear();
         }
     }
 }

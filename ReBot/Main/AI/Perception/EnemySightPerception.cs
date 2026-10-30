@@ -161,8 +161,11 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                 var enemyPosition = enemyPlayerPositions[enemySightIdx];
                 if (enemyInstanceIds.IndexOf(fpcRole.GetInstanceID()) is var enemyIdx && enemyIdx > -1)
                 {
-                    enemyVelocities[enemyIdx] = Vector3.Normalize(enemyPosition - enemyLocations[enemyIdx]) * 2f;
+                    var prevPosition = enemyLocations[enemyIdx];
                     enemyLocations[enemyIdx] = enemyPosition;
+                    enemyVelocities[enemyIdx] = Vector3.Normalize(enemyPosition - prevPosition) * 2f;
+
+                    bot.ObstacleState.ChangedTargetPositions.Add((prevPosition, enemyPosition));
                 }
                 else
                 {
