@@ -2,8 +2,7 @@
 
 internal class MeleeAttackSystem
 {
-    static readonly string HoldShootDummyActionName = $"{ActionName.Shoot}->Hold";
-    static readonly string ReleaseShootDummyActionName = $"{ActionName.Shoot}->Release";
+    static readonly string ShootDummyActionName = $"{ActionName.Shoot}->Click";
 
     public static void Process()
     {
@@ -16,7 +15,7 @@ internal class MeleeAttackSystem
             var isHeld = BotStore.Bots[botIdx].MeleeState.IsHeld;
             var prevIsHeld = isHeld;
 
-            if (wantsAttack)
+            if (wantsAttack && !isHeld)
             {
                 isHeld = true;
             }
@@ -31,11 +30,7 @@ internal class MeleeAttackSystem
             {
                 if (isHeld)
                 {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(HoldShootDummyActionName);
-                }
-                else
-                {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(ReleaseShootDummyActionName);
+                    BotStore.Bots[botIdx].ActionState.WantSet.Add(ShootDummyActionName);
                 }
             }
         }

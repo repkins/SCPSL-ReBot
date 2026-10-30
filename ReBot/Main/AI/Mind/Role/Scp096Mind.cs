@@ -1,4 +1,5 @@
 ﻿using ReBot.Main.AI.Mind.Abilities;
+using ReBot.Main.AI.Mind.Abilities.Break;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
 using ReBot.Main.AI.Mind.Abilities.MoveTo;
@@ -24,6 +25,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
     InteractObstacle interactObstacle = new(botRef);
+    BreakObstacle breakObstacle = new(botRef);
     MoveTo<Obstacle> moveToObstacle = new(botRef, new());
 
     TravelOnElevator travelOnElevator = new(botRef);
@@ -68,6 +70,11 @@ internal struct Scp096Mind(BotRef botRef) : IMind
             case ActionEnum.InteractsWith | ActionEnum.Obstacle:
                 interactObstacle.Enabling(action.Idx, beliefsToEnable);
                 
+                break;
+
+            case ActionEnum.Attacks | ActionEnum.Obstacle:
+                breakObstacle.Enabling(action.Idx, beliefsToEnable);
+
                 break;
             case ActionEnum.MovesTo | ActionEnum.Obstacle:
                 moveToObstacle.Enabling(action.Idx, beliefsToEnable);
@@ -132,6 +139,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
                 else
                 {
                     interactObstacle.Impacting(new(beliefRef.Idx), impactingActions);
+                    breakObstacle.Impacting(new(beliefRef.Idx), impactingActions);
                 }
 
                 break;
