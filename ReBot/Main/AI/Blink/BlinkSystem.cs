@@ -36,27 +36,54 @@ internal class BlinkSystem
             var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
             var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
 
-            var targetPosition = closestPosition;
-            if (PathfindingStore.GoalPositions[botIdx] != closestPosition)
+            var blinkPosition = closestPosition + playerCameraForward * 0.1f;
+            if (PathfindingStore.GoalPositions[botIdx] == closestPosition)
             {
-                targetPosition = closestPosition;
-            }
-            else
-            {
-                if (!Physics.Raycast(targetPosition, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
+                if (Physics.Raycast(blinkPosition, Vector3.down, out var hitInfo, 2f, LayerMask.GetMask("Default")))
                 {
-                    continue;
+                    blinkPosition = hitInfo.point;
                 }
-                targetPosition = hitInfo.point;
             }
 
-            var relTargetPos = targetPosition - playerCameraPosition;
-            if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) < .01f)
+            ref var blinkState = ref BotStore.Bots[botIdx].BlinkState;
+
+            if (playerCameraPosition != blinkState.LastCameraPosition)
             {
-                BotStore.Bots[botIdx].ActionState.WantSet.Add(BlinkDummyActionName);
+                blinkState.DownAimAmount = 0f;
+            }
+            blinkState.LastCameraPosition = playerCameraPosition;
+
+            blinkPosition += Vector3.down * blinkState.DownAimAmount;
+
+            BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, blinkPosition);
+
+            if (blinkState.RemainingSecondsToBlink > .01f)
+            {
+                continue;
             }
 
-            BotStore.Bots[botIdx].MovementState.LookAtPositionRef.Value = (true, targetPosition);
+            var relTargetPos = blinkPosition - playerCameraPosition;
+            if (relTargetPos.magnitude - Vector3.Dot(relTargetPos, playerCameraForward) >= .01f)
+            {
+                continue;
+            }
+
+            var isHeld = blinkState.IsHeld;
+            var prevIsHeld = isHeld;
+
+            isHeld = !isHeld;
+
+            blinkState.IsHeld = isHeld;
+
+            if (prevIsHeld != isHeld)
+            {
+                if (isHeld)
+                {
+                    BotStore.Bots[botIdx].ActionState.WantSet.Add(BlinkDummyActionName);
+
+                    blinkState.DownAimAmount += .1f;
+                }
+            }
         }
     }
 }

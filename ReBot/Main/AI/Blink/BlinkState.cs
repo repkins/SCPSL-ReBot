@@ -6,7 +6,12 @@ namespace ReBot.Main.AI.Blink;
 
 public struct BlinkState() : IDisposable
 {
+    public bool IsHeld;
+
     public NativeReference<(bool, Vector3)> BlinkToPositionRef = new(Allocator.Persistent);
+
+    public Vector3 LastCameraPosition;
+    public float DownAimAmount = 0f;
 
     public bool IsObserved;
     public float RemainingSecondsToBlink;
