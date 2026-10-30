@@ -16,12 +16,7 @@ internal struct PassthroughObstacle(BotRef botRef)
 
     public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
-        var obstaclePosition = obstacleLocations[obstacleRef.Idx];
-
         var cost = 1f;
-        cost += !obstaclesByTarget.TryGetValue(obstaclePosition, out var obstacle2Ref)
-            ? Vector3.Distance(obstaclePosition, playerPosition)
-            : Vector3.Distance(obstaclePosition, obstacleLocations[obstacle2Ref.Idx]);
 
         impactingActions.Add(cost, ActionEnum.PassesThrough | ActionEnum.Obstacle, obstacleRef.Idx);
     }
@@ -30,14 +25,21 @@ internal struct PassthroughObstacle(BotRef botRef)
     {
         var obstaclePosition = obstacleLocations[obstacleIdx];
 
-        if (!obstaclesByTarget.TryGetValue(obstaclePosition, out var obstacle2Ref))
+        if (Vector3.Distance(obstaclePosition, playerPosition) < 2f)
         {
-            moveToPositionRef.Value = (true, obstaclePosition);
-            lookAtPositionRef.Value = (true, obstaclePosition);
+            if (!obstaclesByTarget.TryGetValue(obstaclePosition, out var obstacle2Ref))
+            {
+                moveToPositionRef.Value = (true, obstaclePosition);
+                lookAtPositionRef.Value = (true, obstaclePosition);
+            }
+            else
+            {
+                beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacle2Ref.Idx));
+            }
         }
         else
         {
-            beliefsToEnable.Add(new(BeliefEnum.UnobstructingObstacle, obstacle2Ref.Idx));
+            beliefsToEnable.Add(new(BeliefEnum.WithinObstacle, obstacleIdx));
         }
     }
 }
