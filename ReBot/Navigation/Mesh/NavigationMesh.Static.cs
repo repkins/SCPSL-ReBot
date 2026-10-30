@@ -322,11 +322,8 @@ namespace ReBot.Navigation.Mesh
                 return edge.To.Position;
             }
 
-            planePoint.y = edge.From.Position.y + 2f < planePoint.y
-                ? edge.From.Position.y + 2f
-                : edge.From.Position.y - 2f > planePoint.y
-                    ? edge.From.Position.y - 2f
-                    : planePoint.y;
+            var dir1ToProjected = Vector3.Project(dir1ToPoint, dir1To2.normalized);
+            planePoint = dir1ToProjected + edge.From.Position;
 
             return planePoint;
         }
@@ -439,15 +436,18 @@ namespace ReBot.Navigation.Mesh
                     isAnyVertexPositive = false;
                 }
 
-                if (e.From.Position.y > pointLocalPosition.y - 2f
-                    && e.From.Position.y < pointLocalPosition.y + 2f)
+                if (isPositive)
                 {
-                    isAnyVerticalWithin = true;
-                }
-                else
-                {
-                    isPositive = false;
-                    sqrDist = Vector3.SqrMagnitude(e.From.Position - pointLocalPosition);
+                    if (e.From.Position.y > pointLocalPosition.y - 2f
+                        && e.From.Position.y < pointLocalPosition.y + 2f)
+                    {
+                        isAnyVerticalWithin = true;
+                    }
+                    else
+                    {
+                        isPositive = false;
+                        sqrDist = Vector3.SqrMagnitude(pointLocalPosition with { y = e.From.Position.y } - pointLocalPosition);
+                    }
                 }
 
                 if (!isPositive)

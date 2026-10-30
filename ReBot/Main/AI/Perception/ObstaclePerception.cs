@@ -326,14 +326,15 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                             ? TargetObstacleStatus.Unobstructing 
                             : TargetObstacleStatus.Obstructing;
                     }
-                    else if (hit.collider.GetComponentInParent<ElevatorChamber>() is not null)
+                    else if (hit.collider.GetComponentInParent<ElevatorChamber>() is ElevatorChamber elevatorChamber)
                     {
                         var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
+                        var elevatorTravelPanelPosition = elevatorChamber.GetComponentInChildren<ElevatorPanel>().transform.position;
 
                         //DrawableLines.GenerateLine(hit.point, obstaclePosition);
 
-                        targetObstacleObstructing[targetObstacleIdx] = Vector3.Distance(hit.point, obstaclePosition) < 0.5f 
-                            ? TargetObstacleStatus.Unobstructing 
+                        targetObstacleObstructing[targetObstacleIdx] = Mathf.Abs(elevatorTravelPanelPosition.y - obstaclePosition.y) < 2f
+                            ? TargetObstacleStatus.Unobstructing
                             : TargetObstacleStatus.Obstructing;
                     }
                     else
