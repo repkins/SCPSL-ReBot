@@ -101,7 +101,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
 
                 break;
             case BeliefEnum.Calmed:
-                enrage.Impacting(impactingActions);
+                calm.Impacting(impactingActions);
 
                 break;
             case BeliefEnum.TerminatedEnemy:
