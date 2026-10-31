@@ -1,7 +1,4 @@
-﻿using PlayerRoles.FirstPersonControl;
-using PlayerRoles.PlayableScps.Scp096;
-using Unity.Collections;
-using UnityEngine;
+﻿using PlayerRoles.PlayableScps.Scp096;
 
 namespace ReBot.Main.AI.Rage;
 
@@ -33,26 +30,12 @@ public struct RagePerception(int botCount)
             foreach (var target in targetsTracker.Targets)
             {
                 var targetInstanceId = target.roleManager.CurrentRole.GetInstanceID();
-                if (bot.TerminationState.EnemyInstanceIds.IndexOf(targetInstanceId) is var enemyIdx && enemyIdx > -1)
-                {
-                    var prevPosition = bot.TerminationState.EnemyLocations[enemyIdx];
-                    bot.TerminationState.EnemyLocations[enemyIdx] = target.transform.position;
-                    bot.TerminationState.EnemyVelocities[enemyIdx] = Vector3.Normalize(target.transform.position - prevPosition) * 2f;
+                var targetPosition = target.transform.position;
 
-                    bot.ObstacleState.ChangedTargetPositions.Add((prevPosition, target.transform.position));
-                }
-                else
+                if (bot.TerminationState.ReplaceOrAddEnemy(targetInstanceId, targetPosition, out var enemyRef))
                 {
-                    if (bot.TerminationState.EnemyInstanceIds.Length < bot.TerminationState.EnemyInstanceIds.Capacity)
-                    {
-                        enemyIdx = bot.TerminationState.EnemyInstanceIds.Length;
-                        bot.TerminationState.EnemyInstanceIds.Add(targetInstanceId);
-                        bot.TerminationState.EnemyVelocities.Add(Vector3.zero);
-                        bot.TerminationState.EnemyLocations.Add(target.transform.position);
-                    }
+                    bot.RageState.Targets.Add(enemyRef);
                 }
-
-                bot.RageState.Targets.Add(new(enemyIdx));
             }
         }
     }

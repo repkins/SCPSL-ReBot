@@ -135,10 +135,6 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
             var otherEnemyPlayersInstanceIds = enemySightBots[botIdx].otherEnemyPlayersInstanceIds;
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
 
-            var enemyLocations = bot.TerminationState.EnemyLocations;
-            var enemyVelocities = bot.TerminationState.EnemyVelocities;
-            var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
-
             var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
             enemiesWithinSight.Clear();
 
@@ -158,27 +154,13 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                     continue;
                 }
 
+                var roleInstanceId = fpcRole.GetInstanceID();
                 var enemyPosition = enemyPlayerPositions[enemySightIdx];
-                if (enemyInstanceIds.IndexOf(fpcRole.GetInstanceID()) is var enemyIdx && enemyIdx > -1)
-                {
-                    var prevPosition = enemyLocations[enemyIdx];
-                    enemyLocations[enemyIdx] = enemyPosition;
-                    enemyVelocities[enemyIdx] = Vector3.Normalize(enemyPosition - prevPosition) * 2f;
 
-                    bot.ObstacleState.ChangedTargetPositions.Add((prevPosition, enemyPosition));
-                }
-                else
+                if (bot.TerminationState.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var enemyRef))
                 {
-                    if (enemyInstanceIds.Length < enemyInstanceIds.Capacity)
-                    {
-                        enemyIdx = enemyInstanceIds.Length;
-                        enemyInstanceIds.Add(fpcRole.GetInstanceID());
-                        enemyVelocities.Add(Vector3.zero);
-                        enemyLocations.Add(enemyPosition);
-                    }
+                    enemiesWithinSight.Add(enemyRef);
                 }
-
-                enemiesWithinSight.Add(new(enemyIdx));
             }
         }
     }
@@ -194,29 +176,25 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
 
             var enemyLocations = bot.TerminationState.EnemyLocations;
             var enemyVelocities = bot.TerminationState.EnemyVelocities;
-            var enemyInstanceIds = bot.TerminationState.EnemyInstanceIds;
 
             var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
 
-            for (int enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
+            for (EnemyRef enemyRef = new(0); enemyRef.Idx < enemyLocations.Length; enemyRef.Idx++)
             {
-                //DrawableLines.GenerateSphere(enemyLocations[enemyIdx] + enemyVelocities[enemyIdx], .1f);
+                //DrawableLines.GenerateSphere(enemyLocations[enemyRef.Idx] + enemyVelocities[enemyRef.Idx], .1f);
 
-                var enemyRef = new EnemyRef(enemyIdx);
                 if (enemiesWithinSight.Contains(enemyRef))
                 {
                     continue;
                 }
 
-                var enemyPosition = enemyLocations[enemyIdx];
-                var enemyVelocity = enemyVelocities[enemyIdx];
+                var enemyPosition = enemyLocations[enemyRef.Idx];
+                var enemyVelocity = enemyVelocities[enemyRef.Idx];
                 if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f
                     && Vector3.Dot(cameraForward, Vector3.Normalize((enemyPosition + enemyVelocity) - cameraPosition)) > 0.9f)
                 {
-                    enemyInstanceIds.RemoveAtSwapBack(enemyIdx);
-                    enemyVelocities.RemoveAtSwapBack(enemyIdx);
-                    enemyLocations.RemoveAtSwapBack(enemyIdx);
-                    enemyIdx--;
+                    bot.TerminationState.RemoveEnemyAtSwapback(enemyRef);
+                    enemyRef.Idx--;
                 }
             }
         }

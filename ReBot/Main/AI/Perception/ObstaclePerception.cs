@@ -410,7 +410,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 }
             }
 
-            foreach (var (oldPosition, newPosition) in bot.ObstacleState.ChangedTargetPositions)
+            foreach (var (oldPosition, newPosition) in bot.TerminationState.ChangedTargetPositions)
             {
                 if (!obstacles.TryGetValue(oldPosition, out var obstacleRef))
                 {
@@ -420,7 +420,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 obstacles.Remove(oldPosition);
                 obstacles[newPosition] = obstacleRef;
             }
-            bot.ObstacleState.ChangedTargetPositions.Clear();
+            bot.TerminationState.ChangedTargetPositions.Clear();
         }
     }
 }
