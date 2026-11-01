@@ -160,12 +160,20 @@ namespace ReBot.Navigation
                     if (!RoomIdentifier.RoomsByCoords.TryGetValue(coords, out var room))
                     {
                         RoomUtils.TryGetRoom(doorPosition + doorForward, out room);
+                        Debug.LogWarning($"Adding more room coords for {room}");
                         RoomIdentifier.RoomsByCoords.Add(coords, room);
+                        NavigationMesh.AddedRoomCoords.Add(coords);
                         break;
                     }
                 }
 
                 var cellAt0InShaftResult = NavigationMesh.GetCellWithinOrClosest(doorPosition - doorForward);
+
+                if (!cellAt0InShaftResult.HasValue)
+                {
+                    Debug.LogWarning($"Could not determine elevator level cell for group {group} at door {elevatorDoors[0]}");
+                    continue;
+                }
 
                 doorTransform = elevatorDoors[1].transform;
                 doorPosition = doorTransform.position + Vector3.up;
@@ -179,36 +187,40 @@ namespace ReBot.Navigation
                     if (!RoomIdentifier.RoomsByCoords.TryGetValue(coords, out var room))
                     {
                         RoomUtils.TryGetRoom(doorPosition + doorForward, out room);
+                        Debug.LogWarning($"Adding more room coords for {room}");
                         RoomIdentifier.RoomsByCoords.Add(coords, room);
+                        NavigationMesh.AddedRoomCoords.Add(coords);
                         break;
                     }
                 }
 
                 var cellAt1InShaftResult = NavigationMesh.GetCellWithinOrClosest(doorPosition - doorForward);
 
-                if (cellAt0InShaftResult.HasValue && cellAt1InShaftResult.HasValue)
+                if (!cellAt1InShaftResult.HasValue)
                 {
-                    var cellAt0InShaft = cellAt0InShaftResult.Value;
-                    var cellAt1InShaft = cellAt1InShaftResult.Value;
-
-                    // Connect
-                    NavigationMesh.ForeignConnectedCells[cellAt0InShaft].Add(cellAt1InShaft);
-                    NavigationMesh.ForeignConnectedCells[cellAt1InShaft].Add(cellAt0InShaft);
-
-                    Debug.Log($"{group} elevation cells connections added between {cellAt0InShaft.MeanPosition} and {cellAt1InShaft.MeanPosition}");
-
-                    // Add elevation obstacles
-                    var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>();
-                    var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>();
-
-                    var travelPanel = chamber.GetComponentInChildren<ElevatorPanel>();
-
-                    NavigationMesh.ElevationObstacles.Add((cellAt0InShaft, cellAt1InShaft, panelAt0, travelPanel));
-                    NavigationMesh.ElevationObstacles.Add((cellAt1InShaft, cellAt0InShaft, panelAt1, travelPanel));
-
-                    Debug.Log($"{group} elevation obstacles added between call panels at {panelAt0.transform.position} and {panelAt1.transform.position} with travel panel at {travelPanel.transform.position}");
-
+                    Debug.LogWarning($"Could not determine elevator level cell for group {group} at door {elevatorDoors[1]}");
+                    continue;
                 }
+
+                var cellAt0InShaft = cellAt0InShaftResult.Value;
+                var cellAt1InShaft = cellAt1InShaftResult.Value;
+
+                // Connect
+                NavigationMesh.ForeignConnectedCells[cellAt0InShaft].Add(cellAt1InShaft);
+                NavigationMesh.ForeignConnectedCells[cellAt1InShaft].Add(cellAt0InShaft);
+
+                Debug.Log($"{group} elevation cells connections added between {cellAt0InShaft.MeanPosition} and {cellAt1InShaft.MeanPosition}");
+
+                // Add elevation obstacles
+                var panelAt0 = elevatorDoors[0].GetComponentInChildren<ElevatorPanel>();
+                var panelAt1 = elevatorDoors[1].GetComponentInChildren<ElevatorPanel>();
+
+                var travelPanel = chamber.GetComponentInChildren<ElevatorPanel>();
+
+                NavigationMesh.ElevationObstacles.Add((cellAt0InShaft, cellAt1InShaft, panelAt0, travelPanel));
+                NavigationMesh.ElevationObstacles.Add((cellAt1InShaft, cellAt0InShaft, panelAt1, travelPanel));
+
+                Debug.Log($"{group} elevation obstacles added between call panels at {panelAt0.transform.position} and {panelAt1.transform.position} with travel panel at {travelPanel.transform.position}");
             }
             Debug.Log($"Connecting cells and adding cells with obstacles cells finished.");
 
@@ -219,6 +231,13 @@ namespace ReBot.Navigation
         {
             Debug.Log($"Resetting meshes.");
             NavigationMesh.ResetMeshes();
+
+            Debug.Log($"Removing added room coords");
+            foreach (var coords in NavigationMesh.AddedRoomCoords)
+            {
+                RoomIdentifier.RoomsByCoords.Remove(coords);
+            }
+            NavigationMesh.AddedRoomCoords.Clear();
 
             OnMeshesReset?.Invoke();
         }

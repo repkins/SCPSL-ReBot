@@ -21,6 +21,8 @@ namespace ReBot.Navigation.Mesh
         public static Dictionary<TransformCell, Transform> CellsWithSolidObstacles = [];
         public static List<(TransformCell ToCell, TransformCell FromCell, ElevatorPanel ToCallPanel, ElevatorPanel TravelPanel)> ElevationObstacles = [];
 
+        public static List<Vector3Int> AddedRoomCoords = [];
+
         public static NavigationMesh CreateMesh(string form)
         {
             var mesh = new NavigationMesh();
@@ -412,6 +414,7 @@ namespace ReBot.Navigation.Mesh
             ForeignConnectedCells.Clear();
             ForeignConnectedCellEdges.Clear();
             CellsWithSolidObstacles.Clear();
+            ElevationObstacles.Clear();
         }
 
         #endregion
