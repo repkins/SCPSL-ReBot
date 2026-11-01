@@ -217,6 +217,7 @@ namespace ReBot.Navigation
 
         public void ResetMeshes()
         {
+            Debug.Log($"Resetting meshes.");
             NavigationMesh.ResetMeshes();
 
             OnMeshesReset?.Invoke();

@@ -147,6 +147,8 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
 
     private static void ResetStaticState()
     {
+        Debug.Log("Resetting bot static state started");
+
         ObstacleState.ObstacleLocations.Clear();
         ObstacleState.DoorObstaclePermissions.Clear();
         ObstacleState.ObstaclesByCell.Clear();
@@ -163,6 +165,8 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         ObstacleState.ElevationCallInteractLocations.Clear();
         ObstacleState.ElevationCallInteractPanels.Clear();
         ObstacleState.ElevationCallInteractAbles.Clear();
+
+        Debug.Log("Resetting bot static state finished");
     }
 
     public void ProcessSharedElevationState()
@@ -345,7 +349,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 else
                 {
                     // solid obstacle
-                    if (hit.collider is null || hit.distance < .3f)
+                    if (hit.collider is null || hit.distance < .2f)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                         continue;
