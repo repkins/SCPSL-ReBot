@@ -24,6 +24,7 @@ public static class BotStore
 
     public static void RemoveBotPlayer(BotRef botRef)
     {
+        MindStore.RemoveBot(botRef);
         PathfindingStore.RemoveBot(botRef);
 
         var hub = Bots[botRef.Idx].Hub;
