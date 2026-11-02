@@ -14,19 +14,21 @@ internal class PerceptionSystem
 
     public static void Initialize()
     {
+        EnemyPerception.Initialize();
         ObstaclePerception.Initialize();
     }
 
     public static void Teardown()
     {
         ObstaclePerception.Teardown();
+        EnemyPerception.Teardown();
     }
 
     public static void Process()
     {
         var playerPerception = new PlayerPerception(BotStore.Bots.Count);
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
-        var enemySightPerception = new EnemySightPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
+        var enemySightPerception = new EnemyPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
         var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightDistance, obstacleSightLayerMask);
         var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
         var ragePerception = new RagePerception(BotStore.Bots.Count);

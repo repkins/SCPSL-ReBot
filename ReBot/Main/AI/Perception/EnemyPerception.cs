@@ -1,6 +1,7 @@
 ﻿using DrawableLine;
 using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
+using PlayerRoles.FirstPersonControl.Thirdperson;
 using PlayerRoles.PlayableScps.Scp939;
 using ReBot.Collections;
 using ReBot.Main.AI.Termination;
@@ -10,7 +11,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Perception;
 
-public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMask sightLayerMask)
+public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask sightLayerMask)
 {
     struct EnemySightBot()
     {
@@ -25,6 +26,16 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
     private static readonly int playerLayerMask = LayerMask.GetMask("Ignore Raycast");
 
     private NativeArray<EnemySightBot> enemySightBots = NativeArray<EnemySightBot>.CreateConstructed(botCount, Allocator.Temp);
+
+    public static void Initialize()
+    {
+        AnimatedCharacterModel.OnFootstepPlayed += ProcessPlayedFootstep;
+    }
+
+    public static void Teardown()
+    {
+        AnimatedCharacterModel.OnFootstepPlayed -= ProcessPlayedFootstep;
+    }
 
     public void ProcessSightDistance()
     {
@@ -222,6 +233,35 @@ public struct EnemySightPerception(int botCount, float maxSightDistance, LayerMa
                     enemiesWithinDistance.Add(new(enemyIdx));
                 }
             }
+        }
+    }
+
+    private static void ProcessPlayedFootstep(AnimatedCharacterModel model, float dis)
+    {
+        if (model.OwnerHub.roleManager.CurrentRole is not FpcStandardRoleBase fpcRole
+            || fpcRole.Team.GetFaction() == Faction.Unclassified)
+        {
+            return;
+        }
+
+        var roleInstanceId = fpcRole.GetInstanceID();
+
+        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        {
+            if (fpcRole.Team.GetFaction() == BotStore.Bots[botIdx].Hub.GetFaction())
+            {
+                continue;
+            }
+
+            var enemyPosition = fpcRole.FpcModule.Position;
+            var playerPosition = BotStore.Bots[botIdx].PlayerState.Position;
+
+            if (Vector3.Distance(enemyPosition, playerPosition) > dis)
+            {
+                continue;
+            }
+
+            BotStore.Bots[botIdx].TerminationState.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var _);
         }
     }
 }
