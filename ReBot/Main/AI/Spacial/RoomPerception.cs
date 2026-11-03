@@ -29,8 +29,8 @@ internal struct RoomPerception(int botCount)
                     .SelectMany(transformCell => NavigationMesh.ForeignConnectedCells[transformCell])
                     .Where(foreignCell => foreignCell.Transform.GetComponent<RoomIdentifier>())
                     .Select(foreignCell => foreignCell.AdjacentCells.First())
-
                     .Where(foreignCell => foreignCell.Transform.GetComponent<RoomIdentifier>() != roomWithin)
+
                     //.Where(foreignCell => foreignCell.Room.Identifier.Shape != RoomShape.Endroom || zoneTransitionRoomNames.Contains(foreignCell.Room.Identifier.Name))
                     .OrderBy(foreignCell => bot.RoomState.RoomLastVisitTime.TryGetValue(foreignCell.Transform.GetComponent<RoomIdentifier>(), out var time) ? time : -Random.Range(0f, 4f))
                     .Select(a => a.MeanPosition);
