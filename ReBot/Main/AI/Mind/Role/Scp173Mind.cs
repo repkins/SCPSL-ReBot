@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Mind.Abilities;
+﻿using Interactables.Interobjects.DoorUtils;
+using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.BlinkTo;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
@@ -24,7 +25,7 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     Unobserved<MoveTo<Room>> unobservedMoveToRoom = new(botRef, new(botRef, new(botRef)));
     ObservedBlinkTo<Room> observedBlinkToRoom = new(botRef, new(botRef));
 
-    InteractObstacle interactObstacle = new(botRef);
+    InteractObstacle interactObstacle = new(botRef, DoorPermissionFlags.ScpOverride);
     Unobserved<MoveTo<Obstacle>> unobservedMoveToObstacle = new(botRef, new(botRef, new()));
     ObservedBlinkTo<Obstacle> observedBlinkToObstacle = new(botRef, new());
 

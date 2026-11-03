@@ -1,4 +1,5 @@
-﻿using ReBot.Main.AI.Mind.Abilities;
+﻿using Interactables.Interobjects.DoorUtils;
+using ReBot.Main.AI.Mind.Abilities;
 using ReBot.Main.AI.Mind.Abilities.Break;
 using ReBot.Main.AI.Mind.Abilities.CallElevator;
 using ReBot.Main.AI.Mind.Abilities.Interact;
@@ -24,7 +25,7 @@ internal struct Scp096Mind(BotRef botRef) : IMind
 
     MoveTo<Room> moveToRoom = new(botRef, new(botRef));
 
-    InteractObstacle interactObstacle = new(botRef);
+    InteractObstacle interactObstacle = new(botRef, DoorPermissionFlags.ScpOverride);
     BreakObstacle breakObstacle = new(botRef);
     MoveTo<Obstacle> moveToObstacle = new(botRef, new());
 

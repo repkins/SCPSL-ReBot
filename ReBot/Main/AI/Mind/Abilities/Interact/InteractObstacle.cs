@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Mind.Abilities.Interact;
 
-internal struct InteractObstacle(BotRef botRef)
+internal struct InteractObstacle(BotRef botRef, DoorPermissionFlags rolePermissions)
 {
     Vector3 playerPosition = botRef.Value.PlayerState.Position;
 
@@ -20,7 +20,7 @@ internal struct InteractObstacle(BotRef botRef)
     public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
         var doorPermissions = doorObstaclePermissions[obstacleRef.Idx];
-        if (doorPermissions == DoorPermissionFlags.None)
+        if (doorPermissions == DoorPermissionFlags.None || doorPermissions.HasFlagAny(rolePermissions))
         {
             var cost = 1f;
 
