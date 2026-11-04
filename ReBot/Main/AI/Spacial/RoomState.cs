@@ -1,6 +1,5 @@
 ﻿using MapGeneration;
 using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
@@ -9,11 +8,15 @@ namespace ReBot.Main.AI.Spacial;
 public struct RoomState() : IDisposable
 {
     public RoomIdentifier PrevRoomWithin;
-    public Dictionary<RoomIdentifier, float> RoomLastVisitTime = [];
+    public NativeHashMap<int, float> RoomLastVisitTime = new(10, Allocator.Persistent);
+
+    public NativeList<int> RoomInstanceIds = new(Allocator.Persistent);
     public NativeList<Vector3> RoomEnterLocations = new(Allocator.Persistent);
 
     public void Dispose()
     {
+        RoomLastVisitTime.Dispose();
+        RoomInstanceIds.Dispose();
         RoomEnterLocations.Dispose();
     }
 }
