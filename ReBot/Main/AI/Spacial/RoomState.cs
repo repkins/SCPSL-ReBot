@@ -10,13 +10,13 @@ public struct RoomState() : IDisposable
     public RoomIdentifier PrevRoomWithin;
     public NativeHashMap<int, float> RoomLastVisitTime = new(10, Allocator.Persistent);
 
-    public NativeList<int> RoomInstanceIds = new(Allocator.Persistent);
+    public NativeList<int> RoomEnterInstanceIds = new(Allocator.Persistent);
     public NativeList<Vector3> RoomEnterLocations = new(Allocator.Persistent);
 
     public void Dispose()
     {
         RoomLastVisitTime.Dispose();
-        RoomInstanceIds.Dispose();
+        RoomEnterInstanceIds.Dispose();
         RoomEnterLocations.Dispose();
     }
 }

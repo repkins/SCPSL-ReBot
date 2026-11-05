@@ -24,7 +24,7 @@ internal struct RoomPerception(int botCount)
                     bot.RoomState.RoomLastVisitTime[prevRoomWithin.GetInstanceID()] = Time.time;
                 }
 
-                bot.RoomState.RoomInstanceIds.Clear();
+                bot.RoomState.RoomEnterInstanceIds.Clear();
                 bot.RoomState.RoomEnterLocations.Clear();
                 
                 foreach (var localCell in NavigationMesh.LocalMeshesByRoom[roomWithin.gameObject].Cells)
@@ -36,7 +36,7 @@ internal struct RoomPerception(int botCount)
                         var room = adjacentForeignCell.Transform.GetComponent<RoomIdentifier>();
                         if (room != roomWithin)
                         {
-                            bot.RoomState.RoomInstanceIds.Add(room.GetInstanceID());
+                            bot.RoomState.RoomEnterInstanceIds.Add(room.GetInstanceID());
                             bot.RoomState.RoomEnterLocations.Add(adjacentForeignCell.MeanPosition);
                         }
                     }
