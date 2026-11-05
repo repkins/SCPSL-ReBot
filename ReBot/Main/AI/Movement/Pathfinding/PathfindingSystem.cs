@@ -69,88 +69,88 @@ internal static class PathfindingSystem
         
         var currentPathIdx = 0;
 
-        var nextTargetCell = cellsPath[currentPathIdx + 1];
-        if (!currentCell.AdjacentCellEdges.TryGetValue(nextTargetCell, out var targetCellEdge)
-            && !NavigationMesh.ForeignConnectedCellEdges[currentCell].TryGetValue(nextTargetCell, out targetCellEdge))
+        var nextCell = cellsPath[currentPathIdx + 1];
+        if (!currentCell.AdjacentCellEdges.TryGetValue(nextCell, out var nextCellEdge)
+            && !NavigationMesh.ForeignConnectedCellEdges[currentCell].TryGetValue(nextCell, out nextCellEdge))
         {
             return currentCell.MeanPosition;
         }
-        var nextTargetEdgeMiddlePosition = Vector3.Lerp(targetCellEdge.From.Position, targetCellEdge.To.Position, 0.5f);
+        var nextEdgeMiddlePosition = Vector3.Lerp(nextCellEdge.From.Position, nextCellEdge.To.Position, 0.5f);
 
-        var nextTargetPosition = nextTargetEdgeMiddlePosition;
+        var nextPosition = nextEdgeMiddlePosition;
 
         var aheadPathIdx = currentPathIdx + 1;
 
-        while (nextTargetEdgeMiddlePosition == nextTargetPosition && aheadPathIdx < cellsPath.Count - 1)
+        while (nextEdgeMiddlePosition == nextPosition && aheadPathIdx < cellsPath.Count - 1)
         {
             aheadPathIdx++;
 
-            var relTargetEdgePos = (
-                from: targetCellEdge.From.Position - playerPosition,
-                to: targetCellEdge.To.Position - playerPosition);
+            var relNextEdgePos = (
+                from: nextCellEdge.From.Position - playerPosition,
+                to: nextCellEdge.To.Position - playerPosition);
 
-            var aheadTargetCell = cellsPath[aheadPathIdx];
-            if (!nextTargetCell.AdjacentCellEdges.TryGetValue(aheadTargetCell, out var aheadTargetCellEdge)
-                && !NavigationMesh.ForeignConnectedCellEdges[currentCell].TryGetValue(nextTargetCell, out aheadTargetCellEdge))
+            var aheadCell = cellsPath[aheadPathIdx];
+            if (!nextCell.AdjacentCellEdges.TryGetValue(aheadCell, out var aheadCellEdge)
+                && !NavigationMesh.ForeignConnectedCellEdges[currentCell].TryGetValue(nextCell, out aheadCellEdge))
             {
-                goalPosition = nextTargetCell.MeanPosition;
+                goalPosition = nextCell.MeanPosition;
                 break;
             }
 
             var relAheadTargetEdgePos = (
-                from: aheadTargetCellEdge.From.Position - playerPosition,
-                to: aheadTargetCellEdge.To.Position - playerPosition);
+                from: aheadCellEdge.From.Position - playerPosition,
+                to: aheadCellEdge.To.Position - playerPosition);
 
             var dirToAheadTargetEdgeNormals = (
                 from: Vector3.Cross(relAheadTargetEdgePos.from, Vector3.up),
                 to: Vector3.Cross(relAheadTargetEdgePos.to, Vector3.up));
 
-            if (Vector3.Dot(relTargetEdgePos.from, dirToAheadTargetEdgeNormals.from) < 0)
+            if (Vector3.Dot(relNextEdgePos.from, dirToAheadTargetEdgeNormals.from) < 0)
             {
-                targetCellEdge.From = aheadTargetCellEdge.From;
+                nextCellEdge.From = aheadCellEdge.From;
             }
 
-            if (Vector3.Dot(relTargetEdgePos.to, dirToAheadTargetEdgeNormals.to) > 0)
+            if (Vector3.Dot(relNextEdgePos.to, dirToAheadTargetEdgeNormals.to) > 0)
             {
-                targetCellEdge.To = aheadTargetCellEdge.To;
+                nextCellEdge.To = aheadCellEdge.To;
             }
 
 
-            if (Vector3.Dot(relTargetEdgePos.from, dirToAheadTargetEdgeNormals.to) > 0)
+            if (Vector3.Dot(relNextEdgePos.from, dirToAheadTargetEdgeNormals.to) > 0)
             {
-                nextTargetPosition = targetCellEdge.From.Position;
+                nextPosition = nextCellEdge.From.Position;
             }
 
-            if (Vector3.Dot(relTargetEdgePos.to, dirToAheadTargetEdgeNormals.from) < 0)
+            if (Vector3.Dot(relNextEdgePos.to, dirToAheadTargetEdgeNormals.from) < 0)
             {
-                nextTargetPosition = targetCellEdge.To.Position;
+                nextPosition = nextCellEdge.To.Position;
             }
 
-            nextTargetCell = aheadTargetCell;
+            nextCell = aheadCell;
         }
 
-        if (nextTargetPosition == nextTargetEdgeMiddlePosition)
+        if (nextPosition == nextEdgeMiddlePosition)
         {
-            nextTargetPosition = goalPosition;
+            nextPosition = goalPosition;
 
             var relNextTargetEdgePos = (
-                from: targetCellEdge.From.Position - playerPosition,
-                to: targetCellEdge.To.Position - playerPosition);
+                from: nextCellEdge.From.Position - playerPosition,
+                to: nextCellEdge.To.Position - playerPosition);
 
             var relGoalPos = goalPosition - playerPosition;
             var dirToGoalNormal = Vector3.Cross(relGoalPos, Vector3.up);
 
             if (Vector3.Dot(relNextTargetEdgePos.from, dirToGoalNormal) > 0)
             {
-                nextTargetPosition = targetCellEdge.From.Position;
+                nextPosition = nextCellEdge.From.Position;
             }
 
             if (Vector3.Dot(relNextTargetEdgePos.to, dirToGoalNormal) < 0)
             {
-                nextTargetPosition = targetCellEdge.To.Position;
+                nextPosition = nextCellEdge.To.Position;
             }
         }
 
-        return nextTargetPosition;
+        return nextPosition;
     }
 }
