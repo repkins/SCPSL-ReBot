@@ -24,26 +24,22 @@ internal struct RoomPerception(int botCount)
                     bot.RoomState.RoomLastVisitTime[prevRoomWithin.GetInstanceID()] = Time.time;
                 }
 
-                var enteringRooms = NavigationMesh.LocalMeshesByRoom[roomWithin.gameObject].Cells
-                    .Select(localCell => new TransformCell(localCell, roomWithin.transform))
-                    .SelectMany(transformCell => NavigationMesh.ForeignConnectedCells[transformCell])
-                    .Select(foreignCell => (ForeignCell: foreignCell.AdjacentCells.First(), Room: foreignCell.Transform.GetComponent<RoomIdentifier>()))
-                    .Where(t => t.Room != roomWithin)
-
-                    //.Where(foreignCell => foreignCell.Room.Identifier.Shape != RoomShape.Endroom || zoneTransitionRoomNames.Contains(foreignCell.Room.Identifier.Name))
-                    .OrderBy(t => 
-                        bot.RoomState.RoomLastVisitTime.TryGetValue(t.Room.GetInstanceID(), out var time)
-                            ? time 
-                            : -Random.Range(0f, 4f)
-                    )
-                    .Select(t => (t.ForeignCell.MeanPosition, t.Room.GetInstanceID()));
-
                 bot.RoomState.RoomInstanceIds.Clear();
                 bot.RoomState.RoomEnterLocations.Clear();
-                foreach (var (enteringPosition, enteringInstanceId) in enteringRooms)
+                
+                foreach (var localCell in NavigationMesh.LocalMeshesByRoom[roomWithin.gameObject].Cells)
                 {
-                    bot.RoomState.RoomInstanceIds.Add(enteringInstanceId);
-                    bot.RoomState.RoomEnterLocations.Add(enteringPosition);
+                    var transformCell = new TransformCell(localCell, roomWithin.transform);
+                    foreach (var foreignCell in NavigationMesh.ForeignConnectedCells[transformCell])
+                    {
+                        foreignCell = foreignCell.AdjacentCells.First();
+                        var room = foreignCell.Transform.GetComponent<RoomIdentifier>();
+                        if (room != roomWithin)
+                        {
+                            bot.RoomState.RoomInstanceIds.Add(room.GetInstanceID());
+                            bot.RoomState.RoomEnterLocations.Add(foreignCell.MeanPosition);
+                        }
+                    }
                 }
             }
 
