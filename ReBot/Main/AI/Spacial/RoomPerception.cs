@@ -32,12 +32,12 @@ internal struct RoomPerception(int botCount)
                     var transformCell = new TransformCell(localCell, roomWithin.transform);
                     foreach (var foreignCell in NavigationMesh.ForeignConnectedCells[transformCell])
                     {
-                        foreignCell = foreignCell.AdjacentCells.First();
-                        var room = foreignCell.Transform.GetComponent<RoomIdentifier>();
+                        var adjacentForeignCell = foreignCell.AdjacentCells.First();
+                        var room = adjacentForeignCell.Transform.GetComponent<RoomIdentifier>();
                         if (room != roomWithin)
                         {
                             bot.RoomState.RoomInstanceIds.Add(room.GetInstanceID());
-                            bot.RoomState.RoomEnterLocations.Add(foreignCell.MeanPosition);
+                            bot.RoomState.RoomEnterLocations.Add(adjacentForeignCell.MeanPosition);
                         }
                     }
                 }
