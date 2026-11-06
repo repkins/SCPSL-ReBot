@@ -3,6 +3,7 @@ using Interactables.Interobjects.DoorUtils;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.Handlers;
 using MapGeneration;
+using MapGeneration.StaticHelpers;
 using MEC;
 using ReBot.Navigation.Mesh;
 using System;
@@ -109,7 +110,7 @@ namespace ReBot.Navigation
                         Span<TransformCell> cells = [cellInFront, cellInBack];
                         foreach (var cell in cells)
                         {
-                            NavigationMesh.CellsWithSolidObstacles.Add(cell, door.transform);
+                            NavigationMesh.CellsWithSolidObstacles.Add(cell, (door.transform, null));
                         }
                     }
                 }
@@ -124,10 +125,15 @@ namespace ReBot.Navigation
                         continue;
                     }
 
-                    Debug.Log($"{door}, {door.transform.position}");
+                    var emergencyRelease = door.Rooms[0].GetComponentsInChildren<DynamicChildController>()
+                        .Where(c => c.Child)
+                        .Select(c => c.Child.GetComponentInChildren<EmergencyDoorRelease>())
+                        .FirstOrDefault(c => c && Vector3.Distance(c.transform.position, door.transform.position) < 5f);
+
+                    Debug.Log($"{door.Rooms[0].gameObject.name}, {door.gameObject.name}, {door.RequiredPermissions.RequiredPermissions}, {emergencyRelease?.gameObject.name}");
 
                     var cell = cellResult.Value;
-                    NavigationMesh.CellsWithSolidObstacles.Add(cell, door.transform);
+                    NavigationMesh.CellsWithSolidObstacles.Add(cell, (door.transform, emergencyRelease));
                 }
             }
 

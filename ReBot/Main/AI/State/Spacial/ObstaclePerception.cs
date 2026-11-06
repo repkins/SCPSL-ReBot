@@ -90,7 +90,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
     {
         Debug.Log("Updating bot static state");
 
-        foreach (var (cell, solidObstacle) in NavigationMesh.CellsWithSolidObstacles)
+        foreach (var (cell, (solidObstacle, emergencyRelease)) in NavigationMesh.CellsWithSolidObstacles)
         {
             var obstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
             var obstaclePosition = solidObstacle.position + Vector3.up;
@@ -358,7 +358,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                     }
 
                     var cellInPath = ObstacleState.CellsByObstacle[obstacleRef];
-                    var obstacleTransform = NavigationMesh.CellsWithSolidObstacles[cellInPath];
+                    var (obstacleTransform, _) = NavigationMesh.CellsWithSolidObstacles[cellInPath];
                     if (!obstacleTransform.gameObject.GetComponentsInChildren<Collider>().Contains(hit.collider))
                     {
                         continue;

@@ -18,7 +18,7 @@ namespace ReBot.Navigation.Mesh
         public static Dictionary<TransformCell, List<TransformCell>> ForeignConnectedCells = new();
         public static Dictionary<TransformCell, Dictionary<TransformCell, TransformEdge>> ForeignConnectedCellEdges = new();
 
-        public static Dictionary<TransformCell, Transform> CellsWithSolidObstacles = [];
+        public static Dictionary<TransformCell, (Transform, EmergencyDoorRelease)> CellsWithSolidObstacles = [];
         public static List<(TransformCell ToCell, TransformCell FromCell, ElevatorPanel ToCallPanel, ElevatorPanel TravelPanel)> ElevationObstacles = [];
 
         public static List<Vector3Int> AddedRoomCoords = [];
