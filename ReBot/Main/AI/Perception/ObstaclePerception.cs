@@ -128,6 +128,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             ObstacleState.ElevationTravelEnterLocations.Add(travelEnterPosition);
             ObstacleState.ElevationTravelInteractPanels.Add(travelPanel);
             ObstacleState.ElevationTravelInteractLocations.Add(default);
+            ObstacleState.ElevationTravelChamberLocations.Add(default);
 
             var callObstaclePosition = toCell.MeanPosition + Vector3.down;
             var callObstacleRef = new ObstacleRef(ObstacleState.ObstacleLocations.Length);
@@ -160,6 +161,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         ObstacleState.ElevationTravelEnterLocations.Clear();
         ObstacleState.ElevationTravelInteractPanels.Clear();
         ObstacleState.ElevationTravelInteractLocations.Clear();
+        ObstacleState.ElevationTravelChamberLocations.Clear();
 
         ObstacleState.ElevationCallObstacles.Clear();
         ObstacleState.ElevationCallInteractLocations.Clear();
@@ -174,8 +176,10 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         for (var elevationTravelIdx = 0; elevationTravelIdx < ObstacleState.ElevationTravelInteractPanels.Count; elevationTravelIdx++)
         {
             var travelPanel = ObstacleState.ElevationTravelInteractPanels[elevationTravelIdx];
+            var elevator = travelPanel.AssignedChamber;
 
             ObstacleState.ElevationTravelInteractLocations[elevationTravelIdx] = travelPanel.GetComponent<Collider>().bounds.center;
+            ObstacleState.ElevationTravelChamberLocations[elevationTravelIdx] = elevator.transform.position + Vector3.up;
         }
 
         for (var elevationCallIdx = 0; elevationCallIdx < ObstacleState.ElevationCallInteractPanels.Count; elevationCallIdx++)

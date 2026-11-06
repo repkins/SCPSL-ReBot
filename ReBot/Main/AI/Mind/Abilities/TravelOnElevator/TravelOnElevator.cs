@@ -10,6 +10,7 @@ internal struct TravelOnElevator(BotRef botRef)
 
     NativeList<ObstacleRef> elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
+    NativeList<Vector3> elevationTravelChamberLocations = ObstacleState.ElevationTravelChamberLocations;
     NativeList<Vector3> elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
@@ -36,9 +37,9 @@ internal struct TravelOnElevator(BotRef botRef)
 
     public void Enabling(int elevationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
-        var elevationEnterPosition = elevationTravelEnterLocations[elevationIdx];
+        var elevationChamberPosition = elevationTravelChamberLocations[elevationIdx];
 
-        if (Vector3.Distance(elevationEnterPosition, playerPosition) < 0.5f)
+        if (Vector3.Distance(elevationChamberPosition, playerPosition) < 0.5f)
         {
             var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
             lookAtPositionRef.Value = (true, travelInteractPosition);
