@@ -9,21 +9,21 @@ internal class RageActionSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var enrageRef = BotStore.Bots[botIdx].RageState.EnrageRef;
+            var enrageRef = BotStore.Bots[botIdx].RageStore.EnrageRef;
             var wantsEnrage = enrageRef.Value;
             enrageRef.Value = default;
 
-            var calmRef = BotStore.Bots[botIdx].RageState.CalmRef;
+            var calmRef = BotStore.Bots[botIdx].RageStore.CalmRef;
             var wantsCalm = calmRef.Value;
             calmRef.Value = default;
 
             if (!wantsEnrage && !wantsCalm)
             {
-                BotStore.Bots[botIdx].ActionState.WantSet.Add(ReleaseReloadDummyActionName);
+                BotStore.Bots[botIdx].ActionStore.WantSet.Add(ReleaseReloadDummyActionName);
                 continue;
             }
 
-            BotStore.Bots[botIdx].ActionState.WantSet.Add(HoldReleaseDummyActionName);
+            BotStore.Bots[botIdx].ActionStore.WantSet.Add(HoldReleaseDummyActionName);
         }
     }
 }

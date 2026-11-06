@@ -13,13 +13,13 @@ internal static class ActionSystem
 
             foreach (var dummyAction in dummyActions)
             {
-                if (BotStore.Bots[botIdx].ActionState.WantSet.Contains(dummyAction.Name))
+                if (BotStore.Bots[botIdx].ActionStore.WantSet.Contains(dummyAction.Name))
                 {
                     dummyAction.Action.Invoke();
                 }
             }
 
-            BotStore.Bots[botIdx].ActionState.WantSet.Clear();
+            BotStore.Bots[botIdx].ActionStore.WantSet.Clear();
         }
     }
 }

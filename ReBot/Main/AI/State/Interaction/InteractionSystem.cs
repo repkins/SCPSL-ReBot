@@ -19,7 +19,7 @@ internal static class InteractionSystem
 
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++) 
         {
-            var interactWithPositionRef = BotStore.Bots[botIdx].InteractionState.InteractWithPositionRef;
+            var interactWithPositionRef = BotStore.Bots[botIdx].InteractionStore.InteractWithPositionRef;
 
             var (hasPosition, _) = interactWithPositionRef.Value;
             interactWithPositionRef.Value = default;
@@ -29,8 +29,8 @@ internal static class InteractionSystem
                 continue;
             }
 
-            var playerCameraPosition = BotStore.Bots[botIdx].PlayerState.CameraPosition;
-            var playerCameraForward = BotStore.Bots[botIdx].PlayerState.CameraForward;
+            var playerCameraPosition = BotStore.Bots[botIdx].PlayerStore.CameraPosition;
+            var playerCameraForward = BotStore.Bots[botIdx].PlayerStore.CameraForward;
 
             var raycastCommand = new RaycastCommand(playerCameraPosition, playerCameraForward, new(RaycastLayerMask), MaxInteractDistance + 1f);
 

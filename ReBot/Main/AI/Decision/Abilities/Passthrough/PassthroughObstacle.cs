@@ -6,13 +6,13 @@ namespace ReBot.Main.AI.Decision.Abilities.Passthrough;
 
 internal struct PassthroughObstacle(BotRef botRef)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
-    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementStore.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {

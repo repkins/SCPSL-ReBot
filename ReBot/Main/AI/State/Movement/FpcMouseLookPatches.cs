@@ -18,8 +18,8 @@ namespace ReBot.Main.AI.State.Movement
             {
                 var bot = BotStore.Bots[botRef.Idx];
 
-                var hRotation = bot.MovementState.DesiredLook.DesiredHorizontalRotation;
-                var vRotation = bot.MovementState.DesiredLook.DesiredVerticalRotation;
+                var hRotation = bot.MovementStore.DesiredLook.DesiredHorizontalRotation;
+                var vRotation = bot.MovementStore.DesiredLook.DesiredVerticalRotation;
 
                 //__instance.CurrentHorizontal = Mathf.DeltaAngle(0f, hub.transform.eulerAngles.y);
                 //__instance.CurrentVertical = -Mathf.DeltaAngle(0f, hub.PlayerCameraReference.localEulerAngles.x);
@@ -33,7 +33,7 @@ namespace ReBot.Main.AI.State.Movement
                 hub.transform.rotation = rotation;
                 hub.PlayerCameraReference.localRotation = cameraRotation;
 
-                bot.MovementState.DesiredLook = new(Quaternion.identity, Quaternion.identity, Quaternion.identity);
+                bot.MovementStore.DesiredLook = new(Quaternion.identity, Quaternion.identity, Quaternion.identity);
 
                 return false;
             }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Capture;
 
-public struct CaptureState() : IDisposable
+public struct CaptureStore() : IDisposable
 {
     public bool IsHeld;
 

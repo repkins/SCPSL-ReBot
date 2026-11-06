@@ -42,7 +42,7 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
             var bot = BotStore.Bots[botIdx];
             var hub = bot.Hub;
 
-            bot.TerminationState.EnemyMaxSightDistance = hub.roleManager.CurrentRole switch
+            bot.TerminationStore.EnemyMaxSightDistance = hub.roleManager.CurrentRole switch
             {
                 Scp939Role scp939Role => ((Scp939VisibilityController)scp939Role.VisibilityController).CurrentDetectionRange,
                 _ => maxSightDistance,
@@ -57,8 +57,8 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
 
         for (int botIdx = 0; botIdx < botCount; botIdx++)
         {
-            var playerPosition = BotStore.Bots[botIdx].PlayerState.Position;
-            var sightRadius = BotStore.Bots[botIdx].TerminationState.EnemyMaxSightDistance;
+            var playerPosition = BotStore.Bots[botIdx].PlayerStore.Position;
+            var sightRadius = BotStore.Bots[botIdx].TerminationStore.EnemyMaxSightDistance;
             overlapSphereCommands[botIdx] = new OverlapSphereCommand(playerPosition, sightRadius, new(playerLayerMask));
         }
 
@@ -101,9 +101,9 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
         {
             var bot = BotStore.Bots[botIdx];
 
-            var cameraPosition = bot.PlayerState.CameraPosition;
-            var cameraForward = bot.PlayerState.CameraForward;
-            var sightDistance = bot.TerminationState.EnemyMaxSightDistance;
+            var cameraPosition = bot.PlayerStore.CameraPosition;
+            var cameraForward = bot.PlayerStore.CameraForward;
+            var sightDistance = bot.TerminationStore.EnemyMaxSightDistance;
 
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
             var withinFovTargets = enemySightBots[botIdx].enemyWithinFovTargets;
@@ -144,7 +144,7 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
             var otherEnemyPlayersInstanceIds = enemySightBots[botIdx].otherEnemyPlayersInstanceIds;
             var enemyPlayerPositions = enemySightBots[botIdx].enemyPlayerPositions;
 
-            var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
+            var enemiesWithinSight = bot.TerminationStore.EnemiesWithinSight;
             enemiesWithinSight.Clear();
 
             for (var withinFovResultIdx = 0; withinFovResultIdx < withinFovTargets.Length; withinFovResultIdx++)
@@ -166,7 +166,7 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
                 var roleInstanceId = fpcRole.GetInstanceID();
                 var enemyPosition = enemyPlayerPositions[enemySightIdx];
 
-                if (bot.TerminationState.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var enemyRef))
+                if (bot.TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var enemyRef))
                 {
                     enemiesWithinSight.Add(enemyRef);
                 }
@@ -180,13 +180,13 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
         {
             var bot = BotStore.Bots[botIdx];
 
-            var cameraPosition = bot.PlayerState.CameraPosition;
-            var cameraForward = bot.PlayerState.CameraForward;
+            var cameraPosition = bot.PlayerStore.CameraPosition;
+            var cameraForward = bot.PlayerStore.CameraForward;
 
-            var enemyLocations = bot.TerminationState.EnemyLocations;
-            var enemyVelocities = bot.TerminationState.EnemyVelocities;
+            var enemyLocations = bot.TerminationStore.EnemyLocations;
+            var enemyVelocities = bot.TerminationStore.EnemyVelocities;
 
-            var enemiesWithinSight = bot.TerminationState.EnemiesWithinSight;
+            var enemiesWithinSight = bot.TerminationStore.EnemiesWithinSight;
 
             for (EnemyRef enemyRef = new(0); enemyRef.Idx < enemyLocations.Length; enemyRef.Idx++)
             {
@@ -202,7 +202,7 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
                 if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f
                     && Vector3.Dot(cameraForward, Vector3.Normalize((enemyPosition + enemyVelocity) - cameraPosition)) > 0.9f)
                 {
-                    bot.TerminationState.RemoveEnemyAtSwapback(enemyRef);
+                    bot.TerminationStore.RemoveEnemyAtSwapback(enemyRef);
                     enemyRef.Idx--;
                 }
             }
@@ -215,11 +215,11 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
         {
             var bot = BotStore.Bots[botIdx];
 
-            var enemyLocations = bot.TerminationState.EnemyLocations;
+            var enemyLocations = bot.TerminationStore.EnemyLocations;
 
-            var cameraPosition = bot.PlayerState.CameraPosition;
+            var cameraPosition = bot.PlayerStore.CameraPosition;
 
-            var enemiesWithinDistance = bot.TerminationState.EnemiesWithinDistance;
+            var enemiesWithinDistance = bot.TerminationStore.EnemiesWithinDistance;
             enemiesWithinDistance.Clear();
 
             for (var enemyIdx = 0; enemyIdx < enemyLocations.Length; enemyIdx++)
@@ -252,14 +252,14 @@ public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask si
             }
 
             var enemyPosition = fpcRole.FpcModule.Position;
-            var playerPosition = BotStore.Bots[botIdx].PlayerState.Position;
+            var playerPosition = BotStore.Bots[botIdx].PlayerStore.Position;
 
             if (Vector3.Distance(enemyPosition, playerPosition) > dis)
             {
                 continue;
             }
 
-            BotStore.Bots[botIdx].TerminationState.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var _);
+            BotStore.Bots[botIdx].TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var _);
         }
     }
 }

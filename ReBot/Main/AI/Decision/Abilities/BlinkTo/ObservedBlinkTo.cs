@@ -8,12 +8,12 @@ namespace ReBot.Main.AI.Decision.Abilities.BlinkTo;
 internal struct ObservedBlinkTo<TTarget>(BotRef botRef, TTarget target)
     where TTarget : ITarget
 {
-    bool isObserved = botRef.Value.BlinkState.IsObserved;
-    float remainingSecondsToBlink = botRef.Value.BlinkState.RemainingSecondsToBlink;
+    bool isObserved = botRef.Value.BlinkStore.IsObserved;
+    float remainingSecondsToBlink = botRef.Value.BlinkStore.RemainingSecondsToBlink;
 
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkState.BlinkToPositionRef;
+    NativeReference<(bool, Vector3)> blinkToPositionRef = botRef.Value.BlinkStore.BlinkToPositionRef;
 
     public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {

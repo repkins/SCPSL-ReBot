@@ -8,7 +8,7 @@ internal class CardiacSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            ref var cardiacState = ref BotStore.Bots[botIdx].CardiacState;
+            ref var cardiacState = ref BotStore.Bots[botIdx].CardiacStore;
 
             var cardiacPositionRef = cardiacState.CardiacPositionRef;
             var (hasPosition, _) = cardiacPositionRef.Value;
@@ -32,7 +32,7 @@ internal class CardiacSystem
             {
                 if (isHeld)
                 {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(CardiacDummyActionName);
+                    BotStore.Bots[botIdx].ActionStore.WantSet.Add(CardiacDummyActionName);
                 }
             }
         }

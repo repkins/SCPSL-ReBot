@@ -21,39 +21,39 @@ public class Bot(ReferenceHub hub) : IDisposable
     public Transform PlayerTransform;
     public Transform CameraTransform;
 
-    public ActionState ActionState = new();
+    public ActionStore ActionStore = new();
 
-    public PlayerState PlayerState = new();
-    public RoomState RoomState = new();
-    public ObstacleState ObstacleState = new();
-    public TerminationState TerminationState = new();
+    public PlayerStore PlayerStore = new();
+    public RoomStore RoomStore = new();
+    public ObstacleState ObstacleStore = new();
+    public TerminationStore TerminationStore = new();
 
-    public MovementState MovementState = new();
-    public InteractionState InteractionState = new();
+    public MovementStore MovementStore = new();
+    public InteractionStore InteractionStore = new();
 
-    public CardiacState CardiacState = new();
-    public CaptureState CaptureState = new();
-    public NeckSnapState NeckSnapState = new();
-    public BlinkState BlinkState = new();
-    public RageState RageState = new();
-    public MeleeState MeleeState = new();
+    public CardiacStore CardiacStore = new();
+    public CaptureStore CaptureStore = new();
+    public NeckSnapStore NeckSnapStore = new();
+    public BlinkStore BlinkStore = new();
+    public RageStore RageStore = new();
+    public MeleeStore MeleeStore = new();
 
     public void Dispose()
     {
-        ActionState.Dispose();
-        PlayerState.Dispose();
-        RoomState.Dispose();
-        ObstacleState.Dispose();
-        TerminationState.Dispose();
+        ActionStore.Dispose();
+        PlayerStore.Dispose();
+        RoomStore.Dispose();
+        ObstacleStore.Dispose();
+        TerminationStore.Dispose();
 
-        MovementState.Dispose();
-        InteractionState.Dispose();
+        MovementStore.Dispose();
+        InteractionStore.Dispose();
 
-        CardiacState.Dispose();
-        CaptureState.Dispose();
-        NeckSnapState.Dispose();
-        BlinkState.Dispose();
-        RageState.Dispose();
-        MeleeState.Dispose();
+        CardiacStore.Dispose();
+        CaptureStore.Dispose();
+        NeckSnapStore.Dispose();
+        BlinkStore.Dispose();
+        RageStore.Dispose();
+        MeleeStore.Dispose();
     }
 }

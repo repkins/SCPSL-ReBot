@@ -5,7 +5,7 @@ namespace ReBot.Main.AI.Decision.Abilities.Rage;
 
 internal struct Calm(BotRef botRef)
 {
-    NativeReference<bool> calmRef = botRef.Value.RageState.CalmRef;
+    NativeReference<bool> calmRef = botRef.Value.RageStore.CalmRef;
 
     public void Impacting(NativeList<ImpactingAction> impactingActions)
     {

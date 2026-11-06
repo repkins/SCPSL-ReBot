@@ -5,7 +5,7 @@ namespace ReBot.Main.AI.Decision.Abilities.Terminate.Scp173;
 
 internal struct TerminateEnemies(BotRef botRef)
 {
-    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
+    NativeList<Vector3> enemyLocations = botRef.Value.TerminationStore.EnemyLocations;
 
     public void Enabling(NativeList<BeliefRef> beliefsToEnable)
     {

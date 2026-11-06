@@ -6,15 +6,15 @@ namespace ReBot.Main.AI.Decision.Abilities.TravelOnElevator;
 
 internal struct TravelOnElevator(BotRef botRef)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
     NativeList<ObstacleRef> elevationTravelObstacles = ObstacleState.ElevationTravelObstacles;
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
     NativeList<Vector3> elevationTravelChamberLocations = ObstacleState.ElevationTravelChamberLocations;
     NativeList<Vector3> elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
 
-    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
-    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionStore.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public bool TryGetElevationIdx(ObstacleRef obstacleRef, out int elevationIdx)
     {

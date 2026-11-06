@@ -18,8 +18,8 @@ namespace ReBot.Main.AI.State.Movement
             if (BotStore.BotHubRefs.TryGetValue(hub, out var botRef))
             {
                 var bot = BotStore.Bots[botRef.Idx];
-                __result = fpcModule!.transform.TransformDirection(bot.MovementState.DesiredMove.DesiredLocalDirection);
-                bot.MovementState.DesiredMove = new(Vector3.zero);
+                __result = fpcModule!.transform.TransformDirection(bot.MovementStore.DesiredMove.DesiredLocalDirection);
+                bot.MovementStore.DesiredMove = new(Vector3.zero);
 
                 return false;
             }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Movement;
 
-public struct MovementState() : IDisposable
+public struct MovementStore() : IDisposable
 {
     public NativeReference<(bool, Vector3)> MoveToPositionRef = new(Allocator.Persistent);
     public NativeReference<(bool, Vector3)> LookAtPositionRef = new(Allocator.Persistent);

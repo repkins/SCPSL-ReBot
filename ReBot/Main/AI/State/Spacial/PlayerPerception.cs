@@ -17,10 +17,10 @@ internal struct PlayerPerception(int botCount)
             bot.PlayerTransform = fpcRole.FpcModule.transform;
             bot.CameraTransform = bot.Hub.PlayerCameraReference;
 
-            bot.PlayerState.CameraPosition = fpcRole.CameraPosition;
-            bot.PlayerState.CameraForward = bot.CameraTransform.forward;
-            bot.PlayerState.Position = fpcRole.FpcModule.Position;
-            bot.PlayerState.Forward = fpcRole.FpcModule.transform.forward;
+            bot.PlayerStore.CameraPosition = fpcRole.CameraPosition;
+            bot.PlayerStore.CameraForward = bot.CameraTransform.forward;
+            bot.PlayerStore.Position = fpcRole.FpcModule.Position;
+            bot.PlayerStore.Forward = fpcRole.FpcModule.transform.forward;
         }
     }
 }

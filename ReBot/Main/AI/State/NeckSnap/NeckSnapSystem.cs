@@ -8,7 +8,7 @@ internal class NeckSnapSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            ref var snapState = ref BotStore.Bots[botIdx].NeckSnapState;
+            ref var snapState = ref BotStore.Bots[botIdx].NeckSnapStore;
 
             var snapPositionRef = snapState.SnapPositionRef;
             var (hasPosition, _) = snapPositionRef.Value;
@@ -32,7 +32,7 @@ internal class NeckSnapSystem
             {
                 if (isHeld)
                 {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(SnapDummyActionName);
+                    BotStore.Bots[botIdx].ActionStore.WantSet.Add(SnapDummyActionName);
                 }
             }
         }

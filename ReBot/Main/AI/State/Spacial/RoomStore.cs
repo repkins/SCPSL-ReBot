@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Spacial;
 
-public struct RoomState() : IDisposable
+public struct RoomStore() : IDisposable
 {
     public RoomIdentifier PrevRoomWithin;
     public NativeHashMap<int, float> RoomLastVisitTime = new(10, Allocator.Persistent);

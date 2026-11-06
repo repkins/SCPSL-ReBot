@@ -13,7 +13,7 @@ internal static class PathfindingSystem
             var bot = botRef.Value;
             var botIdx = botRef.Idx;
 
-            var startingPos = bot.PlayerState.Position;
+            var startingPos = bot.PlayerStore.Position;
             var targetPos = position;
 
             var playerRadius = .5f;

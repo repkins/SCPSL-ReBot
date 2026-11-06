@@ -4,7 +4,7 @@ namespace ReBot.Main.AI.Decision.Abilities.Rage;
 
 internal struct Enrage(BotRef botRef)
 {
-    NativeReference<bool> enrageRef = botRef.Value.RageState.EnrageRef;
+    NativeReference<bool> enrageRef = botRef.Value.RageStore.EnrageRef;
 
     public void Impacting(NativeList<ImpactingAction> impactingActions)
     {

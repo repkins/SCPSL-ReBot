@@ -202,10 +202,10 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         {
             var bot = BotStore.Bots[botIdx];
 
-            var cameraPosition = bot.PlayerState.CameraPosition;
-            var cameraForward = bot.PlayerState.CameraForward;
+            var cameraPosition = bot.PlayerStore.CameraPosition;
+            var cameraForward = bot.PlayerStore.CameraForward;
 
-            var receivedObstacles = bot.ObstacleState.ObstaclesByTarget;
+            var receivedObstacles = bot.ObstacleStore.ObstaclesByTarget;
 
             foreach (var pair in receivedObstacles)
             {
@@ -369,7 +369,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             }
 
             var elevationTravelObstacleTargetObstacles = obstacleBots[botIdx].elevationTravelObstacleTargetObstacles;
-            var playerPosition = bot.PlayerState.Position;
+            var playerPosition = bot.PlayerStore.Position;
 
             for (var elevationTravelObstacleIdx = 0; elevationTravelObstacleIdx < elevationTravelObstacleTargetObstacles.Length; elevationTravelObstacleIdx++)
             {
@@ -387,7 +387,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Obstructing;
             }
 
-            var obstacles = bot.ObstacleState.ObstaclesByTarget;
+            var obstacles = bot.ObstacleStore.ObstaclesByTarget;
             var targetObstacleDestinations = obstacleBots[botIdx].targetObstacleDestinations;
 
             for (var targetObstacleIdx = 0; targetObstacleIdx < targetObstacleRefs.Length; targetObstacleIdx++)
@@ -416,7 +416,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 }
             }
 
-            foreach (var (oldPosition, newPosition) in bot.TerminationState.ChangedTargetPositions)
+            foreach (var (oldPosition, newPosition) in bot.TerminationStore.ChangedTargetPositions)
             {
                 if (!obstacles.TryGetValue(oldPosition, out var obstacleRef))
                 {
@@ -426,7 +426,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 obstacles.Remove(oldPosition);
                 obstacles[newPosition] = obstacleRef;
             }
-            bot.TerminationState.ChangedTargetPositions.Clear();
+            bot.TerminationStore.ChangedTargetPositions.Clear();
         }
     }
 }

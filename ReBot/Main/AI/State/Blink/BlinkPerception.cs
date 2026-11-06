@@ -21,14 +21,14 @@ public struct BlinkPerception(int botCount)
                 continue;
             }
 
-            bot.BlinkState.IsObserved = observersTracker.IsObserved;
+            bot.BlinkStore.IsObserved = observersTracker.IsObserved;
 
             if (!scp173Role.SubroutineModule.TryGetSubroutine<Scp173BlinkTimer>(out var blinkTimer))
             {
                 continue;
             }
 
-            bot.BlinkState.RemainingSecondsToBlink = blinkTimer.RemainingBlinkCooldown;
+            bot.BlinkStore.RemainingSecondsToBlink = blinkTimer.RemainingBlinkCooldown;
         }
     }
 }

@@ -4,7 +4,7 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.State.Rage;
 
-public struct RageState() : IDisposable
+public struct RageStore() : IDisposable
 {
     public bool IsEnraged;
     public bool HasTargets;

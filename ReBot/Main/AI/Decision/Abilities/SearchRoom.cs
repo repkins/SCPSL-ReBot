@@ -5,11 +5,11 @@ namespace ReBot.Main.AI.Decision.Abilities;
 
 internal struct SearchRoom(BotRef botRef)
 {
-    NativeHashMap<int, float> roomLastVisitTime = botRef.Value.RoomState.RoomLastVisitTime;
+    NativeHashMap<int, float> roomLastVisitTime = botRef.Value.RoomStore.RoomLastVisitTime;
 
-    NativeList<int> roomEnterInstanceIds = botRef.Value.RoomState.RoomEnterInstanceIds;
-    NativeList<bool> roomExitIsWithins = botRef.Value.RoomState.RoomExitIsWithins;
-    NativeList<float> roomEnterExitDistances = botRef.Value.RoomState.RoomEnterExitDistances;
+    NativeList<int> roomEnterInstanceIds = botRef.Value.RoomStore.RoomEnterInstanceIds;
+    NativeList<bool> roomExitIsWithins = botRef.Value.RoomStore.RoomExitIsWithins;
+    NativeList<float> roomEnterExitDistances = botRef.Value.RoomStore.RoomEnterExitDistances;
 
     public void Impacting(NativeList<ImpactingAction> impactingActions)
     {

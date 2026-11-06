@@ -9,12 +9,12 @@ namespace ReBot.Main.AI.Decision.Abilities.MoveTo;
 internal struct MoveTo<TTarget>(BotRef botRef, TTarget target) : IMoveTo
     where TTarget : ITarget
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementState.MoveToPositionRef;
+    NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementStore.MoveToPositionRef;
 
     public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {

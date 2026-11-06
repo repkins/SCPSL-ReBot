@@ -5,10 +5,10 @@ namespace ReBot.Main.AI.Decision.Abilities.Terminate.Scp096;
 
 internal struct TerminateEnemies(BotRef botRef)
 {
-    bool isEnraged = botRef.Value.RageState.IsEnraged;
-    bool hasTargetsObservedBy = botRef.Value.RageState.HasTargets;
+    bool isEnraged = botRef.Value.RageStore.IsEnraged;
+    bool hasTargetsObservedBy = botRef.Value.RageStore.HasTargets;
 
-    NativeList<EnemyRef> targets = botRef.Value.RageState.Targets;
+    NativeList<EnemyRef> targets = botRef.Value.RageStore.Targets;
 
     public void Enabling(NativeList<BeliefRef> beliefsToEnable)
     {

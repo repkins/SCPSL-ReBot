@@ -7,7 +7,7 @@ namespace ReBot.Main.AI.Decision.Abilities.Observing;
 internal struct Unobserved<TMoveTo>(BotRef botRef, TMoveTo moveTo)
     where TMoveTo : IMoveTo
 {
-    bool isObserved = botRef.Value.BlinkState.IsObserved;
+    bool isObserved = botRef.Value.BlinkStore.IsObserved;
 
     public void Impacting(int targetLocationIdx, NativeList<ImpactingAction> impactingActions)
     {

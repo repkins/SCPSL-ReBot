@@ -16,25 +16,25 @@ public struct RagePerception(int botCount)
                 continue;
             }
 
-            bot.RageState.IsEnraged = scp096Role.IsRageState(Scp096RageState.Enraged);
+            bot.RageStore.IsEnraged = scp096Role.IsRageState(Scp096RageState.Enraged);
 
             if (!scp096Role.SubroutineModule.TryGetSubroutine<Scp096TargetsTracker>(out var targetsTracker))
             {
                 continue;
             }
 
-            bot.RageState.HasTargets = targetsTracker.Targets.Count > 0;
+            bot.RageStore.HasTargets = targetsTracker.Targets.Count > 0;
 
-            bot.RageState.Targets.Clear();
+            bot.RageStore.Targets.Clear();
 
             foreach (var target in targetsTracker.Targets)
             {
                 var targetInstanceId = target.roleManager.CurrentRole.GetInstanceID();
                 var targetPosition = target.transform.position;
 
-                if (bot.TerminationState.ReplaceOrAddEnemy(targetInstanceId, targetPosition, out var enemyRef))
+                if (bot.TerminationStore.ReplaceOrAddEnemy(targetInstanceId, targetPosition, out var enemyRef))
                 {
-                    bot.RageState.Targets.Add(enemyRef);
+                    bot.RageStore.Targets.Add(enemyRef);
                 }
             }
         }

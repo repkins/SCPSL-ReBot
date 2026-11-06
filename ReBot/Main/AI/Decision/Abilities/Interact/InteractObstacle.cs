@@ -7,15 +7,15 @@ namespace ReBot.Main.AI.Decision.Abilities.Interact;
 
 internal struct InteractObstacle(BotRef botRef, DoorPermissionFlags rolePermissions)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeList<DoorPermissionFlags> doorObstaclePermissions = ObstacleState.DoorObstaclePermissions;
 
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
-    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionStore.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {

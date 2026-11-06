@@ -9,17 +9,17 @@ namespace ReBot.Main.AI.Decision.Abilities;
 
 internal struct SnapEnemy(BotRef botRef)
 {
-    bool isObserved = botRef.Value.BlinkState.IsObserved;
+    bool isObserved = botRef.Value.BlinkStore.IsObserved;
 
-    NativeList<Vector3> enemyLocations = botRef.Value.TerminationState.EnemyLocations;
-    NativeList<Vector3> enemyVelocities = botRef.Value.TerminationState.EnemyVelocities;
-    NativeList<EnemyRef> enemiesWithinSight = botRef.Value.TerminationState.EnemiesWithinSight;
-    NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationState.EnemiesWithinDistance;
+    NativeList<Vector3> enemyLocations = botRef.Value.TerminationStore.EnemyLocations;
+    NativeList<Vector3> enemyVelocities = botRef.Value.TerminationStore.EnemyVelocities;
+    NativeList<EnemyRef> enemiesWithinSight = botRef.Value.TerminationStore.EnemiesWithinSight;
+    NativeList<EnemyRef> enemiesWithinDistance = botRef.Value.TerminationStore.EnemiesWithinDistance;
 
-    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleState.ObstaclesByTarget;
+    NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapState.SnapPositionRef;
-    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapStore.SnapPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public void Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)
     {

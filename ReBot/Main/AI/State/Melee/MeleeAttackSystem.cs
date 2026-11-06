@@ -8,11 +8,11 @@ internal class MeleeAttackSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var meleeAttackPositionRef = BotStore.Bots[botIdx].MeleeState.MeleeAttackPositionRef;
+            var meleeAttackPositionRef = BotStore.Bots[botIdx].MeleeStore.MeleeAttackPositionRef;
             var (wantsAttack, _) = meleeAttackPositionRef.Value;
             meleeAttackPositionRef.Value = default;
 
-            var isHeld = BotStore.Bots[botIdx].MeleeState.IsHeld;
+            var isHeld = BotStore.Bots[botIdx].MeleeStore.IsHeld;
             var prevIsHeld = isHeld;
 
             if (wantsAttack && !isHeld)
@@ -24,13 +24,13 @@ internal class MeleeAttackSystem
                 isHeld = false;
             }
 
-            BotStore.Bots[botIdx].MeleeState.IsHeld = isHeld;
+            BotStore.Bots[botIdx].MeleeStore.IsHeld = isHeld;
 
             if (prevIsHeld != isHeld)
             {
                 if (isHeld)
                 {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(ShootDummyActionName);
+                    BotStore.Bots[botIdx].ActionStore.WantSet.Add(ShootDummyActionName);
                 }
             }
         }

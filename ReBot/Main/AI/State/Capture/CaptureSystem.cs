@@ -8,7 +8,7 @@ internal class CaptureSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            ref var captureState = ref BotStore.Bots[botIdx].CaptureState;
+            ref var captureState = ref BotStore.Bots[botIdx].CaptureStore;
 
             var capturePositionRef = captureState.CapturePositionRef;
             var (hasPosition, _) = capturePositionRef.Value;
@@ -32,7 +32,7 @@ internal class CaptureSystem
             {
                 if (isHeld)
                 {
-                    BotStore.Bots[botIdx].ActionState.WantSet.Add(CaptureDummyActionName);
+                    BotStore.Bots[botIdx].ActionStore.WantSet.Add(CaptureDummyActionName);
                 }
             }
         }

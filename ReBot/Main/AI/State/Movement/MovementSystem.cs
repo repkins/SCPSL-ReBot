@@ -15,7 +15,7 @@ public static class MovementSystem
         {
             var bot = BotStore.Bots[botIdx];
 
-            var moveToPositionRef = bot.MovementState.MoveToPositionRef;
+            var moveToPositionRef = bot.MovementStore.MoveToPositionRef;
 
             var (hasTargetPos, targetPos) = moveToPositionRef.Value;
             moveToPositionRef.Value = default;
@@ -38,7 +38,7 @@ public static class MovementSystem
 
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            var lookAtPositionRef = BotStore.Bots[botIdx].MovementState.LookAtPositionRef;
+            var lookAtPositionRef = BotStore.Bots[botIdx].MovementStore.LookAtPositionRef;
 
             var (hasLookAtPosition, lookAtPosition) = lookAtPositionRef.Value;
             lookAtPositionRef.Value = default;
@@ -56,22 +56,22 @@ public static class MovementSystem
     {
         var bot = BotStore.Bots[botRef.Idx];
 
-        var relativePos = targetPosition - bot.PlayerState.CameraPosition;
+        var relativePos = targetPosition - bot.PlayerStore.CameraPosition;
         var relativeHorizontalPos = Vector3.ProjectOnPlane(relativePos, Vector3.up);
-        var turnPosition = relativeHorizontalPos + bot.PlayerState.CameraPosition;
+        var turnPosition = relativeHorizontalPos + bot.PlayerStore.CameraPosition;
 
         LookToPosition(botRef, turnPosition);
 
-        var playerDirection = bot.PlayerState.Forward;
+        var playerDirection = bot.PlayerStore.Forward;
         var dirTowardsTarget = Vector3.Normalize(relativeHorizontalPos);
 
         if (Vector3.Dot(playerDirection, dirTowardsTarget) < 0f)
         {
-            bot.MovementState.DesiredMove = new(bot.PlayerTransform.InverseTransformDirection(dirTowardsTarget));
+            bot.MovementStore.DesiredMove = new(bot.PlayerTransform.InverseTransformDirection(dirTowardsTarget));
         }
         else
         {
-            bot.MovementState.DesiredMove = new(Vector3.forward);
+            bot.MovementStore.DesiredMove = new(Vector3.forward);
         }
     }
 
@@ -108,6 +108,6 @@ public static class MovementSystem
 
         var desiredLook = new Look(hRotation, vRotation, targetHRotation);
 
-        bot.MovementState.DesiredLook = desiredLook;
+        bot.MovementStore.DesiredLook = desiredLook;
     }
 }

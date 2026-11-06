@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.NeckSnap;
 
-public struct NeckSnapState() : IDisposable
+public struct NeckSnapStore() : IDisposable
 {
     public bool IsHeld;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Melee;
 
-public struct MeleeState() : IDisposable
+public struct MeleeStore() : IDisposable
 {
     public bool IsHeld;
 

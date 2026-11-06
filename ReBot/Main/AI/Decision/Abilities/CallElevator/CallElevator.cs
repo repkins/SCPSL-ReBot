@@ -6,15 +6,15 @@ namespace ReBot.Main.AI.Decision.Abilities.CallElevator;
 
 internal struct CallElevator(BotRef botRef)
 {
-    Vector3 playerPosition = botRef.Value.PlayerState.Position;
+    Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
     NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
     NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
     NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
     NativeList<bool> elevationCallInteractAbles = ObstacleState.ElevationCallInteractAbles;
 
-    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionState.InteractWithPositionRef;
-    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementState.LookAtPositionRef;
+    NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionStore.InteractWithPositionRef;
+    NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public bool TryGetElevationCallIdx(ObstacleRef obstacleRef, out int elevationCallIdx)
     {
