@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State;
 
-public struct WithinFovJob : IJobFor
+public struct WithinFovJob(float fovDegrees = 90f) : IJobFor
 {
+    private readonly float cosineOfFov = Mathf.Cos(fovDegrees * Mathf.Deg2Rad / 2f);
+
     [ReadOnly]
     public required LayerMask raycastMask;
     [ReadOnly]
@@ -34,10 +36,6 @@ public struct WithinFovJob : IJobFor
         {
             return;
         }
-
-        var fovDegrees = 90f;
-        var fovRadians = fovDegrees * Mathf.Deg2Rad;
-        var cosineOfFov = Mathf.Cos(fovRadians / 2f);
 
         if (Vector3.Dot(facingDirection, directionToTarget) < cosineOfFov)
         {
