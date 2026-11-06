@@ -2,9 +2,9 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.State.NeckSnap;
+namespace ReBot.Main.AI.State.Snap;
 
-public struct NeckSnapStore() : IDisposable
+public struct SnapStore() : IDisposable
 {
     public bool IsHeld;
 

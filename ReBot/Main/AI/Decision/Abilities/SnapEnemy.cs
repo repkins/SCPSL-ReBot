@@ -18,7 +18,7 @@ internal struct SnapEnemy(BotRef botRef)
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 
-    NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.NeckSnapStore.SnapPositionRef;
+    NativeReference<(bool, Vector3)> snapPositionRef = botRef.Value.SnapStore.SnapPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
 
     public void Impacting(EnemyRef enemyRef, NativeList<ImpactingAction> impactingActions)

@@ -8,8 +8,8 @@ using ReBot.Main.AI.State.Cardiac;
 using ReBot.Main.AI.State.Interaction;
 using ReBot.Main.AI.State.Melee;
 using ReBot.Main.AI.State.Movement;
-using ReBot.Main.AI.State.NeckSnap;
 using ReBot.Main.AI.State.Rage;
+using ReBot.Main.AI.State.Snap;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,7 +83,7 @@ public static class BotSystem
 
                 CardiacSystem.Process(); // SCP 049 Role
                 CaptureSystem.Process(); // SCP 106 Role
-                NeckSnapSystem.Process(); // SCP 173 Role
+                SnapSystem.Process(); // SCP 173 Role
                 BlinkSystem.Process(); // SCP 173 Role
                 RageActionSystem.Process(); // SCP 096 Role
                 MeleeAttackSystem.Process(); // SCP 096 & SCP 939 Role

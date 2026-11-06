@@ -5,8 +5,8 @@ using ReBot.Main.AI.State.Cardiac;
 using ReBot.Main.AI.State.Interaction;
 using ReBot.Main.AI.State.Melee;
 using ReBot.Main.AI.State.Movement;
-using ReBot.Main.AI.State.NeckSnap;
 using ReBot.Main.AI.State.Rage;
+using ReBot.Main.AI.State.Snap;
 using ReBot.Main.AI.State.Spacial;
 using ReBot.Main.AI.State.Termination;
 using System;
@@ -33,7 +33,7 @@ public class Bot(ReferenceHub hub) : IDisposable
 
     public CardiacStore CardiacStore = new();
     public CaptureStore CaptureStore = new();
-    public NeckSnapStore NeckSnapStore = new();
+    public SnapStore SnapStore = new();
     public BlinkStore BlinkStore = new();
     public RageStore RageStore = new();
     public MeleeStore MeleeStore = new();
@@ -51,7 +51,7 @@ public class Bot(ReferenceHub hub) : IDisposable
 
         CardiacStore.Dispose();
         CaptureStore.Dispose();
-        NeckSnapStore.Dispose();
+        SnapStore.Dispose();
         BlinkStore.Dispose();
         RageStore.Dispose();
         MeleeStore.Dispose();

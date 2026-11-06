@@ -1,6 +1,6 @@
-﻿namespace ReBot.Main.AI.State.NeckSnap;
+﻿namespace ReBot.Main.AI.State.Snap;
 
-internal class NeckSnapSystem
+internal class SnapSystem
 {
     static readonly string SnapDummyActionName = $"{ActionName.Shoot}->Click";
 
@@ -8,7 +8,7 @@ internal class NeckSnapSystem
     {
         for (var botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
         {
-            ref var snapState = ref BotStore.Bots[botIdx].NeckSnapStore;
+            ref var snapState = ref BotStore.Bots[botIdx].SnapStore;
 
             var snapPositionRef = snapState.SnapPositionRef;
             var (hasPosition, _) = snapPositionRef.Value;
