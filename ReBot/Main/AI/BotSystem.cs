@@ -1,16 +1,15 @@
 ﻿using MEC;
 using PlayerRoles;
-using ReBot.Main.AI.Action;
-using ReBot.Main.AI.Blink;
-using ReBot.Main.AI.Capture;
-using ReBot.Main.AI.Cardiac;
-using ReBot.Main.AI.Interaction;
-using ReBot.Main.AI.Melee;
-using ReBot.Main.AI.Mind;
-using ReBot.Main.AI.Movement;
-using ReBot.Main.AI.NeckSnap;
-using ReBot.Main.AI.Perception;
-using ReBot.Main.AI.Rage;
+using ReBot.Main.AI.Decision;
+using ReBot.Main.AI.State;
+using ReBot.Main.AI.State.Blink;
+using ReBot.Main.AI.State.Capture;
+using ReBot.Main.AI.State.Cardiac;
+using ReBot.Main.AI.State.Interaction;
+using ReBot.Main.AI.State.Melee;
+using ReBot.Main.AI.State.Movement;
+using ReBot.Main.AI.State.NeckSnap;
+using ReBot.Main.AI.State.Rage;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -92,7 +91,7 @@ public static class BotSystem
                 MovementSystem.Process();
                 InteractionSystem.Process();
 
-                DummyActionSystem.Procees();
+                ActionSystem.Procees();
             }
             catch (Exception e)
             {

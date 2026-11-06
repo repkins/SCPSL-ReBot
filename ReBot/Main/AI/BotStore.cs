@@ -1,6 +1,6 @@
 ﻿using NetworkManagerUtils.Dummies;
-using ReBot.Main.AI.Mind;
-using ReBot.Main.AI.Movement.Pathfinding;
+using ReBot.Main.AI.Decision;
+using ReBot.Main.AI.State.Movement.Pathfinding;
 using System.Collections.Generic;
 
 namespace ReBot.Main.AI;
