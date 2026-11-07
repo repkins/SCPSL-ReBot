@@ -42,20 +42,14 @@ internal struct TravelOnElevator(BotRef botRef)
         var elevationTravelInteractAble = elevationTravelInteractAbles[elevationIdx];
 
         var dist = Vector3.Distance(elevationChamberPosition, playerPosition);
-        if (dist < 2f)
+        if (dist < 1f)
         {
+            var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
+            lookAtPositionRef.Value = (true, travelInteractPosition);
+
             if (elevationTravelInteractAble)
             {
-                if (dist < 0.5f)
-                {
-                    var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
-                    lookAtPositionRef.Value = (true, travelInteractPosition);
-                    interactPositionRef.Value = (true, travelInteractPosition);
-                }
-                else
-                {
-                    beliefsToEnable.Add(new(BeliefEnum.WithinElevator, elevationIdx));
-                }
+                interactPositionRef.Value = (true, travelInteractPosition);
             }
         }
         else
