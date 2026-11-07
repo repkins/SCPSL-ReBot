@@ -1,9 +1,9 @@
-﻿using ReBot.Main.AI.Decision;
+﻿using ReBot.Main.AI.Decision.Abilities.Target;
 using ReBot.Main.AI.State.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Decision.Abilities.Target;
+namespace ReBot.Main.AI.Decision.Target;
 
 internal struct Obstacle() : ITarget
 {

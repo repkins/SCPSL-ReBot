@@ -5,9 +5,9 @@ using ReBot.Main.AI.Decision.Abilities.CallElevator;
 using ReBot.Main.AI.Decision.Abilities.Interact;
 using ReBot.Main.AI.Decision.Abilities.MoveTo;
 using ReBot.Main.AI.Decision.Abilities.Observing;
-using ReBot.Main.AI.Decision.Abilities.Target;
 using ReBot.Main.AI.Decision.Abilities.Terminate.Scp173;
 using ReBot.Main.AI.Decision.Abilities.TravelOnElevator;
+using ReBot.Main.AI.Decision.Target;
 using ReBot.Main.AI.State.Spacial;
 using Unity.Collections;
 

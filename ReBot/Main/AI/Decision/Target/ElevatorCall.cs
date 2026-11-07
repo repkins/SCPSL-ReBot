@@ -1,8 +1,9 @@
-﻿using ReBot.Main.AI.State.Spacial;
+﻿using ReBot.Main.AI.Decision.Abilities.Target;
+using ReBot.Main.AI.State.Spacial;
 using Unity.Collections;
 using UnityEngine;
 
-namespace ReBot.Main.AI.Decision.Abilities.Target;
+namespace ReBot.Main.AI.Decision.Target;
 
 internal struct ElevatorCall() : ITarget
 {
