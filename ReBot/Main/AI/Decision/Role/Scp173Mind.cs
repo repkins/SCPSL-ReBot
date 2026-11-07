@@ -29,6 +29,10 @@ internal struct Scp173Mind(BotRef botRef) : IMind
     Unobserved<MoveTo<Obstacle>> unobservedMoveToObstacle = new(botRef, new(botRef, new()));
     ObservedBlinkTo<Obstacle> observedBlinkToObstacle = new(botRef, new());
 
+    InteractEmergencyRelease interactEmergencyRelease = new(botRef);
+    Unobserved<MoveTo<EmergencyRelease>> unobservedMoveToEmergencyRelease = new(botRef, new(botRef, new()));
+    ObservedBlinkTo<EmergencyRelease> observedBlinkToEmergencyRelease = new(botRef, new());
+
     TravelOnElevator travelOnElevator = new(botRef);
     Unobserved<MoveTo<Elevator>> unobservedMoveToElevator = new(botRef, new(botRef, new()));
     ObservedBlinkTo<Elevator> observedBlinkToElevator = new(botRef, new());
@@ -80,6 +84,18 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 break;
             case ActionEnum.BlinksTo | ActionEnum.Obstacle:
                 observedBlinkToObstacle.Enabling(action.Idx, beliefsToEnable);
+
+                break;
+            case ActionEnum.InteractsWith | ActionEnum.EmergencyRelease:
+                interactEmergencyRelease.Enabling(action.Idx, beliefsToEnable);
+
+                break;
+            case ActionEnum.MovesTo | ActionEnum.EmergencyRelease:
+                unobservedMoveToEmergencyRelease.Enabling(action.Idx, beliefsToEnable);
+
+                break;
+            case ActionEnum.BlinksTo | ActionEnum.EmergencyRelease:
+                observedBlinkToEmergencyRelease.Enabling(action.Idx, beliefsToEnable);
 
                 break;
             case ActionEnum.TravelsOn | ActionEnum.Elevator:
@@ -143,12 +159,18 @@ internal struct Scp173Mind(BotRef botRef) : IMind
                 else
                 {
                     interactObstacle.Impacting(new(beliefRef.Idx), impactingActions);
+                    interactEmergencyRelease.Impacting(new(beliefRef.Idx), impactingActions);
                 }
 
                 break;
             case BeliefEnum.WithinObstacle:
                 unobservedMoveToObstacle.Impacting(beliefRef.Idx, impactingActions);
                 observedBlinkToObstacle.Impacting(beliefRef.Idx, impactingActions);
+
+                break;
+            case BeliefEnum.WithinEmergencyRelease:
+                unobservedMoveToEmergencyRelease.Impacting(beliefRef.Idx, impactingActions);
+                observedBlinkToEmergencyRelease.Impacting(beliefRef.Idx, impactingActions);
 
                 break;
             case BeliefEnum.WithinElevator:

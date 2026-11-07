@@ -12,6 +12,8 @@ public struct ObstacleState() : IDisposable
 {
     public static readonly NativeList<Vector3> ObstacleLocations = new(Allocator.Persistent);
     public static readonly NativeList<DoorPermissionFlags> DoorObstaclePermissions = new(Allocator.Persistent);
+    public static readonly NativeList<bool> DoorObstacleEmergencyReleaseHasPositions = new(Allocator.Persistent);
+    public static readonly NativeList<Vector3> DoorObstacleEmergencyReleasePositions = new(Allocator.Persistent);
 
     internal static readonly Dictionary<TransformCell, ObstacleRef> ObstaclesByCell = [];
     internal static readonly Dictionary<ObstacleRef, TransformCell> CellsByObstacle = [];

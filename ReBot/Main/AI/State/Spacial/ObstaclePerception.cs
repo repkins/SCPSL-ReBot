@@ -96,8 +96,11 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             var obstaclePosition = solidObstacle.position + Vector3.up;
             var doorVariant = solidObstacle.GetComponentInParent<CheckpointDoor>() ?? solidObstacle.GetComponent<DoorVariant>();
             var doorObstaclePermissions = doorVariant.RequiredPermissions.RequiredPermissions;
+            var doorObstacleEmergencyReleaseLocation = emergencyRelease?.GetComponent<Collider>().bounds.center;
             ObstacleState.ObstacleLocations.Add(obstaclePosition);
             ObstacleState.DoorObstaclePermissions.Add(doorObstaclePermissions);
+            ObstacleState.DoorObstacleEmergencyReleaseHasPositions.Add(doorObstacleEmergencyReleaseLocation.HasValue);
+            ObstacleState.DoorObstacleEmergencyReleasePositions.Add(doorObstacleEmergencyReleaseLocation ?? default);
             ObstacleState.ObstaclesByCell.Add(cell, obstacleRef);
             ObstacleState.CellsByObstacle.Add(obstacleRef, cell);
         }
@@ -151,6 +154,8 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
 
         ObstacleState.ObstacleLocations.Clear();
         ObstacleState.DoorObstaclePermissions.Clear();
+        ObstacleState.DoorObstacleEmergencyReleaseHasPositions.Clear();
+        ObstacleState.DoorObstacleEmergencyReleasePositions.Clear();
         ObstacleState.ObstaclesByCell.Clear();
         ObstacleState.CellsByObstacle.Clear();
 

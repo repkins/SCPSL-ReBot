@@ -10,6 +10,7 @@ public enum BeliefEnum : byte
 
     WithinRoom,
     WithinObstacle,
+    WithinEmergencyRelease,
     WithinElevator,
     WithinElevatorCall,
 

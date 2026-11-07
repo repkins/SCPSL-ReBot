@@ -29,6 +29,9 @@ internal struct Scp096Mind(BotRef botRef) : IMind
     BreakObstacle breakObstacle = new(botRef);
     MoveTo<Obstacle> moveToObstacle = new(botRef, new());
 
+    InteractEmergencyRelease interactEmergencyRelease = new(botRef);
+    MoveTo<EmergencyRelease> moveToEmergencyRelease = new(botRef, new());
+
     TravelOnElevator travelOnElevator = new(botRef);
     MoveTo<Elevator> moveToElevator = new(botRef, new());
 
@@ -80,6 +83,14 @@ internal struct Scp096Mind(BotRef botRef) : IMind
             case ActionEnum.MovesTo | ActionEnum.Obstacle:
                 moveToObstacle.Enabling(action.Idx, beliefsToEnable);
                 
+                break;
+            case ActionEnum.InteractsWith | ActionEnum.EmergencyRelease:
+                interactEmergencyRelease.Enabling(action.Idx, beliefsToEnable);
+
+                break;
+            case ActionEnum.MovesTo | ActionEnum.EmergencyRelease:
+                moveToEmergencyRelease.Enabling(action.Idx, beliefsToEnable);
+
                 break;
             case ActionEnum.TravelsOn | ActionEnum.Elevator:
                 travelOnElevator.Enabling(action.Idx, beliefsToEnable);
@@ -141,11 +152,16 @@ internal struct Scp096Mind(BotRef botRef) : IMind
                 {
                     interactObstacle.Impacting(new(beliefRef.Idx), impactingActions);
                     breakObstacle.Impacting(new(beliefRef.Idx), impactingActions);
+                    interactEmergencyRelease.Impacting(new(beliefRef.Idx), impactingActions);
                 }
 
                 break;
             case BeliefEnum.WithinObstacle:
                 moveToObstacle.Impacting(beliefRef.Idx, impactingActions);
+
+                break;
+            case BeliefEnum.WithinEmergencyRelease:
+                moveToEmergencyRelease.Impacting(beliefRef.Idx, impactingActions);
 
                 break;
             case BeliefEnum.WithinElevator:
