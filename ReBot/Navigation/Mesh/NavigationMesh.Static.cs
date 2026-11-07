@@ -199,17 +199,21 @@ namespace ReBot.Navigation.Mesh
             return (roomFormEdge.From, roomFormEdge.To);
         }
 
+        static readonly Dictionary<TransformCell, float> cellsWithPriorityToEvaluate = [];
+        static readonly Dictionary<TransformCell, TransformCell> cameFromCells = [];
+        static readonly Dictionary<TransformCell, float> costsTill = [];
+
         public static void FindShortestPath(TransformCell startingCell, TransformCell endCell, List<TransformCell> results)
         {
-            var cellsWithPriorityToEvaluate = new Dictionary<TransformCell, float>();
-            var cameFromCells = new Dictionary<TransformCell, TransformCell>();
-            var costsTill = new Dictionary<TransformCell, float>();
+            cellsWithPriorityToEvaluate.Clear();
+            cameFromCells.Clear();
+            costsTill.Clear();
 
-            var cost = 0f;
+            var costTill = 0f;
             var heuristic = Vector3.Magnitude(endCell.MeanPosition - startingCell.MeanPosition);
 
-            cellsWithPriorityToEvaluate.Add(startingCell, cost + heuristic);
-            costsTill.Add(startingCell, cost);
+            cellsWithPriorityToEvaluate.Add(startingCell, costTill + heuristic);
+            costsTill.Add(startingCell, costTill);
 
             var cell = startingCell;
 
@@ -227,13 +231,27 @@ namespace ReBot.Navigation.Mesh
                     break;
                 }
 
-                cost = costsTill[cell];
+                costTill = costsTill[cell];
 
-                //Log.Debug($"Cell evaluating connections #{cellIdx} cost so far {cost}");
+                //Log.Debug($"Cell evaluating connections #{cellIdx} cost so far {costTill}");
 
                 foreach (var connectedCell in cell.AdjacentCells.Concat(ForeignConnectedCells[cell]))
                 {
-                    var connectedCost = cost + Vector3.Magnitude(connectedCell.MeanPosition - cell.MeanPosition);
+                    var cost = 0f;
+
+                    if (!cell.AdjacentCellEdges.ContainsKey(connectedCell)
+                        && !ForeignConnectedCellEdges[cell].ContainsKey(connectedCell))
+                    {
+                        // elevation cost
+                        cost += 5f;
+                    }
+                    else
+                    {
+                        // distance cost
+                        cost += Vector3.Magnitude(connectedCell.MeanPosition - cell.MeanPosition);
+                    }
+
+                    var connectedCost = costTill + cost;
 
                     //var connCellIdx = CellsByRoom[connectedCell.Room].IndexOf(connectedCell);
                     //Log.Debug($"Connected cell #{connCellIdx} cost so far {connectedCost} {connectedCell.FormCell.RoomForm}");
