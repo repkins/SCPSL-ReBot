@@ -235,26 +235,29 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
 
             for (int cellIdx = cellsPath.Count - 1; cellIdx >= 0; cellIdx--)
             {
-                TransformCell cellInPath = cellsPath[cellIdx];
+                TransformCell cell = cellsPath[cellIdx];
                 TransformCell? prevCell = cellIdx > 0 ? cellsPath[cellIdx - 1] : null;
 
-                if (ObstacleState.ObstaclesByCell.TryGetValue(cellInPath, out var obstacleRef))
+                if (ObstacleState.ObstaclesByCell.TryGetValue(cell, out var obstacleRef))
                 {
                     if (ObstacleState.ElevationObstacles.IndexOf(obstacleRef) is var elevationIdx && elevationIdx > -1)
                     {
                         if (prevCell.HasValue &&
-                            !prevCell.Value.AdjacentCellEdges.ContainsKey(cellInPath) &&
-                            !NavigationMesh.ForeignConnectedCellEdges[prevCell.Value].ContainsKey(cellInPath))
+                            !prevCell.Value.AdjacentCellEdges.ContainsKey(cell) &&
+                            !NavigationMesh.ForeignConnectedCellEdges[prevCell.Value].ContainsKey(cell))
                         {
                             var travelObstacleRef = ObstacleState.ElevationTravelObstacles[elevationIdx];
                             obstacleBots[botIdx].AddElevationTravelObstacle(travelObstacleRef, currentGoalPos);
                         }
                         else
                         {
+                            if (prevCell.HasValue)
+                            {
                             var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
                             var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
                             obstacleBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
                         }
+                    }
                     }
                     else
                     {
