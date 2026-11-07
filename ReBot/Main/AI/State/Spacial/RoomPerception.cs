@@ -31,8 +31,8 @@ internal struct RoomPerception(int botCount)
                 {
                     bot.RoomStore.RoomEnterInstanceIds.Clear();
                     bot.RoomStore.RoomEnterLocations.Clear();
+                    bot.RoomStore.RoomExitLocations.Clear();
                     bot.RoomStore.RoomExitIsWithins.Clear();
-                    bot.RoomStore.RoomEnterExitDistances.Clear();
 
                     foreach (var localCell in NavigationMesh.LocalMeshesByRoom[roomWithin.gameObject].Cells)
                     {
@@ -44,17 +44,11 @@ internal struct RoomPerception(int botCount)
                             if (room != roomWithin)
                             {
                                 bot.RoomStore.RoomEnterInstanceIds.Add(room.GetInstanceID());
-
-                                var roomEnterPosition = adjacentForeignCell.MeanPosition;
-                                var roomExitPosition = transformCell.MeanPosition;
-                                var roomEnterExitDistance = Vector3.Distance(roomEnterPosition, roomExitPosition);
+                                bot.RoomStore.RoomEnterLocations.Add(adjacentForeignCell.MeanPosition);
+                                bot.RoomStore.RoomExitLocations.Add(transformCell.MeanPosition);
 
                                 var roomExitIsWithin = cellWithinResult.HasValue && cellWithinResult.Value == transformCell;
-                                roomEnterPosition = roomExitIsWithin ? roomEnterPosition : roomExitPosition;
-
-                                bot.RoomStore.RoomEnterLocations.Add(roomEnterPosition);
                                 bot.RoomStore.RoomExitIsWithins.Add(roomExitIsWithin);
-                                bot.RoomStore.RoomEnterExitDistances.Add(roomEnterExitDistance);
                             }
                         }
                     }
