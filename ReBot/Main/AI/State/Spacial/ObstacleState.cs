@@ -22,6 +22,7 @@ public struct ObstacleState() : IDisposable
     public static readonly NativeList<Vector3> ElevationTravelEnterLocations = new(Allocator.Persistent);
     public static readonly List<ElevatorPanel> ElevationTravelInteractPanels = [];
     public static NativeList<Vector3> ElevationTravelInteractLocations = new(Allocator.Persistent);
+    public static NativeList<bool> ElevationTravelInteractAbles = new(Allocator.Persistent);
     public static NativeList<Vector3> ElevationTravelChamberLocations = new(Allocator.Persistent);
 
     public static readonly NativeList<ObstacleRef> ElevationCallObstacles = new(Allocator.Persistent);

@@ -12,6 +12,7 @@ internal struct TravelOnElevator(BotRef botRef)
     NativeList<Vector3> elevationTravelEnterLocations = ObstacleState.ElevationTravelEnterLocations;
     NativeList<Vector3> elevationTravelChamberLocations = ObstacleState.ElevationTravelChamberLocations;
     NativeList<Vector3> elevationTravelInteractLocations = ObstacleState.ElevationTravelInteractLocations;
+    NativeList<bool> elevationTravelInteractAbles = ObstacleState.ElevationTravelInteractAbles;
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionStore.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
@@ -38,12 +39,24 @@ internal struct TravelOnElevator(BotRef botRef)
     public void Enabling(int elevationIdx, NativeList<BeliefRef> beliefsToEnable)
     {
         var elevationChamberPosition = elevationTravelChamberLocations[elevationIdx];
+        var elevationTravelInteractAble = elevationTravelInteractAbles[elevationIdx];
 
-        if (Vector3.Distance(elevationChamberPosition, playerPosition) < 0.5f)
+        var dist = Vector3.Distance(elevationChamberPosition, playerPosition);
+        if (dist < 2f)
         {
-            var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
-            lookAtPositionRef.Value = (true, travelInteractPosition);
-            interactPositionRef.Value = (true, travelInteractPosition);
+            if (elevationTravelInteractAble)
+            {
+                if (dist < 0.5f)
+                {
+                    var travelInteractPosition = elevationTravelInteractLocations[elevationIdx];
+                    lookAtPositionRef.Value = (true, travelInteractPosition);
+                    interactPositionRef.Value = (true, travelInteractPosition);
+                }
+                else
+                {
+                    beliefsToEnable.Add(new(BeliefEnum.WithinElevator, elevationIdx));
+                }
+            }
         }
         else
         {

@@ -125,6 +125,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
             ObstacleState.ElevationTravelObstacles.Add(travelObstacleRef);
             ObstacleState.ElevationTravelEnterLocations.Add(travelEnterPosition);
             ObstacleState.ElevationTravelInteractPanels.Add(travelPanel);
+            ObstacleState.ElevationTravelInteractAbles.Add(default);
             ObstacleState.ElevationTravelInteractLocations.Add(default);
             ObstacleState.ElevationTravelChamberLocations.Add(default);
 
@@ -158,6 +159,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         ObstacleState.ElevationTravelObstacles.Clear();
         ObstacleState.ElevationTravelEnterLocations.Clear();
         ObstacleState.ElevationTravelInteractPanels.Clear();
+        ObstacleState.ElevationTravelInteractAbles.Clear();
         ObstacleState.ElevationTravelInteractLocations.Clear();
         ObstacleState.ElevationTravelChamberLocations.Clear();
 
@@ -174,10 +176,11 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
         for (var elevationTravelIdx = 0; elevationTravelIdx < ObstacleState.ElevationTravelInteractPanels.Count; elevationTravelIdx++)
         {
             var travelPanel = ObstacleState.ElevationTravelInteractPanels[elevationTravelIdx];
-            var elevator = travelPanel.AssignedChamber;
+            var chamber = travelPanel.AssignedChamber;
 
             ObstacleState.ElevationTravelInteractLocations[elevationTravelIdx] = travelPanel.GetComponent<Collider>().bounds.center;
-            ObstacleState.ElevationTravelChamberLocations[elevationTravelIdx] = elevator.transform.position + Vector3.up;
+            ObstacleState.ElevationTravelChamberLocations[elevationTravelIdx] = chamber.transform.position + Vector3.up;
+            ObstacleState.ElevationTravelInteractAbles[elevationTravelIdx] = chamber.IsReadyForUserInput;
         }
 
         for (var elevationCallIdx = 0; elevationCallIdx < ObstacleState.ElevationCallInteractPanels.Count; elevationCallIdx++)
