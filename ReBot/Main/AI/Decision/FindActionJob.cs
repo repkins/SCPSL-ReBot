@@ -30,7 +30,8 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
 
         foreach (var (cost, multiplier, impactingAction) in goalImpactingActions)
         {
-            actionPathfinding.EnqueueIfLess(cost, multiplier, impactingAction);
+            var generalCost = cost * multiplier;
+            actionPathfinding.EnqueueIfLess(generalCost, multiplier, impactingAction);
         }
 
         var actionToEnable = default(ActionRef);

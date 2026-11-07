@@ -25,6 +25,7 @@ internal static class PathfindingSystem
                 continue;
             }
 
+            PathfindingStore.PrevCellWithins[botIdx] = PathfindingStore.CellWithins[botIdx];
             PathfindingStore.CellWithins[botIdx] = startingCellResult;
 
             NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, PathfindingStore.CellsPath[botIdx]);

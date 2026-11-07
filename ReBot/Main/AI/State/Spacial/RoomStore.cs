@@ -12,11 +12,15 @@ public struct RoomStore() : IDisposable
 
     public NativeList<int> RoomEnterInstanceIds = new(Allocator.Persistent);
     public NativeList<Vector3> RoomEnterLocations = new(Allocator.Persistent);
+    public NativeList<bool> RoomExitIsWithins = new(Allocator.Persistent);
+    public NativeList<float> RoomEnterExitDistances = new(Allocator.Persistent);
 
     public void Dispose()
     {
         RoomLastVisitTime.Dispose();
         RoomEnterInstanceIds.Dispose();
         RoomEnterLocations.Dispose();
+        RoomExitIsWithins.Dispose();
+        RoomEnterExitDistances.Dispose();
     }
 }

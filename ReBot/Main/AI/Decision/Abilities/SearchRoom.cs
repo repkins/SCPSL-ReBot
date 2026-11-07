@@ -8,6 +8,8 @@ internal struct SearchRoom(BotRef botRef)
     NativeHashMap<int, float> roomLastVisitTime = botRef.Value.RoomStore.RoomLastVisitTime;
 
     NativeList<int> roomEnterInstanceIds = botRef.Value.RoomStore.RoomEnterInstanceIds;
+    NativeList<bool> roomExitIsWithins = botRef.Value.RoomStore.RoomExitIsWithins;
+    NativeList<float> roomEnterExitDistances = botRef.Value.RoomStore.RoomEnterExitDistances;
 
     public void Impacting(NativeList<ImpactingAction> impactingActions)
     {
@@ -20,6 +22,11 @@ internal struct SearchRoom(BotRef botRef)
                 multiplier += roomLastVisitTime.TryGetValue(roomEnterInstanceIds[roomEnterIdx], out var time)
                     ? 1f / ((Time.time - time) / 300f) // 300 secs = 5 mins
                     : 0f;
+
+                if (!roomExitIsWithins[roomEnterIdx])
+                {
+                    cost += roomEnterExitDistances[roomEnterIdx];
+                }
 
                 impactingActions.Add(cost, multiplier, ActionEnum.Searches | ActionEnum.Room, roomEnterIdx);
             }
