@@ -11,7 +11,7 @@ internal class PerceptionSystem
 {
     private const float maxSightDistance = 30f;
     private static readonly LayerMask sightLayerMask = LayerMask.GetMask("Default", "Door", "Ignore Raycast");
-    private static readonly LayerMask obstacleSightLayerMask = LayerMask.GetMask("Default", "Door", "Ignore Raycast", "Fence");
+    private static readonly LayerMask obstacleSightLayerMask = LayerMask.GetMask("Default", "Door", "Fence");
 
     public static void Initialize()
     {

@@ -24,6 +24,9 @@ internal static class PathfindingSystem
 
             if (!startingCellResult.HasValue || !targetCellResult.HasValue)
             {
+                outClosestPositions.Add((new(botIdx), targetPos, default));
+                PathfindingStore.GoalPositions[botIdx] = targetPos;
+
                 continue;
             }
 
@@ -33,6 +36,9 @@ internal static class PathfindingSystem
             NavigationMesh.FindShortestPath(startingCellResult.Value, targetCellResult.Value, PathfindingStore.CellsPath[botIdx]);
             if (PathfindingStore.CellsPath[botIdx].Count < 1)
             {
+                outClosestPositions.Add((new(botIdx), targetPos, default));
+                PathfindingStore.GoalPositions[botIdx] = targetPos;
+
                 continue;
             }
 
@@ -43,27 +49,6 @@ internal static class PathfindingSystem
 
             outClosestPositions.Add((new(botIdx), closestPosition, needsJump));
             PathfindingStore.GoalPositions[botIdx] = targetPos;
-
-            var pointsPath = PathfindingStore.PointsPath[botIdx];
-            pointsPath.Clear();
-            pointsPath.Add(startingPos);
-
-            var partialPath = false;
-            foreach (var (cell, nextCell) in PathfindingStore.CellPathSegments[botIdx])
-            {
-                if (!cell.AdjacentCellEdges.TryGetValue(nextCell, out var e)
-                    && !NavigationMesh.ForeignConnectedCellEdges[cell].TryGetValue(nextCell, out e))
-                {
-                    partialPath = true;
-                    break;
-                }
-                pointsPath.Add(Vector3.Lerp(e.From.Position, e.To.Position, .5f));
-            }
-
-            if (!partialPath)
-            {
-                pointsPath.Add(targetPos);
-            }
         }
     }
 

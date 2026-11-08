@@ -16,9 +16,6 @@ internal static class PathfindingStore
     public static readonly List<List<TransformCell>> CellsPath = [];
     public static readonly List<IEnumerable<(TransformCell Cell, TransformCell NextCell)>> CellPathSegments = [];
 
-    public static readonly List<List<Vector3>> PointsPath = [];
-    public static readonly List<IEnumerable<(Vector3 point, Vector3 nextPoint)>> PathSegments = [];
-
     public static readonly List<TransformCell?> CellWithins = [];
     public static readonly List<TransformCell?> PrevCellWithins = [];
 
@@ -29,9 +26,6 @@ internal static class PathfindingStore
         CellsPath.Add([]);
         CellPathSegments.Add(CellsPath[botRef.Idx].Zip(CellsPath[botRef.Idx].Skip(1), (cell, nextCell) => (cell, nextCell)));
 
-        PointsPath.Add([]);
-        PathSegments.Add(PointsPath[botRef.Idx].Zip(PointsPath[botRef.Idx].Skip(1), (point, nextPoint) => (point, nextPoint)));
-
         CellWithins.Add(default);
         PrevCellWithins.Add(default);
     }
@@ -40,9 +34,6 @@ internal static class PathfindingStore
     {
         CellWithins.RemoveAt(botRef.Idx);
         PrevCellWithins.RemoveAt(botRef.Idx);
-
-        PathSegments.RemoveAt(botRef.Idx);
-        PointsPath.RemoveAt(botRef.Idx);
 
         CellPathSegments.RemoveAt(botRef.Idx);
         CellsPath.RemoveAt(botRef.Idx);
