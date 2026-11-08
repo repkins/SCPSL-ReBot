@@ -16,7 +16,7 @@ internal struct PassthroughObstacle(BotRef botRef)
 
     public void Impacting(ObstacleRef obstacleRef, NativeList<ImpactingAction> impactingActions)
     {
-        var cost = 1f;
+        var cost = 0.5f;
 
         impactingActions.Add(cost, ActionEnum.PassesThrough | ActionEnum.Obstacle, obstacleRef.Idx);
     }

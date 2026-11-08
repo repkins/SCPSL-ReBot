@@ -258,11 +258,11 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                         {
                             if (prevCell.HasValue)
                             {
-                            var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
-                            var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
-                            obstacleBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
+                                var callObstacleRef = ObstacleState.ElevationCallObstacles[elevationIdx];
+                                var obstaclePosition = ObstacleState.ObstacleLocations[callObstacleRef.Idx];
+                                obstacleBots[botIdx].AddElevationCallObstacle(callObstacleRef, currentGoalPos, obstaclePosition);
+                            }
                         }
-                    }
                     }
                     else
                     {
@@ -272,7 +272,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                             continue;
                         }
 
-                        obstacleBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition + Vector3.up);
+                        obstacleBots[botIdx].AddSightObstacle(obstacleRef, currentGoalPos, obstaclePosition);
                     }
                 }
             }
@@ -362,7 +362,7 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 else
                 {
                     // solid obstacle
-                    if (hit.collider is null || hit.distance < .2f)
+                    if (hit.collider is null)
                     {
                         targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
                         continue;
@@ -379,8 +379,26 @@ public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask s
                 }
             }
 
-            var elevationTravelObstacleTargetObstacles = obstacleBots[botIdx].elevationTravelObstacleTargetObstacles;
             var playerPosition = bot.PlayerStore.Position;
+
+            for (var sightObstacleIdx = 0; sightObstacleIdx < sightObstacleTargetObstacles.Length; sightObstacleIdx++)
+            {
+                if (!elevationCallObstacleSightObstacles.Contains(sightObstacleIdx))
+                {
+                    // solid obstacle
+                    var targetObstacleIdx = sightObstacleTargetObstacles[sightObstacleIdx];
+                    var obstacleRef = targetObstacleRefs[targetObstacleIdx];
+
+                    var obstaclePosition = ObstacleState.ObstacleLocations[obstacleRef.Idx];
+
+                    if (Vector3.Distance(obstaclePosition, playerPosition) < .3f)
+                    {
+                        targetObstacleObstructing[targetObstacleIdx] = TargetObstacleStatus.Unobstructing;
+                    }
+                }
+            }
+
+            var elevationTravelObstacleTargetObstacles = obstacleBots[botIdx].elevationTravelObstacleTargetObstacles;
 
             for (var elevationTravelObstacleIdx = 0; elevationTravelObstacleIdx < elevationTravelObstacleTargetObstacles.Length; elevationTravelObstacleIdx++)
             {
