@@ -26,10 +26,10 @@ internal class BlinkSystem
             PathfindingStore.DestinationPositions.Add((new(botIdx), position));
         }
 
-        var closestPositions = new NativeList<(BotRef, Vector3)>(Allocator.Temp);
+        var closestPositions = new NativeList<(BotRef, Vector3, bool)>(Allocator.Temp);
         PathfindingSystem.Process(closestPositions);
 
-        foreach (var (botRef, closestPosition) in closestPositions)
+        foreach (var (botRef, closestPosition, _) in closestPositions)
         {
             var botIdx = botRef.Idx;
 

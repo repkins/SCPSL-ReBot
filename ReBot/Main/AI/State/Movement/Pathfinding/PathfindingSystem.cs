@@ -6,7 +6,9 @@ namespace ReBot.Main.AI.State.Movement.Pathfinding;
 
 internal static class PathfindingSystem
 {
-    public static void Process(NativeList<(BotRef, Vector3)> outClosestPositions)
+    const float SineOfJumpThresholdAngles = 0.5f;    // 30 degrees
+
+    public static void Process(NativeList<(BotRef, Vector3, bool)> outClosestPositions)
     {
         foreach (var (botRef, position) in PathfindingStore.DestinationPositions)
         {
@@ -34,11 +36,12 @@ internal static class PathfindingSystem
                 continue;
             }
 
+            var needsJump = false;
             var closestPosition = PathfindingStore.CellsPath[botIdx].Count > 1
-                ? GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value) 
+                ? GetNextCorner(botIdx, startingPos, targetPos, startingCellResult.Value, out needsJump) 
                 : targetPos;
 
-            outClosestPositions.Add((new(botIdx), closestPosition));
+            outClosestPositions.Add((new(botIdx), closestPosition, needsJump));
             PathfindingStore.GoalPositions[botIdx] = targetPos;
 
             var pointsPath = PathfindingStore.PointsPath[botIdx];
@@ -64,31 +67,43 @@ internal static class PathfindingSystem
         }
     }
 
-    private static Vector3 GetNextCorner(int botIdx, Vector3 playerPosition, Vector3 goalPosition, TransformCell currentCell)
+    private static Vector3 GetNextCorner(int botIdx, Vector3 playerPosition, Vector3 goalPosition, TransformCell currentCell, out bool jump)
     {
+        jump = false;
+
         var cellsPath = PathfindingStore.CellsPath[botIdx];
         
-        var currentPathIdx = 0;
+        var startPathIdx = 0;
 
-        var nextCell = cellsPath[currentPathIdx + 1];
+        var nextCell = cellsPath[startPathIdx + 1];
         if (!currentCell.AdjacentCellEdges.TryGetValue(nextCell, out var nextCellEdge)
             && !NavigationMesh.ForeignConnectedCellEdges[currentCell].TryGetValue(nextCell, out nextCellEdge))
         {
             return currentCell.MeanPosition;
         }
-        var nextEdgeMiddlePosition = Vector3.Lerp(nextCellEdge.From.Position, nextCellEdge.To.Position, 0.5f);
 
-        var nextPosition = nextEdgeMiddlePosition;
+        var firstEdgeMiddlePosition = Vector3.Lerp(nextCellEdge.From.Position, nextCellEdge.To.Position, 0.5f);
+        var directionToFirstEdge = Vector3.Normalize(firstEdgeMiddlePosition - playerPosition);
 
-        var aheadPathIdx = currentPathIdx + 1;
+        var jumpEdgeResult = default(TransformEdge?);
 
-        while (nextEdgeMiddlePosition == nextPosition && aheadPathIdx < cellsPath.Count - 1)
+        if (Vector3.Dot(directionToFirstEdge, Vector3.up) > SineOfJumpThresholdAngles)
+        {
+            jumpEdgeResult = nextCellEdge;
+        }
+
+        var nextPosition = firstEdgeMiddlePosition;
+
+        var nextWithinCellEdge = nextCellEdge;
+        var aheadPathIdx = startPathIdx + 1;
+
+        while (firstEdgeMiddlePosition == nextPosition && aheadPathIdx < cellsPath.Count - 1)
         {
             aheadPathIdx++;
 
             var relNextEdgePos = (
-                from: nextCellEdge.From.Position - playerPosition,
-                to: nextCellEdge.To.Position - playerPosition);
+                from: nextWithinCellEdge.From.Position - playerPosition,
+                to: nextWithinCellEdge.To.Position - playerPosition);
 
             var aheadCell = cellsPath[aheadPathIdx];
             if (!nextCell.AdjacentCellEdges.TryGetValue(aheadCell, out var aheadCellEdge)
@@ -96,6 +111,18 @@ internal static class PathfindingSystem
             {
                 goalPosition = nextCell.MeanPosition;
                 break;
+            }
+
+            if (!jumpEdgeResult.HasValue)
+            {
+                var nextEdgeMiddlePosition = Vector3.Lerp(nextCellEdge.From.Position, nextCellEdge.To.Position, 0.5f);
+                var aheadEdgeMiddlePosition = Vector3.Lerp(aheadCellEdge.From.Position, aheadCellEdge.To.Position, 0.5f);
+                var directionToAheadEdge = Vector3.Normalize(aheadEdgeMiddlePosition - nextEdgeMiddlePosition);
+
+                if (Vector3.Dot(directionToAheadEdge, Vector3.up) > SineOfJumpThresholdAngles)
+                {
+                    jumpEdgeResult = aheadCellEdge;
+                }
             }
 
             var relAheadTargetEdgePos = (
@@ -108,47 +135,64 @@ internal static class PathfindingSystem
 
             if (Vector3.Dot(relNextEdgePos.from, dirToAheadTargetEdgeNormals.from) < 0)
             {
-                nextCellEdge.From = aheadCellEdge.From;
+                nextWithinCellEdge.From = aheadCellEdge.From;
             }
 
             if (Vector3.Dot(relNextEdgePos.to, dirToAheadTargetEdgeNormals.to) > 0)
             {
-                nextCellEdge.To = aheadCellEdge.To;
+                nextWithinCellEdge.To = aheadCellEdge.To;
             }
 
 
             if (Vector3.Dot(relNextEdgePos.from, dirToAheadTargetEdgeNormals.to) > 0)
             {
-                nextPosition = nextCellEdge.From.Position;
+                nextPosition = nextWithinCellEdge.From.Position;
             }
 
             if (Vector3.Dot(relNextEdgePos.to, dirToAheadTargetEdgeNormals.from) < 0)
             {
-                nextPosition = nextCellEdge.To.Position;
+                nextPosition = nextWithinCellEdge.To.Position;
             }
 
             nextCell = aheadCell;
+            nextCellEdge = aheadCellEdge;
         }
 
-        if (nextPosition == nextEdgeMiddlePosition)
+        if (nextPosition == firstEdgeMiddlePosition)
         {
             nextPosition = goalPosition;
 
             var relNextTargetEdgePos = (
-                from: nextCellEdge.From.Position - playerPosition,
-                to: nextCellEdge.To.Position - playerPosition);
+                from: nextWithinCellEdge.From.Position - playerPosition,
+                to: nextWithinCellEdge.To.Position - playerPosition);
 
             var relGoalPos = goalPosition - playerPosition;
             var dirToGoalNormal = Vector3.Cross(relGoalPos, Vector3.up);
 
             if (Vector3.Dot(relNextTargetEdgePos.from, dirToGoalNormal) > 0)
             {
-                nextPosition = nextCellEdge.From.Position;
+                nextPosition = nextWithinCellEdge.From.Position;
             }
 
             if (Vector3.Dot(relNextTargetEdgePos.to, dirToGoalNormal) < 0)
             {
-                nextPosition = nextCellEdge.To.Position;
+                nextPosition = nextWithinCellEdge.To.Position;
+            }
+        }
+
+        if (jumpEdgeResult.HasValue)
+        {
+            var plane = new Plane(playerPosition, nextPosition, playerPosition + Vector3.up);
+            var ray = new Ray(jumpEdgeResult.Value.From.Position, jumpEdgeResult.Value.To.Position - jumpEdgeResult.Value.From.Position);
+
+            if (plane.Raycast(ray, out var enterDist))
+            {
+                var intersectPoint = ray.GetPoint(enterDist);
+                if (Vector3.Distance(playerPosition, intersectPoint) < 1f)
+                {
+                    jump = true;
+                    Debug.Log($"Setting for jump");
+                }
             }
         }
 

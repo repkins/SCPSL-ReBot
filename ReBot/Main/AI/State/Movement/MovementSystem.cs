@@ -8,6 +8,8 @@ public static class MovementSystem
 {
     private const float MaxSteeringForceDegrees = 640f;
 
+    static readonly string JumpDummyActionName = $"Jump";
+
     public static void Process()
     {
         PathfindingStore.DestinationPositions.Clear();
@@ -28,12 +30,13 @@ public static class MovementSystem
             PathfindingStore.DestinationPositions.Add((new(botIdx), targetPos));
         }
 
-        var closestPositions = new NativeList<(BotRef, Vector3)>(Allocator.Temp);
+        var closestPositions = new NativeList<(BotRef, Vector3, bool)>(Allocator.Temp);
         PathfindingSystem.Process(closestPositions);
 
-        foreach (var (botRef, position) in closestPositions)
+        foreach (var (botRef, position, needsJump) in closestPositions)
         {
             SteerToPosition(botRef, position);
+            ProcessJumping(botRef, needsJump);
         }
 
         for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
@@ -109,5 +112,30 @@ public static class MovementSystem
         var desiredLook = new Look(hRotation, vRotation, targetHRotation);
 
         bot.MovementStore.DesiredLook = desiredLook;
+    }
+
+    private static void ProcessJumping(BotRef botRef, bool needsJump)
+    {
+        var jumpIsHeld = BotStore.Bots[botRef.Idx].MovementStore.JumpIsHeld;
+        var prevJumpIsHeld = jumpIsHeld;
+
+        if (needsJump && !jumpIsHeld)
+        {
+            jumpIsHeld = true;
+        }
+        else
+        {
+            jumpIsHeld = false;
+        }
+
+        BotStore.Bots[botRef.Idx].MovementStore.JumpIsHeld = jumpIsHeld;
+
+        if (prevJumpIsHeld != jumpIsHeld)
+        {
+            if (jumpIsHeld)
+            {
+                BotStore.Bots[botRef.Idx].ActionStore.WantSet.Add(JumpDummyActionName);
+            }
+        }
     }
 }

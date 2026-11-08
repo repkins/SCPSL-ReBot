@@ -12,6 +12,9 @@ public struct MovementStore() : IDisposable
     public Move DesiredMove;
     public Look DesiredLook;
 
+    public bool NeedsJump;
+    public bool JumpIsHeld;
+
     public void Dispose()
     {
         MoveToPositionRef.Dispose();

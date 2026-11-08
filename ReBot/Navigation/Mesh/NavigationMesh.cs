@@ -84,8 +84,25 @@ namespace ReBot.Navigation.Mesh
                     var adjacentEdge = new Edge(edge.To, edge.From);
                     if (adjacentCell.Edges.Contains(adjacentEdge))
                     {
-                        newCell.AddAdjacentCell(adjacentCell, adjacentEdge);
-                        adjacentCell.AddAdjacentCell(newCell, edge);
+                        var adjacentEdgeMiddlePos = Vector3.Lerp(adjacentEdge.From.Position, adjacentEdge.To.Position, 0.5f);
+                        var relPosToAdjacentEdge = adjacentEdgeMiddlePos - newCell.MeanPosition;
+                        var dirToAdjacentEdge = Vector3.Normalize(relPosToAdjacentEdge);
+
+                        if (Vector3.Dot(dirToAdjacentEdge, Vector3.up) < 0.8f
+                            || relPosToAdjacentEdge.magnitude * 2f < 1f)
+                        {
+                            newCell.AddAdjacentCell(adjacentCell, adjacentEdge);
+                        }
+
+                        var edgeMiddlePos = Vector3.Lerp(edge.From.Position, edge.To.Position, 0.5f);
+                        var relPosToEdge = edgeMiddlePos - adjacentCell.MeanPosition;
+                        var dirToEdge = Vector3.Normalize(relPosToEdge);
+
+                        if (Vector3.Dot(dirToEdge, Vector3.up) < 0.8f
+                            || relPosToEdge.magnitude * 2f < 1f)
+                        {
+                            adjacentCell.AddAdjacentCell(newCell, edge);
+                        }
                     }
                 }
             }
