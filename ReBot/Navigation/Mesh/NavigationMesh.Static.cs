@@ -19,6 +19,7 @@ namespace ReBot.Navigation.Mesh
         public static Dictionary<TransformCell, Dictionary<TransformCell, TransformEdge>> ForeignConnectedCellEdges = new();
 
         public static Dictionary<TransformCell, (Transform, EmergencyDoorRelease)> CellsWithSolidObstacles = [];
+        public static Dictionary<TransformCell, Transform> CellsWithTeslaGateObstacles = [];
         public static List<(TransformCell ToCell, TransformCell FromCell, ElevatorPanel ToCallPanel, ElevatorPanel TravelPanel)> ElevationObstacles = [];
 
         public static List<Vector3Int> AddedRoomCoords = [];
@@ -432,6 +433,7 @@ namespace ReBot.Navigation.Mesh
             ForeignConnectedCells.Clear();
             ForeignConnectedCellEdges.Clear();
             CellsWithSolidObstacles.Clear();
+            CellsWithTeslaGateObstacles.Clear();
             ElevationObstacles.Clear();
         }
 

@@ -137,6 +137,24 @@ namespace ReBot.Navigation
                 }
             }
 
+            Debug.Log($"Adding cells with tesla gate obstacles");
+            foreach (var teslaGate in TeslaGate.AllGates)
+            {
+                const float PlayerRadius = .5f;
+
+                var cellResult = NavigationMesh.GetCellWithinOrClosest(teslaGate.transform.position + Vector3.up, PlayerRadius);
+                if (!cellResult.HasValue)
+                {
+                    Debug.LogWarning($"Could not find nav cell for tesla gate {teslaGate} at ({teslaGate.Room}) to create obstacle entry with");
+                    continue;
+                }
+
+                Debug.Log($"{teslaGate.Room.gameObject.name}, {teslaGate.gameObject.name}");
+
+                var cell = cellResult.Value;
+                NavigationMesh.CellsWithTeslaGateObstacles.Add(cell, teslaGate.transform);
+            }
+
             Debug.Log($"Connecting cells between elevator destinations and adding elevation cells.");
             var elevatorGroups = Enum.GetValues(typeof(ElevatorGroup));
             foreach (ElevatorGroup group in elevatorGroups)
