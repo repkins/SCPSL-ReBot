@@ -14,6 +14,7 @@ public struct RoomStore() : IDisposable
     public NativeList<Vector3> RoomEnterLocations = new(Allocator.Persistent);
     public NativeList<Vector3> RoomExitLocations = new(Allocator.Persistent);
     public NativeList<bool> RoomExitIsWithins = new(Allocator.Persistent);
+    public NativeList<bool> RoomIsElevations = new(Allocator.Persistent);
 
     public void Dispose()
     {
@@ -22,5 +23,6 @@ public struct RoomStore() : IDisposable
         RoomEnterLocations.Dispose();
         RoomExitLocations.Dispose();
         RoomExitIsWithins.Dispose();
+        RoomIsElevations.Dispose();
     }
 }

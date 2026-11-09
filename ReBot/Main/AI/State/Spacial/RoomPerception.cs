@@ -33,6 +33,7 @@ internal struct RoomPerception(int botCount)
                     bot.RoomStore.RoomEnterLocations.Clear();
                     bot.RoomStore.RoomExitLocations.Clear();
                     bot.RoomStore.RoomExitIsWithins.Clear();
+                    bot.RoomStore.RoomIsElevations.Clear();
 
                     foreach (var localCell in NavigationMesh.LocalMeshesByRoom[roomWithin.gameObject].Cells)
                     {
@@ -49,6 +50,7 @@ internal struct RoomPerception(int botCount)
 
                                 var roomExitIsWithin = cellWithinResult.HasValue && cellWithinResult.Value == transformCell;
                                 bot.RoomStore.RoomExitIsWithins.Add(roomExitIsWithin);
+                                bot.RoomStore.RoomIsElevations.Add(!NavigationMesh.ForeignConnectedCellEdges[transformCell].ContainsKey(foreignCell));
                             }
                         }
                     }
