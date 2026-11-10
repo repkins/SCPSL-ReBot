@@ -55,6 +55,7 @@ public class LabApiPlugin : Plugin
 #endif
 
         PlayerRoleManager.OnRoleChanged += OnRoleChanged;
+        ReferenceHub.OnPlayerAdded += OnPlayerAdded;
         ReferenceHub.OnPlayerRemoved += OnPlayerRemoved;
         PlayerEvents.Kicked += Kicked;
     }
@@ -62,6 +63,7 @@ public class LabApiPlugin : Plugin
     public override void Disable()
     {
         PlayerRoleManager.OnRoleChanged -= OnRoleChanged;
+        ReferenceHub.OnPlayerAdded -= OnPlayerAdded;
         ReferenceHub.OnPlayerRemoved -= OnPlayerRemoved;
         PlayerEvents.Kicked -= Kicked;
 
@@ -81,6 +83,14 @@ public class LabApiPlugin : Plugin
         if (BotStore.BotHubRefs.TryGetValue(userHub, out var botRef))
         {
             BotSystem.PrintRoleChanged(userHub, prevRole, newRole);
+        }
+    }
+
+    private static void OnPlayerAdded(ReferenceHub hub)
+    {
+        if (hub.IsDummy)
+        {
+            BotSystem.AddBotPlayer(hub);
         }
     }
 

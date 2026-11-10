@@ -39,6 +39,11 @@ public static class BotSystem
         Debug.Log($"Bot \"{userHub}\" got new role {newRole.RoleTypeId}");
     }
 
+    public static void AddBotPlayer(ReferenceHub hub)
+    {
+        BotStore.AddBotPlayer(hub);
+    }
+
     public static void RemoveBotPlayer(ReferenceHub userHub, BotRef botRef)
     {
         BotStore.RemoveBotPlayer(botRef);

@@ -1,5 +1,4 @@
-﻿using NetworkManagerUtils.Dummies;
-using ReBot.Main.AI.Decision;
+﻿using ReBot.Main.AI.Decision;
 using ReBot.Main.AI.State.Movement.Pathfinding;
 using System.Collections.Generic;
 
@@ -10,11 +9,10 @@ public static class BotStore
     public readonly static List<Bot> Bots = [];
     public readonly static Dictionary<ReferenceHub, BotRef> BotHubRefs = [];
 
-    public static void AddBotPlayer()
+    public static void AddBotPlayer(ReferenceHub referenceHub)
     {
         var nextBotIdx = Bots.Count;
 
-        var referenceHub = InstantiatePlayerObject($"Bot{nextBotIdx}");
         Bots.Add(new(referenceHub));
         BotHubRefs.Add(referenceHub, new(nextBotIdx));
 
@@ -38,12 +36,5 @@ public static class BotStore
             var botHub = Bots[botIdx].Hub;
             BotHubRefs[botHub] = new(botIdx);
         }
-    }
-
-    private static ReferenceHub InstantiatePlayerObject(string nickname)
-    {
-        var referenceHub = DummyUtils.SpawnDummy(nickname);
-
-        return referenceHub;
     }
 }
