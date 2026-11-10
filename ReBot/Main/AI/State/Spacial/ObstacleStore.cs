@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Spacial;
 
-public struct ObstacleState() : IDisposable
+public struct ObstacleStore() : IDisposable
 {
     public static readonly NativeList<Vector3> ObstacleLocations = new(Allocator.Persistent);
     public static readonly NativeList<DoorPermissionFlags> DoorObstaclePermissions = new(Allocator.Persistent);

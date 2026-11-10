@@ -8,8 +8,8 @@ internal struct InteractEmergencyRelease(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
-    NativeList<bool> doorObstacleEmergencyReleaseHasPositions = ObstacleState.DoorObstacleEmergencyReleaseHasPositions;
-    NativeList<Vector3> doorObstacleEmergencyReleasePositions = ObstacleState.DoorObstacleEmergencyReleasePositions;
+    NativeList<bool> doorObstacleEmergencyReleaseHasPositions = ObstacleStore.DoorObstacleEmergencyReleaseHasPositions;
+    NativeList<Vector3> doorObstacleEmergencyReleasePositions = ObstacleStore.DoorObstacleEmergencyReleasePositions;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 

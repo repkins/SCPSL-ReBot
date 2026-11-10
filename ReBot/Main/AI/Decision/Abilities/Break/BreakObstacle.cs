@@ -10,7 +10,7 @@ internal struct BreakObstacle(BotRef botRef)
 
     Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
+    NativeList<Vector3> obstacleLocations = ObstacleStore.ObstacleLocations;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 

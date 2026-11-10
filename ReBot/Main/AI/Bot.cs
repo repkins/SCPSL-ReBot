@@ -25,7 +25,7 @@ public class Bot(ReferenceHub hub) : IDisposable
 
     public PlayerStore PlayerStore = new();
     public RoomStore RoomStore = new();
-    public ObstacleState ObstacleStore = new();
+    public ObstacleStore ObstacleStore = new();
     public TerminationStore TerminationStore = new();
 
     public MovementStore MovementStore = new();

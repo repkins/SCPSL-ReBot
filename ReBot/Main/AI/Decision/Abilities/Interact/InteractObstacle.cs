@@ -9,8 +9,8 @@ internal struct InteractObstacle(BotRef botRef, DoorPermissionFlags rolePermissi
 {
     Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeList<DoorPermissionFlags> doorObstaclePermissions = ObstacleState.DoorObstaclePermissions;
+    NativeList<Vector3> obstacleLocations = ObstacleStore.ObstacleLocations;
+    NativeList<DoorPermissionFlags> doorObstaclePermissions = ObstacleStore.DoorObstaclePermissions;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
 

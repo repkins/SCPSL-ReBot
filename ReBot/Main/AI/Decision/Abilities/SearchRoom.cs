@@ -15,7 +15,7 @@ internal struct SearchRoom(BotRef botRef)
     NativeList<bool> roomIsElevations = botRef.Value.RoomStore.RoomIsElevations;
 
     NativeHashMap<Vector3, ObstacleRef> obstaclesByTarget = botRef.Value.ObstacleStore.ObstaclesByTarget;
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
+    NativeList<Vector3> obstacleLocations = ObstacleStore.ObstacleLocations;
 
     NativeReference<(bool, Vector3)> moveToPositionRef = botRef.Value.MovementStore.MoveToPositionRef;
 

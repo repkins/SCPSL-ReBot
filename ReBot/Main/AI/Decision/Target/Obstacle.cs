@@ -7,7 +7,7 @@ namespace ReBot.Main.AI.Decision.Target;
 
 internal struct Obstacle() : ITarget
 {
-    public NativeList<Vector3> Locations { get; } = ObstacleState.ObstacleLocations;
+    public NativeList<Vector3> Locations { get; } = ObstacleStore.ObstacleLocations;
 
     public ActionEnum Enum { get; } = ActionEnum.Obstacle;
 }

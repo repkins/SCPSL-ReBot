@@ -8,10 +8,10 @@ internal struct CallElevator(BotRef botRef)
 {
     Vector3 playerPosition = botRef.Value.PlayerStore.Position;
 
-    NativeList<Vector3> obstacleLocations = ObstacleState.ObstacleLocations;
-    NativeList<ObstacleRef> elevationCallObstacles = ObstacleState.ElevationCallObstacles;
-    NativeList<Vector3> elevationCallInteractLocations = ObstacleState.ElevationCallInteractLocations;
-    NativeList<bool> elevationCallInteractAbles = ObstacleState.ElevationCallInteractAbles;
+    NativeList<Vector3> obstacleLocations = ObstacleStore.ObstacleLocations;
+    NativeList<ObstacleRef> elevationCallObstacles = ObstacleStore.ElevationCallObstacles;
+    NativeList<Vector3> elevationCallInteractLocations = ObstacleStore.ElevationCallInteractLocations;
+    NativeList<bool> elevationCallInteractAbles = ObstacleStore.ElevationCallInteractAbles;
 
     NativeReference<(bool, Vector3)> interactPositionRef = botRef.Value.InteractionStore.InteractWithPositionRef;
     NativeReference<(bool, Vector3)> lookAtPositionRef = botRef.Value.MovementStore.LookAtPositionRef;
