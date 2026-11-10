@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CentralAuth;
+using HarmonyLib;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features;
@@ -55,17 +56,17 @@ public class LabApiPlugin : Plugin
 #endif
 
         PlayerRoleManager.OnRoleChanged += OnRoleChanged;
-        ReferenceHub.OnPlayerAdded += OnPlayerAdded;
         ReferenceHub.OnPlayerRemoved += OnPlayerRemoved;
         PlayerEvents.Kicked += Kicked;
+        PlayerAuthenticationManager.OnInstanceModeChanged += OnInstanceModeChanged;
     }
 
     public override void Disable()
     {
         PlayerRoleManager.OnRoleChanged -= OnRoleChanged;
-        ReferenceHub.OnPlayerAdded -= OnPlayerAdded;
         ReferenceHub.OnPlayerRemoved -= OnPlayerRemoved;
         PlayerEvents.Kicked -= Kicked;
+        PlayerAuthenticationManager.OnInstanceModeChanged -= OnInstanceModeChanged;
 
         BotSystem.Teardown();
 
@@ -86,9 +87,9 @@ public class LabApiPlugin : Plugin
         }
     }
 
-    private static void OnPlayerAdded(ReferenceHub hub)
+    private static void OnInstanceModeChanged(ReferenceHub hub, ClientInstanceMode mode)
     {
-        if (hub.IsDummy)
+        if (mode == ClientInstanceMode.Dummy)
         {
             BotSystem.AddBotPlayer(hub);
         }
@@ -110,4 +111,5 @@ public class LabApiPlugin : Plugin
             BotSystem.PrintKickReason(hub, args.Reason);
         }
     }
+
 }

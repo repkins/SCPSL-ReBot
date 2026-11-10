@@ -42,6 +42,8 @@ public static class BotSystem
     public static void AddBotPlayer(ReferenceHub hub)
     {
         BotStore.AddBotPlayer(hub);
+
+        Debug.Log($"Bot player added: {hub}");
     }
 
     public static void RemoveBotPlayer(ReferenceHub userHub, BotRef botRef)

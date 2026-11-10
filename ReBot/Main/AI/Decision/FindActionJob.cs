@@ -70,7 +70,7 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         var impactingActionStack = new NativeList<(NativeParallelMultiHashMapIterator<ActionRef> iterator, ActionRef actionToEnable)>(Allocator.Temp);
         var actionAction = MindStore.EnabledActionRefs[botRef.Idx];
 
-        var nick = botRef.Value.Hub.nicknameSync;
+        var nick = botRef.Value.Hub.nicknameSync.MyNick;
 
         foreach (var (_, _, goalImpactingAction) in goalImpactingActions)
         {
