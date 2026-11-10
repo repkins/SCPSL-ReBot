@@ -58,19 +58,23 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         {
             MindStore.EnabledActionRefs[botRef.Idx] = actionToEnable;
 
+#if DEBUG
             PrintVisitedActions(actionPathfinding, goalImpactingActions);
+#endif
         }
     }
 
+#if DEBUG
     private void PrintVisitedActions(ActionPathfinding actionPathfinding, NativeList<ImpactingAction> goalImpactingActions)
     {
         var impactingActionStack = new NativeList<(NativeParallelMultiHashMapIterator<ActionRef> iterator, ActionRef actionToEnable)>(Allocator.Temp);
         var actionAction = MindStore.EnabledActionRefs[botRef.Idx];
 
+        var nick = botRef.Value.Hub.nicknameSync;
+
         foreach (var (_, _, goalImpactingAction) in goalImpactingActions)
         {
             var impactingAction = goalImpactingAction;
-            var actionToEnable = default(ActionRef);
             var actionToEnableGeneralCost = 0f;
 
             do
@@ -79,12 +83,9 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
                 var (generalCost, multiplier) = actionPathfinding.generalCosts[impactingAction];
                 var cost = generalCost - actionToEnableGeneralCost;
 
-                var actionPart = (ActionEnum)((byte)impactingAction.Enum & 0x0F);
-                var subjectPart = (ActionEnum)((byte)impactingAction.Enum & 0xF0);
+                Debug.Log($"{nick}: {prefix} {impactingAction.Enum} ({impactingAction.Idx}), {cost} ({multiplier}x){(impactingAction == actionAction ? " <--" : "")}");
 
-                Debug.Log($"{prefix}{impactingAction.Enum}({impactingAction.Idx}), {cost} ({multiplier}x){(impactingAction == actionAction ? " <--" : "")}");
-
-                actionToEnable = impactingAction;
+                var actionToEnable = impactingAction;
                 if (actionPathfinding.visitedImpactingActions.TryGetFirstValue(actionToEnable, out impactingAction, out var impactingIterator))
                 {
                     impactingActionStack.Add((impactingIterator, actionToEnable));
@@ -114,4 +115,5 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
             while (impactingActionStack.Length > 0);
         }
     }
+#endif
 }

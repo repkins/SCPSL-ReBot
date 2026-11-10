@@ -176,7 +176,6 @@ internal static class PathfindingSystem
                 if (Vector3.Distance(playerPosition, intersectPoint) < 1f)
                 {
                     jump = true;
-                    Debug.Log($"Setting for jump");
                 }
             }
         }

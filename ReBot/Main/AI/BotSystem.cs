@@ -34,11 +34,6 @@ public static class BotSystem
         Timing.KillCoroutines(handle);
     }
 
-    public static void OnRoundRestarted()
-    {
-
-    }
-
     public static void PrintRoleChanged(ReferenceHub userHub, PlayerRoleBase prevRole, PlayerRoleBase newRole)
     {
         Debug.Log($"Bot \"{userHub}\" got new role {newRole.RoleTypeId}");
@@ -55,21 +50,6 @@ public static class BotSystem
     {
         Debug.Log($"Bot player \"{hub}\" got kicked, reason: {reason}");
     }
-
-    public static void AssignSupportedRole()
-    {
-        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
-        {
-            var hub = BotStore.Bots[botIdx].Hub;
-
-            var targetRoleType = RoleTypeId.Scp049;
-            if (hub.roleManager.CurrentRole.RoleTypeId != targetRoleType)
-            {
-                hub.roleManager.ServerSetRole(targetRoleType, RoleChangeReason.None);
-            }
-        }
-    }
-
 
     public static IEnumerator<float> RunPlayerUpdates()
     {
