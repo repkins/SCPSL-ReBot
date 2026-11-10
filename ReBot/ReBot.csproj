@@ -15,19 +15,19 @@
     <AssemblySearchPaths>$(SL_REFERENCES);$(AssemblySearchPaths)</AssemblySearchPaths>
 
     <Deterministic>False</Deterministic>
-    <AssemblyVersion>0.0.0.*</AssemblyVersion>
+    <IsPublishable>False</IsPublishable>
 
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebugType>embedded</DebugType>
     <DefineConstants>$(DefineConstants);ENABLE_PROFILER</DefineConstants>
-    <IsPublishable>False</IsPublishable>
+    <AssemblyVersion>0.0.0.*</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebugType>portable</DebugType>
-    <IsPublishable>False</IsPublishable>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">    
