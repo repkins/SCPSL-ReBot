@@ -18,3 +18,12 @@ Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite
  - **Opens doors**, **uses emergency door overrides**, **uses elevators** and **jumps** to try reach destinations.
  - **Built-in mesh-based navigation system** with in-game navigation mesh editor (legacy from previous project).
  - Due to design of legacy built-in navigation system, plugin patches facility generator to **use standard room connectors**.
+
+## Dependencies
+
+ - Harmony 2.3
+
+## Installation
+
+ 1. Download plugin archive from releases.
+ 2. Put contents of the archive to the relevant LabAPI plugins sub-directory.
