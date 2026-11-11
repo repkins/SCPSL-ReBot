@@ -4,7 +4,7 @@ Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite
 
 ## Features
 
- - **Complete rewrite** into data-oriented design to enable better CPU core utilization.
+ - **Complete rewrite** into data-oriented design to enable better CPU utilization.
  - AI of this plugin gets added to every dummy.
  - **GOAP inspired decision making system** which enables performing actions **optimally** using action path-finding algorithm.
  - Supports _currently_ the following roles:
