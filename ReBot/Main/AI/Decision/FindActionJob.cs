@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.Decision;
 
+using Conditional = System.Diagnostics.ConditionalAttribute;
+
 internal struct FindActionJob<TMind, TMindFactory> : IJob
     where TMind : IMind
     where TMindFactory : IMind.IFactory<TMind>, new()
@@ -58,13 +60,11 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
         {
             MindStore.EnabledActionRefs[botRef.Idx] = actionToEnable;
 
-#if DEBUG
             PrintVisitedActions(actionPathfinding, goalImpactingActions);
-#endif
         }
     }
 
-#if DEBUG
+    [Conditional("DEBUG")]
     private void PrintVisitedActions(ActionPathfinding actionPathfinding, NativeList<ImpactingAction> goalImpactingActions)
     {
         var impactingActionStack = new NativeList<(NativeParallelMultiHashMapIterator<ActionRef> iterator, ActionRef actionToEnable)>(Allocator.Temp);
@@ -115,5 +115,4 @@ internal struct FindActionJob<TMind, TMindFactory> : IJob
             while (impactingActionStack.Length > 0);
         }
     }
-#endif
 }
