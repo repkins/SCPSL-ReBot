@@ -16,6 +16,7 @@
 
     <Deterministic>False</Deterministic>
     <IsPublishable>False</IsPublishable>
+    <Authors>repkins(19)</Authors>
 
   </PropertyGroup>
 
@@ -27,7 +28,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebugType>portable</DebugType>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">    
