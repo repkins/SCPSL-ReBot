@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Decision;
 
-public static class NativeContainerExtensions
+internal static class NativeContainerExtensions
 {
     public static void Add(this NativeList<ImpactingAction> impactingActions, float cost, float multiplier, ActionEnum actionEnum, int beliefIdx)
     {

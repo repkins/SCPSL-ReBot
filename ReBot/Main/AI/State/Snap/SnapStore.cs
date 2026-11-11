@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Snap;
 
-public struct SnapStore() : IDisposable
+internal struct SnapStore() : IDisposable
 {
     public bool IsHeld;
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Spacial;
 
-public struct PlayerStore : IDisposable
+internal struct PlayerStore : IDisposable
 {
     public Vector3 Position;
     public Vector3 Forward;

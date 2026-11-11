@@ -11,7 +11,7 @@ using Unity.Collections;
 
 namespace ReBot.Main.AI.Decision.Role;
 
-public struct Scp049Mind(BotRef botRef) : IMind
+internal struct Scp049Mind(BotRef botRef) : IMind
 {
     TerminateEnemies terminateEnemies = new(botRef);
     CardiacEnemy cardiacEnemy = new(botRef);

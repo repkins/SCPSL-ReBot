@@ -1,6 +1,6 @@
 ﻿namespace ReBot.Main.AI.Decision;
 
-public enum BeliefEnum : byte
+internal enum BeliefEnum : byte
 {
     TerminatedEnemy,
     WithinEnemy,

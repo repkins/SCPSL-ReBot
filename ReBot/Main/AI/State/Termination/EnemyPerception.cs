@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Termination;
 
-public struct EnemyPerception(int botCount, float maxSightDistance, LayerMask sightLayerMask)
+internal struct EnemyPerception(int botCount, float maxSightDistance, LayerMask sightLayerMask)
 {
     struct EnemySightBot()
     {

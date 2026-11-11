@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.State.Blink;
 
-public struct BlinkPerception(int botCount)
+internal struct BlinkPerception(int botCount)
 {
     public void Process()
     {

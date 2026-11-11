@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Interaction;
 
-public struct InteractionStore() : IDisposable
+internal struct InteractionStore() : IDisposable
 {
     public NativeReference<(bool, Vector3)> InteractWithPositionRef = new(Allocator.Persistent);
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ReBot.Main.AI;
 
-public static class BotStore
+internal static class BotStore
 {
     public readonly static List<Bot> Bots = [];
     public readonly static Dictionary<ReferenceHub, BotRef> BotHubRefs = [];

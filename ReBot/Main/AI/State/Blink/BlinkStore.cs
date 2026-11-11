@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Blink;
 
-public struct BlinkStore() : IDisposable
+internal struct BlinkStore() : IDisposable
 {
     public bool IsHeld;
 

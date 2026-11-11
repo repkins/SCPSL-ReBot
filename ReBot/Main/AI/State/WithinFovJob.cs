@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State;
 
-public struct WithinFovJob(float fovDegrees = 90f) : IJobFor
+internal struct WithinFovJob(float fovDegrees = 90f) : IJobFor
 {
     private readonly float cosineOfFov = Mathf.Cos(fovDegrees * Mathf.Deg2Rad / 2f);
 

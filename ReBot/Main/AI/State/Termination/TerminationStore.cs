@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Termination;
 
-public struct TerminationStore() : IDisposable
+internal struct TerminationStore() : IDisposable
 {
     public NativeList<int> EnemyInstanceIds = new(5, Allocator.Persistent);
     public NativeList<Vector3> EnemyLocations = new(5, Allocator.Persistent);

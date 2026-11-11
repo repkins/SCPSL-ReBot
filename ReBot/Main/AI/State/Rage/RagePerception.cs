@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.State.Rage;
 
-public struct RagePerception(int botCount)
+internal struct RagePerception(int botCount)
 {
     public void Process()
     {

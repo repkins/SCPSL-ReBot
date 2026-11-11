@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI;
 
-public static class BotSystem
+internal static class BotSystem
 {
     private static CoroutineHandle handle;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Movement;
 
-public static class MovementSystem
+internal static class MovementSystem
 {
     private const float MaxSteeringForceDegrees = 640f;
 

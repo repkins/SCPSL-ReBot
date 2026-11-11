@@ -15,7 +15,7 @@ using UnityEngine;
 
 namespace ReBot.Navigation
 {
-    public class NavigationSystem
+    internal class NavigationSystem
     {
         public static readonly NavigationSystem Instance = new();
 

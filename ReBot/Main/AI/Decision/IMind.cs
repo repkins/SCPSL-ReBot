@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Decision;
 
-public interface IMind
+internal interface IMind
 {
     void ProcessGoals(NativeList<BeliefRef> beliefsToEnable);
     void ProcessImpactingAction(ActionRef action, NativeList<BeliefRef> beliefsToEnable);

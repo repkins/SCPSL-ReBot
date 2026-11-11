@@ -2,4 +2,4 @@
 
 namespace ReBot.Main.AI.State.Movement;
 
-public record struct Look(Quaternion DesiredHorizontalRotation, Quaternion DesiredVerticalRotation, Quaternion TargetHorizontalRotation);
+internal record struct Look(Quaternion DesiredHorizontalRotation, Quaternion DesiredVerticalRotation, Quaternion TargetHorizontalRotation);

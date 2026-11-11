@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Spacial;
 
-public struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
+internal struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask sightLayerMask)
 {
     enum TargetObstacleStatus
     {

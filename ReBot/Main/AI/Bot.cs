@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI;
 
-public class Bot(ReferenceHub hub) : IDisposable
+internal class Bot(ReferenceHub hub) : IDisposable
 {
     public readonly ReferenceHub Hub = hub;
 

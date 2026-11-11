@@ -2,7 +2,7 @@
 
 namespace ReBot.Main.AI.Decision;
 
-public struct ActionPathfinding()
+internal struct ActionPathfinding()
 {
     private NativeList<(float, ActionRef)> actionsToVisit = new(Allocator.Temp);
     public NativeHashMap<ActionRef, (float cost, float multiplier)> generalCosts = new(1, Allocator.Temp);

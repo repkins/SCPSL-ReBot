@@ -3,7 +3,7 @@ using Unity.Collections;
 
 namespace ReBot.Collections;
 
-public static class NativeContainerExtensions
+internal static class NativeContainerExtensions
 {
     extension<TItem>(NativeArray<TItem>)
         where TItem : unmanaged

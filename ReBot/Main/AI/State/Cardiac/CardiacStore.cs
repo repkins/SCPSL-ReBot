@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ReBot.Main.AI.State.Cardiac;
 
-public struct CardiacStore() : IDisposable
+internal struct CardiacStore() : IDisposable
 {
     public bool IsHeld;
 

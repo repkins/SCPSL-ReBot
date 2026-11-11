@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace ReBot;
 
-public class LabApiPlugin : Plugin
+internal class LabApiPlugin : Plugin
 {
     public override string Name { get; } = "ReBot";
     public override string Description { get; } = "Bot players plugin";

@@ -3,7 +3,7 @@
 namespace ReBot.Main.AI.Decision;
 
 [Flags]
-public enum ActionEnum : byte
+internal enum ActionEnum : byte
 {
     Default = 0x00,
 
