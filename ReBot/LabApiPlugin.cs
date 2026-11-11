@@ -19,7 +19,7 @@ namespace ReBot;
 internal class LabApiPlugin : Plugin
 {
     public override string Name { get; } = "ReBot";
-    public override string Description { get; } = "Adds bot AI to dummies";
+    public override string Description { get; } = "Adds goal-oriented bot AI to dummies";
     public override string Author { get; } = "repkins(19)";
     public override Version Version { get; } = new ("0.1.0");
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
