@@ -1,6 +1,6 @@
 # SCP: Secret Laboratory ReBot
 
-Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite of previous SCPSL bot plugin as separate plugin.
+Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite of previous SCPSL bot plugin.
 
 ## Features
 
