@@ -78,10 +78,14 @@ internal struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask
     {
         NavigationSystem.Instance.OnMeshesConnected += UpdateStaticState;
         NavigationSystem.Instance.OnMeshesReset += ResetStaticState;
+
+        DoorEvents.OnDoorAction += ProcessDoorAction;
     }
 
     public static void Teardown()
     {
+        DoorEvents.OnDoorAction -= ProcessDoorAction;
+
         NavigationSystem.Instance.OnMeshesReset -= ResetStaticState;
         NavigationSystem.Instance.OnMeshesConnected -= UpdateStaticState;
     }
@@ -90,17 +94,18 @@ internal struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask
     {
         Debug.Log("Updating bot static state");
 
-        foreach (var (cell, (solidObstacle, emergencyRelease)) in NavigationMesh.CellsWithSolidObstacles)
+        foreach (var (cell, (solidObstacleTransform, emergencyRelease)) in NavigationMesh.CellsWithSolidObstacles)
         {
             var obstacleRef = new ObstacleRef(ObstacleStore.ObstacleLocations.Length);
-            var obstaclePosition = solidObstacle.position + Vector3.up;
-            var doorVariant = solidObstacle.GetComponentInParent<CheckpointDoor>() ?? solidObstacle.GetComponent<DoorVariant>();
+            var obstaclePosition = solidObstacleTransform.position + Vector3.up;
+            var doorVariant = solidObstacleTransform.GetComponentInParent<CheckpointDoor>() ?? solidObstacleTransform.GetComponent<DoorVariant>();
             var doorObstaclePermissions = doorVariant.RequiredPermissions.RequiredPermissions;
             var doorObstacleEmergencyReleaseLocation = emergencyRelease?.GetComponent<Collider>().bounds.center;
             ObstacleStore.ObstacleLocations.Add(obstaclePosition);
             ObstacleStore.DoorObstaclePermissions.Add(doorObstaclePermissions);
             ObstacleStore.DoorObstacleEmergencyReleaseHasPositions.Add(doorObstacleEmergencyReleaseLocation.HasValue);
             ObstacleStore.DoorObstacleEmergencyReleasePositions.Add(doorObstacleEmergencyReleaseLocation ?? default);
+            ObstacleStore.ObstaclesByInstanceId.Add(doorVariant.GetInstanceID(), obstacleRef);
             ObstacleStore.ObstaclesByCell.Add(cell, obstacleRef);
             ObstacleStore.CellsByObstacle.Add(obstacleRef, cell);
         }
@@ -156,6 +161,7 @@ internal struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask
         ObstacleStore.DoorObstaclePermissions.Clear();
         ObstacleStore.DoorObstacleEmergencyReleaseHasPositions.Clear();
         ObstacleStore.DoorObstacleEmergencyReleasePositions.Clear();
+        ObstacleStore.ObstaclesByInstanceId.Clear();
         ObstacleStore.ObstaclesByCell.Clear();
         ObstacleStore.CellsByObstacle.Clear();
 
@@ -522,6 +528,40 @@ internal struct ObstaclePerception(int botCount, float maxSightRadius, LayerMask
                 obstacles[newPosition] = obstacleRef;
             }
             BotStore.Bots[botIdx].TerminationStore.ChangedTargetPositions.Clear();
+        }
+    }
+
+    private static void ProcessDoorAction(DoorVariant door, DoorAction doorAction, ReferenceHub hub)
+    {
+        if (doorAction != DoorAction.Opened)
+        {
+            return;
+        }
+
+        var doorInstanceId = door.GetInstanceID();
+
+        for (int botIdx = 0; botIdx < BotStore.Bots.Count; botIdx++)
+        {
+            var doorPosition = door.transform.position + Vector3.up;
+            var playerPosition = BotStore.Bots[botIdx].PlayerStore.Position;
+
+            if (Vector3.Distance(doorPosition, playerPosition) > 10f)
+            {
+                continue;
+            }
+
+            var obstacleRef = ObstacleStore.ObstaclesByInstanceId[doorInstanceId];
+            var obstaclesByTarget = BotStore.Bots[botIdx].ObstacleStore.ObstaclesByTarget;
+
+            foreach (var pair in obstaclesByTarget)
+            {
+                pair.GetKeyValue(out var goalPos, out var storedObstacleRef);
+
+                if (storedObstacleRef == obstacleRef)
+                {
+                    obstaclesByTarget.Remove(goalPos);
+                }
+            }
         }
     }
 }
