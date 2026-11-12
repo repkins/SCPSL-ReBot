@@ -165,8 +165,9 @@ internal struct EnemyPerception(int botCount, float maxSightDistance, LayerMask 
 
                 var roleInstanceId = fpcRole.GetInstanceID();
                 var enemyPosition = enemyPlayerPositions[enemySightIdx];
+                var enemySensedTime = Time.time;
 
-                if (bot.TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var enemyRef))
+                if (bot.TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, enemySensedTime, out var enemyRef))
                 {
                     enemiesWithinSight.Add(enemyRef);
                 }
@@ -190,8 +191,6 @@ internal struct EnemyPerception(int botCount, float maxSightDistance, LayerMask 
 
             for (EnemyRef enemyRef = new(0); enemyRef.Idx < enemyLocations.Length; enemyRef.Idx++)
             {
-                //DrawableLines.GenerateSphere(enemyLocations[enemyRef.Idx] + enemyVelocities[enemyRef.Idx], .1f);
-
                 if (enemiesWithinSight.Contains(enemyRef))
                 {
                     continue;
@@ -201,6 +200,33 @@ internal struct EnemyPerception(int botCount, float maxSightDistance, LayerMask 
                 var enemyVelocity = enemyVelocities[enemyRef.Idx];
                 if (Vector3.Distance(cameraPosition, enemyPosition) < 1.5f
                     && Vector3.Dot(cameraForward, Vector3.Normalize((enemyPosition + enemyVelocity) - cameraPosition)) > 0.9f)
+                {
+                    bot.TerminationStore.RemoveEnemyAtSwapback(enemyRef);
+                    enemyRef.Idx--;
+                }
+            }
+        }
+    }
+
+    public void ProcessEnemiesSensedTime()
+    {
+        for (int botIdx = 0; botIdx < botCount; botIdx++)
+        {
+            var bot = BotStore.Bots[botIdx];
+
+            var enemySensedTimes = bot.TerminationStore.EnemySensedTimes;
+            var enemiesWithinSight = bot.TerminationStore.EnemiesWithinSight;
+
+            for (var enemyRef = new EnemyRef(0); enemyRef.Idx < enemySensedTimes.Length; enemyRef.Idx++)
+            {
+                if (enemiesWithinSight.Contains(enemyRef))
+                {
+                    continue;
+                }
+
+                var timeLastSensed = enemySensedTimes[enemyRef.Idx];
+
+                if (Time.time - timeLastSensed > 60f)
                 {
                     bot.TerminationStore.RemoveEnemyAtSwapback(enemyRef);
                     enemyRef.Idx--;
@@ -253,13 +279,14 @@ internal struct EnemyPerception(int botCount, float maxSightDistance, LayerMask 
 
             var enemyPosition = fpcRole.FpcModule.Position;
             var playerPosition = BotStore.Bots[botIdx].PlayerStore.Position;
+            var enemySensedTime = Time.time;
 
             if (Vector3.Distance(enemyPosition, playerPosition) > dis)
             {
                 continue;
             }
 
-            BotStore.Bots[botIdx].TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, out var _);
+            BotStore.Bots[botIdx].TerminationStore.ReplaceOrAddEnemy(roleInstanceId, enemyPosition, enemySensedTime, out var _);
         }
     }
 }

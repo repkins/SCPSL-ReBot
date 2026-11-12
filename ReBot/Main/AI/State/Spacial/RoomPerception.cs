@@ -49,8 +49,9 @@ internal struct RoomPerception(int botCount)
                                 bot.RoomStore.RoomExitLocations.Add(transformCell.MeanPosition);
 
                                 var roomExitIsWithin = cellWithinResult.HasValue && cellWithinResult.Value == transformCell;
+                                var roomIsElevation = !NavigationMesh.ForeignConnectedCellEdges[transformCell].ContainsKey(foreignCell);
                                 bot.RoomStore.RoomExitIsWithins.Add(roomExitIsWithin);
-                                bot.RoomStore.RoomIsElevations.Add(!NavigationMesh.ForeignConnectedCellEdges[transformCell].ContainsKey(foreignCell));
+                                bot.RoomStore.RoomIsElevations.Add(roomIsElevation);
                             }
                         }
                     }

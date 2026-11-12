@@ -29,20 +29,20 @@ internal class PerceptionSystem
     {
         var playerPerception = new PlayerPerception(BotStore.Bots.Count);
         var roomPerception = new RoomPerception(BotStore.Bots.Count);
-        var enemySightPerception = new EnemyPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
+        var enemyPerception = new EnemyPerception(BotStore.Bots.Count, maxSightDistance, sightLayerMask);
         var obstaclePerception = new ObstaclePerception(BotStore.Bots.Count, maxSightDistance, obstacleSightLayerMask);
         var blinkPerception = new BlinkPerception(BotStore.Bots.Count);
         var ragePerception = new RagePerception(BotStore.Bots.Count);
 
-        enemySightPerception.ProcessSightDistance();
-        enemySightPerception.PrepareEnemiesWithinRadius();
+        enemyPerception.ProcessSightDistance();
+        enemyPerception.PrepareEnemiesWithinRadius();
 
-        var enemiesSightingHandle = enemySightPerception.ProcessEnemySighting();
+        var enemiesSensingHandle = enemyPerception.ProcessEnemySighting();
         var obstaclesSensingHandle = obstaclePerception.PrepareSensableObstacles();
 
-        JobHandle.CompleteAll(ref enemiesSightingHandle, ref obstaclesSensingHandle);
+        JobHandle.CompleteAll(ref enemiesSensingHandle, ref obstaclesSensingHandle);
 
-        enemySightPerception.ProcessEnemySightResults();
+        enemyPerception.ProcessEnemySightResults();
         ragePerception.Process();
         obstaclePerception.ProcessSensedObstacleResults();
 
@@ -52,7 +52,8 @@ internal class PerceptionSystem
 
         obstaclePerception.ProcessSharedElevationState();
 
-        enemySightPerception.ProcessEnemiesLostSight();
-        enemySightPerception.ProcessEnemiesWithinDistance();
+        enemyPerception.ProcessEnemiesLostSight();
+        enemyPerception.ProcessEnemiesSensedTime();
+        enemyPerception.ProcessEnemiesWithinDistance();
     }
 }

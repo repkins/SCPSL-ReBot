@@ -1,4 +1,5 @@
 ﻿using PlayerRoles.PlayableScps.Scp096;
+using UnityEngine;
 
 namespace ReBot.Main.AI.State.Rage;
 
@@ -31,8 +32,9 @@ internal struct RagePerception(int botCount)
             {
                 var targetInstanceId = target.roleManager.CurrentRole.GetInstanceID();
                 var targetPosition = target.transform.position;
+                var targetSensedTime = Time.time;
 
-                if (bot.TerminationStore.ReplaceOrAddEnemy(targetInstanceId, targetPosition, out var enemyRef))
+                if (bot.TerminationStore.ReplaceOrAddEnemy(targetInstanceId, targetPosition, targetSensedTime, out var enemyRef))
                 {
                     bot.RageStore.Targets.Add(enemyRef);
                 }
