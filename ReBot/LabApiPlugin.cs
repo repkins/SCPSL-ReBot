@@ -5,7 +5,6 @@ using LabApi.Events.Handlers;
 using LabApi.Features;
 using LabApi.Features.Console;
 using LabApi.Loader.Features.Plugins;
-using Mirror.LiteNetLib4Mirror;
 using PlayerRoles;
 using ReBot.Main.AI;
 using ReBot.Navigation;
@@ -21,7 +20,7 @@ internal class LabApiPlugin : Plugin
     public override string Name { get; } = "ReBot";
     public override string Description { get; } = "Adds goal-oriented bot AI to dummies";
     public override string Author { get; } = "repkins(19)";
-    public override Version Version { get; } = new ("0.1.0");
+    public override Version Version { get; } = new ("0.1.1");
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
     private Harmony harmonyInstance;
