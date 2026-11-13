@@ -4,7 +4,7 @@ Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite
 
 ## Features
 
- - **Complete rewrite** into data-oriented design to enable better CPU utilization.
+ - **Complete rewrite** into data-oriented design to enable better CPU utilization and flexibility.
  - AI of this plugin gets added to every dummy.
  - **GOAP inspired decision making system** which enables performing actions **optimally** using action path-finding algorithm.
  - Supports _currently_ the following roles:
@@ -16,8 +16,8 @@ Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite
  - Support for **other roles** will be added later.
  - Supported SCP roles **terminates enemies**, attacking sensed enemies. **Finds enemies** by visiting different rooms.
  - **Opens doors**, **uses emergency door overrides**, **uses elevators** and **jumps** to try reach destinations.
- - **Built-in mesh-based navigation system** with in-game navigation mesh editor (legacy from previous project).
- - Due to design of legacy built-in navigation system, plugin patches facility generator to **use standard room connectors**.
+ - **Built-in navigation system** (legacy from previous project).
+ - Due to design of legacy built-in navigation system, plugin **patches** facility generator to **use standard room connectors**.
 
 ## Dependencies
 
