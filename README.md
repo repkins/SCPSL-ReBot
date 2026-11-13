@@ -21,9 +21,9 @@ Adds goal-oriented AI to dummies to game server running on Unity Engine. Rewrite
 
 ## Dependencies
 
- - Harmony 2.3
+ - [Harmony 2.3](https://github.com/pardeike/Harmony)
 
 ## Installation
 
  1. Download plugin archive from releases.
- 2. Put contents of the archive to the relevant LabAPI plugins sub-directory.
+ 2. Put contents of the archive to the relevant LabAPI plugins sub-directory (ex. `LabAPI/plugins/global`).
